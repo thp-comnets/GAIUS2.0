@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">GAIUS</string>
+
+    <string name="title_home">Home</string>
+    <string name="title_friends">Friends</string>
+    <string name="title_web">Web</string>
+    <string name="title_videos">Videos</string>
+
+</resources>

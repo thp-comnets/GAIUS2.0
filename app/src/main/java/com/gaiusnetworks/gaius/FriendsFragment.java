@@ -47,6 +47,7 @@ public class FriendsFragment extends Fragment {
         friendList = new ArrayList<>();
         loadFriends();
     }
+
     private void loadFriends() {
         /*
          * Creating a String Request
@@ -73,7 +74,8 @@ public class FriendsFragment extends Fragment {
                                 friendList.add(new Friend(
                                         friend.getInt("id"),
                                         friend.getString("name"),
-                                        friend.getString("phoneNumber"),
+                                        "current status",
+//                                        friend.getString("phoneNumber"),
                                         friend.getString("avatar")
                                 ));
                             }

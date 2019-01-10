@@ -16,11 +16,11 @@ import java.util.List;
 public class FriendsAdapter extends RecyclerView.Adapter<FriendsAdapter.FriendViewHolder> {
 
     private Context mCtx;
-    private List<Friend> friendtList;
+    private List<Friend> friendsList;
 
-    public FriendsAdapter(Context mCtx, List<Friend> friendtList) {
+    public FriendsAdapter(Context mCtx, List<Friend> friendsList) {
         this.mCtx = mCtx;
-        this.friendtList = friendtList;
+        this.friendsList = friendsList;
     }
 
     @Override
@@ -32,7 +32,7 @@ public class FriendsAdapter extends RecyclerView.Adapter<FriendsAdapter.FriendVi
 
     @Override
     public void onBindViewHolder(FriendViewHolder holder, int position) {
-        Friend friend = friendtList.get(position);
+        Friend friend = friendsList.get(position);
 
         RequestOptions requestOptions = new RequestOptions();
         requestOptions.error(R.drawable.ic_avatar);
@@ -49,7 +49,7 @@ public class FriendsAdapter extends RecyclerView.Adapter<FriendsAdapter.FriendVi
 
     @Override
     public int getItemCount() {
-        return friendtList.size();
+        return friendsList.size();
     }
 
     class FriendViewHolder extends RecyclerView.ViewHolder {

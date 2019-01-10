@@ -2,10 +2,12 @@ package com.gaiusnetworks.gaius;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -14,7 +16,6 @@ import com.bumptech.glide.request.RequestOptions;
 import java.util.List;
 
 public class ChannelsAdapter extends RecyclerView.Adapter<ChannelsAdapter.ChannelViewHolder> {
-
     private Context mCtx;
     private List<Channel> channelsList;
 
@@ -44,6 +45,15 @@ public class ChannelsAdapter extends RecyclerView.Adapter<ChannelsAdapter.Channe
                 .into(holder.imageView);
 
         holder.textViewTitle.setText(channel.getTitle());
+
+        holder.channelItem.setTag(position);
+        holder.channelItem.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Channel c = channelsList.get((Integer) v.getTag());
+                Log.d("Yasir", "click " + c.getTitle());
+            }
+        });
     }
 
     @Override
@@ -55,12 +65,14 @@ public class ChannelsAdapter extends RecyclerView.Adapter<ChannelsAdapter.Channe
 
         TextView textViewTitle;
         ImageView imageView;
+        LinearLayout channelItem;
 
         public ChannelViewHolder(View itemView) {
             super(itemView);
 
             textViewTitle = itemView.findViewById(R.id.textViewName);
             imageView = itemView.findViewById(R.id.imageView);
+            channelItem = itemView.findViewById(R.id.channelItem);
         }
     }
 }

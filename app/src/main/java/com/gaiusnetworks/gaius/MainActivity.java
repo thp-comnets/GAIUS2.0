@@ -18,7 +18,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
         BottomNavigationView navigation = findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(this);
-        navigation.setItemIconTintList(null);
+//        navigation.setItemIconTintList(null);
     }
 
     @Override

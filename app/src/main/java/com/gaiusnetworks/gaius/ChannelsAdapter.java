@@ -1,6 +1,11 @@
 package com.gaiusnetworks.gaius;
 
+import android.app.Activity;
+import android.app.FragmentManager;
 import android.content.Context;
+
+import android.content.Intent;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -52,6 +57,15 @@ public class ChannelsAdapter extends RecyclerView.Adapter<ChannelsAdapter.Channe
             public void onClick(View v) {
                 Channel c = channelsList.get((Integer) v.getTag());
                 Log.d("Yasir", "click " + c.getTitle());
+
+                Intent i = new Intent(mCtx, RenderMAML.class);
+                mCtx.startActivity(i);
+
+
+//                ((AppCompatActivity) mCtx).getSupportFragmentManager().beginTransaction()
+//                        .replace(R.id.fragment_container, new VideosFragment())
+//                        .commit();
+
             }
         });
     }

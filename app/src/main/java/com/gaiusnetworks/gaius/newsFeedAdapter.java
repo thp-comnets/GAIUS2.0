@@ -2,6 +2,7 @@ package com.gaiusnetworks.gaius;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,6 +11,7 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+import com.bumptech.glide.signature.ObjectKey;
 
 import java.util.List;
 
@@ -43,6 +45,8 @@ public class newsFeedAdapter extends RecyclerView.Adapter<newsFeedAdapter.newsFe
         Glide.with(mCtx)
                 .setDefaultRequestOptions(requestOptions)
                 .load(newsfeed.getAvatar())
+//                .apply(new RequestOptions().signature(new ObjectKey("signature string")))
+                .apply(new RequestOptions().signature(new ObjectKey(System.currentTimeMillis())))
                 .into(holder.avatarView);
 
         requestOptions = new RequestOptions();
@@ -52,7 +56,10 @@ public class newsFeedAdapter extends RecyclerView.Adapter<newsFeedAdapter.newsFe
         Glide.with(mCtx)
                 .setDefaultRequestOptions(requestOptions)
                 .load(newsfeed.getImage())
+                .apply(new RequestOptions().signature(new ObjectKey(System.currentTimeMillis())))
                 .into(holder.imageView);
+
+        Log.d("yasir", newsfeed.getImage());
 
         holder.textViewName.setText(newsfeed.getName());
         holder.textViewUpdateTime.setText(newsfeed.getUpdateTime());

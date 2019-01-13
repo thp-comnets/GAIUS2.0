@@ -5,6 +5,7 @@ import android.app.FragmentManager;
 import android.content.Context;
 
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -56,16 +57,27 @@ public class ChannelsAdapter extends RecyclerView.Adapter<ChannelsAdapter.Channe
             @Override
             public void onClick(View v) {
                 Channel c = channelsList.get((Integer) v.getTag());
-                Log.d("Yasir", "click " + c.getTitle());
 
+                Bundle bundle = new Bundle();
                 Intent i = new Intent(mCtx, RenderMAML.class);
-                mCtx.startActivity(i);
 
+                if (!c.getUserID().contains("null")) {
+                    Log.d("Yasir", "click " + c.getTitle());
+//                    intent = new Intent(view.getContext(), DynamicChannelListViewActivity.class);
+//                    bundle.putSerializable("URL_POST_FIX", "?userid=" + clickedChannel.getUserId());
+//                    bundle.putBoolean("LOCAL", true);
+//                    bundle.putSerializable("CHANNEL_NAME", clickedChannel.getName());
+                }
+                else {
+                    bundle.putSerializable("BASEURL", "http://91.230.41.34:8080/test/");
+                    bundle.putSerializable("URL", c.getUrl());
+                    i.putExtras(bundle);
+                    mCtx.startActivity(i);
+                }
 
 //                ((AppCompatActivity) mCtx).getSupportFragmentManager().beginTransaction()
 //                        .replace(R.id.fragment_container, new VideosFragment())
 //                        .commit();
-
             }
         });
     }

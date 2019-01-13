@@ -74,7 +74,8 @@ public class WebFragment extends Fragment {
                                 channelList.add(new Channel(
                                         channel.getInt("id"),
                                         channel.getString("title"),
-                                        "link",
+                                        channel.getString("url"),
+                                        channel.getString("userID"),
                                         channel.getString("avatar")
                                 ));
                             }

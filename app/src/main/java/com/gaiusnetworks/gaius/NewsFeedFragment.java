@@ -1,11 +1,8 @@
 package com.gaiusnetworks.gaius;
 
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -26,7 +23,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-public class HomeFragment extends Fragment {
+public class NewsFeedFragment extends Fragment {
     private static final String URL_PRODUCTS = "http://91.230.41.34:8080/test/listPages.py";
     List<NewsFeed> newsFeedList;
     RecyclerView recyclerView;
@@ -44,11 +41,11 @@ public class HomeFragment extends Fragment {
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        DividerItemDecoration horizontalDecoration = new DividerItemDecoration(recyclerView.getContext(),
-                DividerItemDecoration.VERTICAL);
-        Drawable horizontalDivider = ContextCompat.getDrawable(getActivity(), R.drawable.horizontal_divider);
-        horizontalDecoration.setDrawable(horizontalDivider);
-        recyclerView.addItemDecoration(horizontalDecoration);
+//        DividerItemDecoration horizontalDecoration = new DividerItemDecoration(recyclerView.getContext(),
+//                DividerItemDecoration.VERTICAL);
+//        Drawable horizontalDivider = ContextCompat.getDrawable(getActivity(), R.drawable.horizontal_divider);
+//        horizontalDecoration.setDrawable(horizontalDivider);
+//        recyclerView.addItemDecoration(horizontalDecoration);
 
         newsFeedList = new ArrayList<>();
         loadPages();
@@ -83,12 +80,13 @@ public class HomeFragment extends Fragment {
                                         newsFeed.getString("avatar"),
                                         newsFeed.getString("thumbnail"),
                                         newsFeed.getString("title"),
-                                        newsFeed.getString("description")
+                                        newsFeed.getString("description"),
+                                        newsFeed.getString("url")
                                 ));
                             }
 
                             //creating adapter object and setting it to recyclerview
-                            newsFeedAdapter adapter = new newsFeedAdapter(getContext(), newsFeedList);
+                            NewsFeedAdapter adapter = new NewsFeedAdapter(getContext(), newsFeedList);
                             recyclerView.setAdapter(adapter);
                         } catch (JSONException e) {
                             e.printStackTrace();

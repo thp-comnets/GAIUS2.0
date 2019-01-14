@@ -8,8 +8,9 @@ public class NewsFeed {
     private String image;
     private String title;
     private String description;
+    private String url;
 
-    public NewsFeed (int id, String name, String updateTime, String avatar, String image, String title, String description) {
+    public NewsFeed (int id, String name, String updateTime, String avatar, String image, String title, String description, String url) {
         this.id = id;
         this.name = name;
         this.updateTime = updateTime;
@@ -17,6 +18,7 @@ public class NewsFeed {
         this.image = "http://91.230.41.34:8080/test/"+image;
         this.title = title;
         this.description = description;
+        this.url = url;
     }
 
     public int getId() {
@@ -46,5 +48,7 @@ public class NewsFeed {
     public String getDescription() {
         return description;
     }
+
+    public String getUrl() {return url; }
 
 }

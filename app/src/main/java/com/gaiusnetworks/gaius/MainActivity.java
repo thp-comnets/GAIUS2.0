@@ -31,14 +31,14 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-
         // asking the user for all required permissions
         checkPermissions ();
 
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
         //loading the default fragment
-        loadFragment(new HomeFragment());
+        loadFragment(new NewsFeedFragment());
 
         BottomNavigationView navigation = findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(this);
@@ -51,7 +51,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
         switch (item.getItemId()) {
             case R.id.navigation_home:
-                fragment = new HomeFragment();
+                fragment = new NewsFeedFragment();
                 setTitle("Home");
                 break;
 

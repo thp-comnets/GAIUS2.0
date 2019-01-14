@@ -1,6 +1,9 @@
 package com.gaiusnetworks.gaius;
 
 import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -15,14 +18,12 @@ import com.bumptech.glide.signature.ObjectKey;
 
 import java.util.List;
 
-import static java.security.AccessController.getContext;
-
-public class newsFeedAdapter extends RecyclerView.Adapter<newsFeedAdapter.newsFeedViewHolder> {
+public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.newsFeedViewHolder> {
 
     private Context mCtx;
     private List<NewsFeed> newsFeedList;
 
-    public newsFeedAdapter(Context mCtx, List<NewsFeed> newsFeedList) {
+    public NewsFeedAdapter(Context mCtx, List<NewsFeed> newsFeedList) {
         this.mCtx = mCtx;
         this.newsFeedList = newsFeedList;
     }
@@ -50,7 +51,7 @@ public class newsFeedAdapter extends RecyclerView.Adapter<newsFeedAdapter.newsFe
                 .into(holder.avatarView);
 
         requestOptions = new RequestOptions();
-        requestOptions.error(R.drawable.ic_home);
+//        requestOptions.error(R.drawable.ic_home);
 
         //loading the image
         Glide.with(mCtx)
@@ -65,6 +66,23 @@ public class newsFeedAdapter extends RecyclerView.Adapter<newsFeedAdapter.newsFe
         holder.textViewUpdateTime.setText(newsfeed.getUpdateTime());
         holder.textViewTitle.setText(newsfeed.getTitle());
         holder.textViewDescription.setText(newsfeed.getDescription());
+
+        holder.newsFeedCard.setTag(position);
+        holder.newsFeedCard.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                NewsFeed n = newsFeedList.get((Integer) v.getTag());
+
+                Bundle bundle = new Bundle();
+                Intent i = new Intent(mCtx, RenderMAML.class);
+
+                bundle.putSerializable("BASEURL", "http://91.230.41.34:8080/test/");
+                bundle.putSerializable("URL", n.getUrl());
+                i.putExtras(bundle);
+                mCtx.startActivity(i);
+
+            }
+        });
     }
 
     @Override
@@ -74,6 +92,7 @@ public class newsFeedAdapter extends RecyclerView.Adapter<newsFeedAdapter.newsFe
 
     class newsFeedViewHolder extends RecyclerView.ViewHolder {
 
+        CardView newsFeedCard;
         TextView textViewName, textViewUpdateTime, textViewTitle, textViewDescription;
         ImageView avatarView, imageView;
 
@@ -86,6 +105,7 @@ public class newsFeedAdapter extends RecyclerView.Adapter<newsFeedAdapter.newsFe
             imageView = itemView.findViewById(R.id.imageView);
             textViewTitle = itemView.findViewById(R.id.textViewTitle);
             textViewDescription = itemView.findViewById(R.id.textViewDescription);
+            newsFeedCard =  itemView.findViewById(R.id.imageViewCardView);
         }
     }
 }

@@ -25,7 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class WebFragment extends Fragment {
-    private static final String URL_PRODUCTS = "http://91.230.41.34:8080/test/listChannels.py";
+    private static String URL = "";
     List<Channel> channelList;
     RecyclerView recyclerView;
 
@@ -45,6 +45,18 @@ public class WebFragment extends Fragment {
                 DividerItemDecoration.VERTICAL));
 
         channelList = new ArrayList<>();
+        URL = "http://91.230.41.34:8080/test/listChannels.py";
+
+        // reading if there is a bundle, used to request and display a channel sub-pages
+        Bundle bundle = this.getArguments();
+        if (bundle != null) {
+            String userID = bundle.getString("userID", null);
+            if (userID != null) {
+                URL += "?userID="+userID;
+            }
+            bundle.clear();
+        }
+
         loadChannels();
     }
 
@@ -56,7 +68,7 @@ public class WebFragment extends Fragment {
          * Then we have a Response Listener and a Error Listener
          * In response listener we will get the JSON response as a String
          * */
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, URL_PRODUCTS,
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, URL,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {

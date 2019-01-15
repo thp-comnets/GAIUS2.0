@@ -9,8 +9,9 @@ public class NewsFeed {
     private String title;
     private String description;
     private String url;
+    private String type;
 
-    public NewsFeed (int id, String name, String updateTime, String avatar, String image, String title, String description, String url) {
+    public NewsFeed (int id, String name, String updateTime, String avatar, String image, String title, String description, String url, String type) {
         this.id = id;
         this.name = name;
         this.updateTime = updateTime;
@@ -19,6 +20,7 @@ public class NewsFeed {
         this.title = title;
         this.description = description;
         this.url = url;
+        this.type = type;
     }
 
     public int getId() {
@@ -50,5 +52,7 @@ public class NewsFeed {
     }
 
     public String getUrl() {return url; }
+
+    public String getType() {return type; }
 
 }

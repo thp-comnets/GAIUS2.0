@@ -97,7 +97,8 @@ public class NewsFeedFragment extends Fragment {
                                         newsFeed.getString("thumbnail"),
                                         newsFeed.getString("title"),
                                         newsFeed.getString("description"),
-                                        newsFeed.getString("url")
+                                        newsFeed.getString("url"),
+                                        newsFeed.getString("type")
                                 ));
                             }
 

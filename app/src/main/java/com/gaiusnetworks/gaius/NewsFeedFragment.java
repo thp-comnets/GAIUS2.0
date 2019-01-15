@@ -1,6 +1,8 @@
 package com.gaiusnetworks.gaius;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -9,6 +11,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RelativeLayout;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
@@ -24,9 +27,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class NewsFeedFragment extends Fragment {
-    private static final String URL_PRODUCTS = "http://91.230.41.34:8080/test/listPages.py";
+    private static String URL_PRODUCTS = "";
     List<NewsFeed> newsFeedList;
     RecyclerView recyclerView;
+    SharedPreferences prefs;
+    RelativeLayout noFriends;
 
     @Nullable
     @Override
@@ -37,6 +42,13 @@ public class NewsFeedFragment extends Fragment {
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        String token;
+        noFriends = view.findViewById(R.id.noFriends);
+
+        prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+        token = prefs.getString("account_token", "null");
+        URL_PRODUCTS = "http://91.230.41.34:8080/test/listPages.py?token="+token;
+
         recyclerView =  getView().findViewById(R.id.recylcerView);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -66,6 +78,10 @@ public class NewsFeedFragment extends Fragment {
                         try {
                             //converting the string to json array object
                             JSONArray array = new JSONArray(response);
+
+                            if (array.length() == 0 ) {
+                                noFriends.setVisibility(View.VISIBLE);
+                            }
 
                             //traversing through all the object
                             for (int i = 0; i < array.length(); i++) {

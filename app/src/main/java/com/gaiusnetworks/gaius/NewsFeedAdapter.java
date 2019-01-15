@@ -42,13 +42,23 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.newsFe
         RequestOptions requestOptions = new RequestOptions();
         requestOptions.error(R.drawable.ic_avatar);
 
-        //loading the image
-        Glide.with(mCtx)
-                .setDefaultRequestOptions(requestOptions)
-                .load(newsfeed.getAvatar())
+        if (newsfeed.getAvatar().contains("None")) {
+            //loading the image
+            Glide.with(mCtx)
+                    .load(R.drawable.ic_avatar)
+                    .into(holder.avatarView);
+        }
+        else{
+            //loading the image
+            Glide.with(mCtx)
+                    .setDefaultRequestOptions(requestOptions)
+                    .load(newsfeed.getAvatar())
 //                .apply(new RequestOptions().signature(new ObjectKey("signature string")))
-                .apply(new RequestOptions().signature(new ObjectKey(System.currentTimeMillis())))
-                .into(holder.avatarView);
+                    .apply(new RequestOptions().signature(new ObjectKey(System.currentTimeMillis())))
+                    .into(holder.avatarView);
+        }
+
+
 
         requestOptions = new RequestOptions();
 //        requestOptions.error(R.drawable.ic_home);

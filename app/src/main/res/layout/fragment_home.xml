@@ -3,7 +3,33 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context="com.gaiusnetworks.gaius.MainActivity">
+    tools:context="com.gaiusnetworks.gaius.MainActivity"
+    android:background="@drawable/gradient_background">
+
+    <RelativeLayout
+        android:id="@+id/noFriends"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:visibility="gone">
+
+        <pl.droidsonroids.gif.GifImageView
+            android:id="@+id/lonely_animation"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_lonely">
+        </pl.droidsonroids.gif.GifImageView>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/lonely_animation"
+            android:paddingStart="50dp"
+            android:paddingEnd="50dp"
+            android:text="You don't have friends yet.\nPlease consider adding some."
+            android:textStyle="bold"
+            android:textColor="#000000"/>
+    </RelativeLayout>
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recylcerView"

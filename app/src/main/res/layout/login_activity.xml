@@ -8,13 +8,19 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <ImageView
+        <VideoView
             android:id="@+id/logo"
-            android:layout_marginTop="20dp"
-            android:layout_width="250dp"
-            android:layout_height="180dp"
-            android:layout_centerHorizontal="true"
-            android:src="@drawable/gaius_logo"/>
+            android:layout_width="300dp"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"/>
+
+        <!--<ImageView-->
+            <!--android:id="@+id/logo"-->
+            <!--android:layout_marginTop="20dp"-->
+            <!--android:layout_width="250dp"-->
+            <!--android:layout_height="180dp"-->
+            <!--android:layout_centerHorizontal="true"-->
+            <!--android:src="@drawable/gaius_logo"/>-->
 
 
         <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -22,14 +28,15 @@
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:layout_below="@+id/logo"
+            android:layout_marginTop="20dp"
             android:gravity="center_vertical"
             android:fitsSystemWindows="true"
             android:orientation="vertical">
 
             <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
-                android:layout_marginLeft="16dp"
-                android:layout_marginRight="16dp"
+                android:layout_marginLeft="30dp"
+                android:layout_marginRight="30dp"
                 android:theme="@style/TextLabel"
                 android:id="@+id/email_text_input_layout"
                 android:layout_height="wrap_content">
@@ -48,8 +55,8 @@
             <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="16dp"
-                android:layout_marginRight="16dp"
+                android:layout_marginLeft="30dp"
+                android:layout_marginRight="30dp"
                 android:id="@+id/password_text_input_layout"
                 android:theme="@style/TextLabel">
 
@@ -63,34 +70,69 @@
                     android:inputType="textPassword" />
             </android.support.design.widget.TextInputLayout>
 
-            <android.support.v7.widget.AppCompatButton
-                android:id="@+id/custom_signin_button"
-                android:layout_width="match_parent"
-                android:layout_height="56dp"
-                android:tag="custom_login_button"
-                android:layout_margin="16dp"
-                android:text="Sign in"
-                android:background="@color/colorPrimary"
-                android:textSize="24dp"
-                app:drawableTint="@color/colorAccent"
-                android:textColor="#ffffff" />
-
-            <TextView
-                android:id="@+id/custom_signup_button"
+            <LinearLayout
                 android:layout_width="wrap_content"
-                android:layout_height="48dp"
-                android:layout_gravity="center_horizontal"
-                android:gravity="center_vertical"
-                android:layout_marginLeft="16dp"
-                android:layout_marginRight="16dp"
-                android:textColor="#000000"
-                android:textSize="18sp"
-                android:text="No account yet? Create one"/>
+                android:layout_height="80dp"
+                android:orientation="horizontal"
+                android:layout_marginTop="30dp">
+
+                <android.support.v7.widget.AppCompatButton
+                    android:id="@+id/custom_signin_button"
+                    android:layout_width="120dp"
+                    android:layout_height="56dp"
+                    android:tag="custom_login_button"
+                    android:layout_margin="50dp"
+                    android:layout_gravity="left"
+                    android:text="Sign in"
+                    android:background="@drawable/button_bg"
+                    android:textSize="18sp"
+                    app:drawableTint="@color/colorAccent"
+                    android:textColor="#592c76" />
+
+                <TextView
+                    android:id="@+id/custom_forgotpassword"
+                    android:layout_width="wrap_content"
+                    android:layout_height="48dp"
+                    android:layout_gravity="center_horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginRight="30dp"
+                    android:textColor="#000000"
+                    android:textSize="18sp"
+                    android:text="Forgot Password?"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="50dp"
+                android:background="@drawable/login_create_account_bg"
+                android:layout_marginTop="10dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/custom_signup"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:paddingStart="50dp"
+                    android:layout_weight="0"
+                    android:textColor="#000000"
+                    android:gravity="center"
+                    android:textSize="18sp"
+                    android:text="No account yet?  "/>
+
+                <TextView
+                    android:id="@+id/custom_signup_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:layout_weight="0"
+                    android:textColor="@color/colorAccent"
+                    android:textSize="18sp"
+                    android:text="Create one"/>
+
+            </LinearLayout>
 
         </LinearLayout>
-
-
-
     </RelativeLayout>
 
 </android.support.constraint.ConstraintLayout>

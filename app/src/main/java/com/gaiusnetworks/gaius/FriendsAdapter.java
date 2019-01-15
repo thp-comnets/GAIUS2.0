@@ -37,11 +37,20 @@ public class FriendsAdapter extends RecyclerView.Adapter<FriendsAdapter.FriendVi
         RequestOptions requestOptions = new RequestOptions();
         requestOptions.error(R.drawable.ic_avatar);
 
-        //loading the image
-        Glide.with(mCtx)
-                .setDefaultRequestOptions(requestOptions)
-                .load(friend.getImage())
-                .into(holder.imageView);
+        if (friend.getImage().contains("None")) {
+            //loading the image
+            Glide.with(mCtx)
+                    .load(R.drawable.ic_avatar)
+                    .into(holder.imageView);
+        }
+        else {
+            //loading the image
+            Glide.with(mCtx)
+                    .setDefaultRequestOptions(requestOptions)
+                    .load(friend.getImage())
+                    .into(holder.imageView);
+        }
+
 
         holder.textViewName.setText(friend.getName());
         holder.textViewPhoneNumber.setText(friend.getPhoneNumber());

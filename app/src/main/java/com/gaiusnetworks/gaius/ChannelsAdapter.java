@@ -42,11 +42,20 @@ public class ChannelsAdapter extends RecyclerView.Adapter<ChannelsAdapter.Channe
         RequestOptions requestOptions = new RequestOptions();
         requestOptions.error(R.drawable.ic_avatar);
 
-        //loading the image
-        Glide.with(mCtx)
-                .setDefaultRequestOptions(requestOptions)
-                .load(channel.getImage())
-                .into(holder.imageView);
+        if (channel.getImage().contains("None")) {
+            //loading the image
+            Glide.with(mCtx)
+                    .load(R.drawable.ic_avatar)
+                    .into(holder.imageView);
+        }
+        else {
+            //loading the image
+            Glide.with(mCtx)
+                    .setDefaultRequestOptions(requestOptions)
+                    .load(channel.getImage())
+                    .into(holder.imageView);
+        }
+
 
         holder.textViewTitle.setText(channel.getTitle());
 

@@ -31,7 +31,7 @@ public class WebAdapter extends RecyclerView.Adapter<WebAdapter.ChannelViewHolde
     @Override
     public ChannelViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(mCtx);
-        View view = inflater.inflate(R.layout.channel_list, null);
+        View view = inflater.inflate(R.layout.web_list, null);
         return new ChannelViewHolder(view);
     }
 

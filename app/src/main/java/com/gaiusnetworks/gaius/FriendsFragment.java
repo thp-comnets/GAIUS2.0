@@ -13,12 +13,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.gaiusnetworks.gaius.utils.LogOut;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -103,6 +105,13 @@ public class FriendsFragment extends Fragment {
                         } catch (JSONException e) {
                             e.printStackTrace();
                             Log.d("Yasir","Json error "+e);
+
+                            if (response.contains("invalid token")) {
+                                LogOut.logout(getContext());
+                                Toast.makeText(getContext(), "You have logged in from another device. Please login again.",
+                                        Toast.LENGTH_LONG).show();
+                                getActivity().finish();
+                            }
                         }
                     }
                 },

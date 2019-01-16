@@ -11,8 +11,11 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+
+import com.gaiusnetworks.gaius.utils.LogOut;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -123,6 +126,25 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                 return;
             }
         }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.preferences_menu, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    // handle button activities
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        if (id == R.id.logoutButton) {
+            // do something here
+            LogOut.logout(getApplicationContext());
+            finish();
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override

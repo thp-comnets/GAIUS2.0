@@ -64,7 +64,9 @@ public class ContentFragment extends Fragment {
 
         //adding the product to product list
         contentList.add(new Content(0, "Web", R.drawable.ic_web_animation));
-        contentList.add(new Content(0, "Videos", R.drawable.ic_video_animation));
+        contentList.add(new Content(1, "Videos", R.drawable.ic_video_animation));
+        contentList.add(new Content(2, "Photos", R.drawable.ic_photos_animation));
+        contentList.add(new Content(3, "Advertise", R.drawable.ic_ads_animation));
 
         //creating adapter object and setting it to recyclerview
         ContentsAdapter adapter = new ContentsAdapter(getContext(), contentList);

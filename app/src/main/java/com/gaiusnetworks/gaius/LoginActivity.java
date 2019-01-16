@@ -30,13 +30,16 @@ public class LoginActivity extends AppCompatActivity {
     private Button customSigninButton;
     private TextView custom_signup_button;
     private EditText loginInputEmail, loginInputPassword;
+    SharedPreferences prefs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        // try to login first with saved/cached email and password
+        readServerParameters();
+        loginFromSaveData();
+
         setContentView(R.layout.login_activity);
         super.onCreate(savedInstanceState);
-
-        readServerParameters();
 
         VideoView view = (VideoView)findViewById(R.id.logo);
         String path = "android.resource://" + getPackageName() + "/" + R.raw.gaius_logo;
@@ -62,7 +65,8 @@ public class LoginActivity extends AppCompatActivity {
                 }
                 if (!error) {
                     loginUser(loginInputEmail.getText().toString(),
-                            loginInputPassword.getText().toString());
+                            loginInputPassword.getText().toString(),
+                            false);
                 }
             }
         });
@@ -77,6 +81,16 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    public void onResume(){
+        super.onResume();
+
+        VideoView view = (VideoView)findViewById(R.id.logo);
+        String path = "android.resource://" + getPackageName() + "/" + R.raw.gaius_logo;
+        view.setVideoURI(Uri.parse(path));
+        view.start();
+    }
+
     private void readServerParameters() {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
 
@@ -87,7 +101,19 @@ public class LoginActivity extends AppCompatActivity {
         URL_FOR_LOGIN = "http://" + hostIP + ":" + hostPort + "/" + hostPath + "/"+"login.php";
     }
 
-    private void loginUser( final String email, final String password) {
+    private void loginFromSaveData() {
+        prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        String email = prefs.getString("email", null);
+        String password = prefs.getString("password",null);
+
+        Log.d("yasir", email + " " + password);
+
+        if (email != null && password != null) {
+            loginUser(email, password, true);
+        }
+    }
+
+    private void loginUser( final String email, final String password, final Boolean automaticLogin) {
         // Tag used to cancel the request
         String cancel_req_tag = "login";
         StringRequest strReq = new StringRequest(Request.Method.POST,
@@ -103,6 +129,9 @@ public class LoginActivity extends AppCompatActivity {
                         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
                         SharedPreferences.Editor editor = prefs.edit();
                         editor.putString("account_token", jObj.getJSONObject("user").getString("token"));
+                        editor.putString("email", loginInputEmail.getText().toString());
+                        editor.putString("password", loginInputPassword.getText().toString());
+
 //                        editor.putString("account_name", jObj.getJSONObject("user").getString("name"));
 //                        editor.putString("account_channel", jObj.getJSONObject("user").getString("channel"));
 //                        editor.putString("account_email", jObj.getJSONObject("user").getString("email"));
@@ -116,9 +145,11 @@ public class LoginActivity extends AppCompatActivity {
                         startActivity(i);
 
                     } else {
-                        String errorMsg = jObj.getString("error_msg");
-                        Toast.makeText(getApplicationContext(),
-                                errorMsg, Toast.LENGTH_LONG).show();
+                        if (!automaticLogin) {
+                            String errorMsg = jObj.getString("error_msg");
+                            Toast.makeText(getApplicationContext(),
+                                    errorMsg, Toast.LENGTH_LONG).show();
+                        }
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -129,9 +160,11 @@ public class LoginActivity extends AppCompatActivity {
 
             @Override
             public void onErrorResponse(VolleyError error) {
-                Log.e("User Login", "Login Error: " + error.getMessage());
-                Toast.makeText(getApplicationContext(),
-                        error.getMessage(), Toast.LENGTH_LONG).show();
+                if (!automaticLogin) {
+                    Log.e("User Login", "Login Error: " + error.getMessage());
+                    Toast.makeText(getApplicationContext(),
+                            error.getMessage(), Toast.LENGTH_LONG).show();
+                }
             }
         }) {
 
@@ -143,7 +176,6 @@ public class LoginActivity extends AppCompatActivity {
                 params.put("password", password);
                 return params;
             }
-
         };
         // Adding request to request queue
         AppSingleton.getInstance(getApplicationContext()).addToRequestQueue(strReq,cancel_req_tag);

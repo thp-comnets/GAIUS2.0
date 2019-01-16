@@ -53,8 +53,12 @@ public class WebFragment extends Fragment {
             String userID = bundle.getString("userID", null);
             if (userID != null) {
                 URL += "?userID="+userID;
+                recyclerView.setTag("Sub");
             }
             bundle.clear();
+        }
+        else{
+            recyclerView.setTag("Main");
         }
 
         loadChannels();

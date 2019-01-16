@@ -9,8 +9,10 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -67,7 +69,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                 break;
 
             case R.id.navigation_videos:
-                fragment = new VideosFragment();
+                fragment = new ContentFragment();
                 setTitle("Videos");
                 break;
         }
@@ -120,6 +122,43 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                 }
                 return;
             }
+        }
+    }
+
+    @Override
+    public void onBackPressed()
+    {
+        BottomNavigationView navigation = findViewById(R.id.navigation);
+        RecyclerView recycler = findViewById(R.id.recylcerView);
+
+        View visibleChild = recycler.getChildAt(0);
+        int positionOfChild = recycler.getChildAdapterPosition(visibleChild);
+
+        if (positionOfChild > 0) {
+            recycler.smoothScrollToPosition(0);
+            return;
+        }
+
+        switch (navigation.getSelectedItemId()) {
+            case R.id.navigation_home:
+                moveTaskToBack(true);
+                break;
+
+            case R.id.navigation_web:
+                if ((recycler.getTag()+"").contains("Sub")) {
+                    loadFragment(new WebFragment());
+                    navigation.setOnNavigationItemSelectedListener(MainActivity.this);
+                    navigation.setSelectedItemId(R.id.navigation_web);
+                    break;
+                }
+                // else would be to go back to default because it means we are at the main webFragment
+
+            default:
+                //loading the main newsfeed fragment
+                loadFragment(new NewsFeedFragment());
+                navigation.setOnNavigationItemSelectedListener(MainActivity.this);
+                navigation.setSelectedItemId(R.id.navigation_home);
+                break;
         }
     }
 }

@@ -166,6 +166,13 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                 moveTaskToBack(true);
                 break;
 
+            case R.id.navigation_friends:
+                if ((recycler.getTag()+"").contains("SubFriends")) {
+                    setTitle("Friends");
+                    loadFragment(new FriendsFragment());
+                    break;
+                }
+
             case R.id.navigation_content:
                 Log.d("tags", "tag is " + recycler.getTag()+"");
 

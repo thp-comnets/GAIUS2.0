@@ -12,7 +12,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.Request;
@@ -20,50 +22,88 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.gaiusnetworks.gaius.utils.LogOut;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class FriendsFragment extends Fragment {
-    private static String URL_PRODUCTS = "";
-    List<Friend> friendList;
+public class userFragment extends Fragment {
+    private static String URL = "";
+    List<NewsFeed> pagesList;
     RecyclerView recyclerView;
     SharedPreferences prefs;
-    RelativeLayout noFriends;
+    RelativeLayout noPages;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
-        return inflater.inflate(R.layout.fragment_friends, null);
+        return inflater.inflate(R.layout.fragment_user, null);
     }
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        String token;
-
-        noFriends = view.findViewById(R.id.noFriends);
-
-        prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
-        token = prefs.getString("account_token", "null");
-        URL_PRODUCTS = "http://91.230.41.34:8080/test/listFriends2.py?token="+token;
+        String userID, name="", avatar="None";
+        URL = "http://91.230.41.34:8080/test/listUserPages.py";
+        noPages = view.findViewById(R.id.noPages);
 
         recyclerView =  getView().findViewById(R.id.recylcerView);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        recyclerView.addItemDecoration(new DividerItemDecoration(getContext(),
-                DividerItemDecoration.VERTICAL));
 
-        friendList = new ArrayList<>();
-        loadFriends();
+        // reading if there is a bundle, used to request and display a channel sub-pages
+        Bundle bundle = this.getArguments();
+        if (bundle != null) {
+            userID = bundle.getString("userID", null);
+            name = bundle.getString("name", null);
+            avatar = bundle.getString("avatar", null);
+
+            if (userID != null) {
+                URL += "?userID="+userID;
+                recyclerView.setTag("SubFriends");
+            }
+            bundle.clear();
+        }
+        else{
+            Log.d("yasir","something went wrong no userID in userFragment bundle");
+            getActivity().finish();
+        }
+
+        TextView textViewName = getView().findViewById(R.id.name);
+        textViewName.setText(name);
+
+        ImageView imageViewAvatar = getView().findViewById(R.id.avatarView);
+
+        RequestOptions requestOptions = new RequestOptions();
+        requestOptions.error(R.drawable.ic_avatar);
+
+        if (avatar.contains("None")) {
+            //loading the image
+            Glide.with(getContext())
+                    .load(R.drawable.ic_avatar)
+                    .into(imageViewAvatar);
+        }
+        else {
+            //loading the image
+            Glide.with(getContext())
+                    .setDefaultRequestOptions(requestOptions)
+                    .load(avatar)
+                    .into(imageViewAvatar);
+        }
+
+
+        pagesList = new ArrayList<>();
+        loadPages();
     }
 
-    private void loadFriends() {
+    private void loadPages() {
         /*
          * Creating a String Request
          * The request type is GET defined by first parameter
@@ -71,7 +111,7 @@ public class FriendsFragment extends Fragment {
          * Then we have a Response Listener and a Error Listener
          * In response listener we will get the JSON response as a String
          * */
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, URL_PRODUCTS,
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, URL,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
@@ -80,28 +120,30 @@ public class FriendsFragment extends Fragment {
                             JSONArray array = new JSONArray(response);
 
                             if (array.length() == 0 ) {
-                                noFriends.setVisibility(View.VISIBLE);
+                                noPages.setVisibility(View.VISIBLE);
                             }
 
                             //traversing through all the object
                             for (int i = 0; i < array.length(); i++) {
 
                                 //getting product object from json array
-                                JSONObject friend = array.getJSONObject(i);
+                                JSONObject newsFeed = array.getJSONObject(i);
 
-                                //adding the product to product list
-                                friendList.add(new Friend(
-                                        friend.getInt("id"),
-                                        friend.getString("name"),
-                                        "current status",
-//                                        friend.getString("phoneNumber"),
-                                        friend.getString("avatar"),
-                                        friend.getString("userID")
+                                pagesList.add(new NewsFeed(
+                                        newsFeed.getInt("id"),
+                                        newsFeed.getString("name"),
+                                        newsFeed.getString("uploadTime"),
+                                        newsFeed.getString("avatar"),
+                                        newsFeed.getString("thumbnail"),
+                                        newsFeed.getString("title"),
+                                        newsFeed.getString("description"),
+                                        newsFeed.getString("url"),
+                                        newsFeed.getString("type")
                                 ));
                             }
 
                             //creating adapter object and setting it to recyclerview
-                            FriendsAdapter adapter = new FriendsAdapter(getContext(), friendList);
+                            NewsFeedAdapter adapter = new NewsFeedAdapter(getContext(), pagesList);
                             recyclerView.setAdapter(adapter);
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -128,6 +170,4 @@ public class FriendsFragment extends Fragment {
         //adding our stringrequest to queue
         Volley.newRequestQueue(getContext()).add(stringRequest);
     }
-
 }
-

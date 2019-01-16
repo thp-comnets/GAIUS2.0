@@ -26,7 +26,7 @@ import java.util.List;
 
 public class WebFragment extends Fragment {
     private static String URL = "";
-    List<Channel> channelList;
+    List<Web> webList;
     RecyclerView recyclerView;
 
     @Nullable
@@ -44,7 +44,7 @@ public class WebFragment extends Fragment {
         recyclerView.addItemDecoration(new DividerItemDecoration(getContext(),
                 DividerItemDecoration.VERTICAL));
 
-        channelList = new ArrayList<>();
+        webList = new ArrayList<>();
         URL = "http://91.230.41.34:8080/test/listChannels.py";
 
         // reading if there is a bundle, used to request and display a channel sub-pages
@@ -53,12 +53,12 @@ public class WebFragment extends Fragment {
             String userID = bundle.getString("userID", null);
             if (userID != null) {
                 URL += "?userID="+userID;
-                recyclerView.setTag("Sub");
+                recyclerView.setTag("SubWeb");
             }
             bundle.clear();
         }
         else{
-            recyclerView.setTag("Main");
+            recyclerView.setTag("MainWeb");
         }
 
         loadChannels();
@@ -87,7 +87,7 @@ public class WebFragment extends Fragment {
                                 JSONObject channel = array.getJSONObject(i);
 
                                 //adding the product to product list
-                                channelList.add(new Channel(
+                                webList.add(new Web(
                                         channel.getInt("id"),
                                         channel.getString("title"),
                                         channel.getString("url"),
@@ -97,7 +97,7 @@ public class WebFragment extends Fragment {
                             }
 
                             //creating adapter object and setting it to recyclerview
-                            ChannelsAdapter adapter = new ChannelsAdapter(getContext(), channelList);
+                            WebAdapter adapter = new WebAdapter(getContext(), webList);
                             recyclerView.setAdapter(adapter);
                         } catch (JSONException e) {
                             e.printStackTrace();

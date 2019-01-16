@@ -19,11 +19,11 @@ import com.bumptech.glide.request.RequestOptions;
 
 import java.util.List;
 
-public class ChannelsAdapter extends RecyclerView.Adapter<ChannelsAdapter.ChannelViewHolder> {
+public class WebAdapter extends RecyclerView.Adapter<WebAdapter.ChannelViewHolder> {
     private Context mCtx;
-    private List<Channel> channelsList;
+    private List<Web> channelsList;
 
-    public ChannelsAdapter(Context mCtx, List<Channel> channelsList) {
+    public WebAdapter(Context mCtx, List<Web> channelsList) {
         this.mCtx = mCtx;
         this.channelsList = channelsList;
     }
@@ -37,12 +37,12 @@ public class ChannelsAdapter extends RecyclerView.Adapter<ChannelsAdapter.Channe
 
     @Override
     public void onBindViewHolder(ChannelViewHolder holder, int position) {
-        Channel channel = channelsList.get(position);
+        Web web = channelsList.get(position);
 
         RequestOptions requestOptions = new RequestOptions();
         requestOptions.error(R.drawable.ic_avatar);
 
-        if (channel.getImage().contains("None")) {
+        if (web.getImage().contains("None")) {
             //loading the image
             Glide.with(mCtx)
                     .load(R.drawable.ic_avatar)
@@ -52,18 +52,18 @@ public class ChannelsAdapter extends RecyclerView.Adapter<ChannelsAdapter.Channe
             //loading the image
             Glide.with(mCtx)
                     .setDefaultRequestOptions(requestOptions)
-                    .load(channel.getImage())
+                    .load(web.getImage())
                     .into(holder.imageView);
         }
 
 
-        holder.textViewTitle.setText(channel.getTitle());
+        holder.textViewTitle.setText(web.getTitle());
 
         holder.channelItem.setTag(position);
         holder.channelItem.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Channel c = channelsList.get((Integer) v.getTag());
+                Web c = channelsList.get((Integer) v.getTag());
                 Bundle bundle = new Bundle();
 
                 if (!c.getUserID().contains("null")) {

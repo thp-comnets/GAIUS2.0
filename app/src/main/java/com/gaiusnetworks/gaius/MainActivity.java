@@ -63,15 +63,15 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                 setTitle("Friends");
                 break;
 
-            case R.id.navigation_web:
-                fragment = new WebFragment();
-                setTitle("Web Browser");
-                break;
-
-            case R.id.navigation_videos:
+            case R.id.navigation_content:
                 fragment = new ContentFragment();
-                setTitle("Videos");
+                setTitle("Content Browser");
                 break;
+//
+//            case R.id.navigation_videos:
+//                fragment = new ContentFragment();
+//                setTitle("Videos");
+//                break;
         }
 
         return loadFragment(fragment);
@@ -144,19 +144,21 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                 moveTaskToBack(true);
                 break;
 
-            case R.id.navigation_web:
-                if ((recycler.getTag()+"").contains("Sub")) {
+            case R.id.navigation_content:
+                Log.d("tags", "tag is " + recycler.getTag()+"");
+
+                if ((recycler.getTag()+"").contains("SubWeb")) {
+                    setTitle("Content Browser");
                     loadFragment(new WebFragment());
-                    navigation.setOnNavigationItemSelectedListener(MainActivity.this);
-                    navigation.setSelectedItemId(R.id.navigation_web);
+                    break;
+                }
+                else if ((recycler.getTag()+"").contains("MainWeb") || (recycler.getTag()+"").contains("MainVideo")) {
+                    navigation.setSelectedItemId(R.id.navigation_content);
                     break;
                 }
                 // else would be to go back to default because it means we are at the main webFragment
 
             default:
-                //loading the main newsfeed fragment
-                loadFragment(new NewsFeedFragment());
-                navigation.setOnNavigationItemSelectedListener(MainActivity.this);
                 navigation.setSelectedItemId(R.id.navigation_home);
                 break;
         }

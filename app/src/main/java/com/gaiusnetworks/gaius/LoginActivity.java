@@ -35,7 +35,6 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         // try to login first with saved/cached email and password
-        readServerParameters();
         loginFromSaveData();
 
         setContentView(R.layout.login_activity);
@@ -77,7 +76,7 @@ public class LoginActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent i = new Intent(getApplicationContext(), SignUp.class);
                 startActivity(i);
-            }
+                }
         });
     }
 
@@ -89,22 +88,20 @@ public class LoginActivity extends AppCompatActivity {
         String path = "android.resource://" + getPackageName() + "/" + R.raw.gaius_logo;
         view.setVideoURI(Uri.parse(path));
         view.start();
+
+        loginFromSaveData();
     }
 
-    private void readServerParameters() {
+    private void loginFromSaveData() {
         prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
 
         String hostIP = prefs.getString("ip_edge", "91.230.41.34");
         String hostPort = prefs.getString("port_edge", "8080");
         String hostPath = prefs.getString("path_edge", "test");
-
-        URL_FOR_LOGIN = "http://" + hostIP + ":" + hostPort + "/" + hostPath + "/"+"login.php";
-    }
-
-    private void loginFromSaveData() {
-//        prefs = PreferenceManager.getDefaultSharedPreferences(this);
         String email = prefs.getString("email", null);
         String password = prefs.getString("password",null);
+
+        URL_FOR_LOGIN = "http://" + hostIP + ":" + hostPort + "/" + hostPath + "/"+"login.php";
 
         Log.d("yasir", "email and password"+ email + " " + password);
 

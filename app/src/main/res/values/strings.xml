@@ -5,4 +5,6 @@
     <string name="title_friends">Friends</string>
     <string name="title_content">Content</string>
 
+    <string name="notification_title">Object Upload</string>
+
 </resources>

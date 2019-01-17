@@ -113,5 +113,14 @@
 
         </LinearLayout>
 
+        <pl.droidsonroids.gif.GifImageView
+            android:id="@+id/signup_animation"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:src="@drawable/ic_loading2"
+            android:visibility="gone">
+        </pl.droidsonroids.gif.GifImageView>
+
     </RelativeLayout>
 </android.support.constraint.ConstraintLayout>

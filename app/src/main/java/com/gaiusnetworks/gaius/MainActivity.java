@@ -20,6 +20,8 @@ import com.gaiusnetworks.gaius.utils.LogOut;
 import java.util.ArrayList;
 import java.util.List;
 
+import cn.jzvd.Jzvd;
+
 import static com.gaiusnetworks.gaius.utils.Constants.MULTIPLE_PERMISSIONS;
 
 public class MainActivity extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener {
@@ -53,6 +55,8 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        Jzvd.releaseAllVideos();
+
         Fragment fragment = null;
 
         switch (item.getItemId()) {
@@ -150,6 +154,8 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
     @Override
     public void onBackPressed()
     {
+        Jzvd.releaseAllVideos();
+
         BottomNavigationView navigation = findViewById(R.id.navigation);
         RecyclerView recycler = findViewById(R.id.recylcerView);
 
@@ -192,4 +198,11 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                 break;
         }
     }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Jzvd.releaseAllVideos();
+    }
+
 }

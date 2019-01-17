@@ -92,7 +92,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void readServerParameters() {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+        prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
 
         String hostIP = prefs.getString("ip_edge", "91.230.41.34");
         String hostPort = prefs.getString("port_edge", "8080");
@@ -102,11 +102,11 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void loginFromSaveData() {
-        prefs = PreferenceManager.getDefaultSharedPreferences(this);
+//        prefs = PreferenceManager.getDefaultSharedPreferences(this);
         String email = prefs.getString("email", null);
         String password = prefs.getString("password",null);
 
-        Log.d("yasir", email + " " + password);
+        Log.d("yasir", "email and password"+ email + " " + password);
 
         if (email != null && password != null) {
             loginUser(email, password, true);
@@ -126,11 +126,10 @@ public class LoginActivity extends AppCompatActivity {
                     boolean error = jObj.getBoolean("error");
 
                     if (!error) {
-                        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
                         SharedPreferences.Editor editor = prefs.edit();
                         editor.putString("account_token", jObj.getJSONObject("user").getString("token"));
-                        editor.putString("email", loginInputEmail.getText().toString());
-                        editor.putString("password", loginInputPassword.getText().toString());
+                        editor.putString("email", email);
+                        editor.putString("password", password);
 
 //                        editor.putString("account_name", jObj.getJSONObject("user").getString("name"));
 //                        editor.putString("account_channel", jObj.getJSONObject("user").getString("channel"));

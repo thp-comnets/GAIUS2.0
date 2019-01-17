@@ -24,6 +24,8 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
+import cn.jzvd.Jzvd;
+
 public class VideosFragment extends Fragment {
     private static String URL = "http://91.230.41.34:8080/test/listVideos2.py";
     List<Video> videoList;

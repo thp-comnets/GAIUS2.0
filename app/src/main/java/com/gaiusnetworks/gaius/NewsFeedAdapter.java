@@ -75,6 +75,7 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.newsFe
             Glide.with(mCtx)
                     .setDefaultRequestOptions(requestOptions)
                     .load(newsfeed.getImage())
+//                    .apply(new RequestOptions().signature(new ObjectKey("signature string")))
                     .apply(new RequestOptions().signature(new ObjectKey(System.currentTimeMillis())))
                     .into(holder.imageView);
             Log.d("yasir", "image "+newsfeed.getImage());

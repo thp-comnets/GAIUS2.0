@@ -40,6 +40,8 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.login_activity);
         super.onCreate(savedInstanceState);
 
+        getSupportActionBar().hide();
+
         VideoView view = (VideoView)findViewById(R.id.logo);
         String path = "android.resource://" + getPackageName() + "/" + R.raw.gaius_logo;
         view.setVideoURI(Uri.parse(path));

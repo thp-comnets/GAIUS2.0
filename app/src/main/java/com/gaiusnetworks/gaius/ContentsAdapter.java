@@ -2,11 +2,14 @@ package com.gaiusnetworks.gaius;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -48,20 +51,70 @@ public class ContentsAdapter extends RecyclerView.Adapter<ContentsAdapter.Conten
             public void onClick(View v) {
                 Content c = contentsList.get((Integer) v.getTag());
 
-                if (c.getTitle().contains("Web")) {
+                if (c.getTitle().contains("Browse Web")) {
                     Fragment fragment = new WebFragment();
 
                     ((AppCompatActivity) mCtx).getSupportFragmentManager().beginTransaction()
                             .replace(R.id.fragment_container, fragment)
                             .commit();
                 }
-                else if (c.getTitle().contains("Videos")) {
+                else if (c.getTitle().contains("Browse Videos")) {
                     Fragment fragment = new VideosFragment();
 
                     ((AppCompatActivity) mCtx).getSupportFragmentManager().beginTransaction()
                             .replace(R.id.fragment_container, fragment)
                             .commit();
                 }
+                else if (c.getTitle().contains("Create Content")) {
+                    displayIntentOptions();
+                }
+            }
+        });
+    }
+
+    private void displayIntentOptions(){
+
+        LayoutInflater layoutInflater = LayoutInflater.from(mCtx);
+        View promptView = layoutInflater.inflate(R.layout.create_content_popup, null);
+        final AlertDialog alertD = new AlertDialog.Builder(mCtx).create();
+        alertD.setView(promptView);
+        alertD.show();
+
+        CardView web_button = (CardView) promptView.findViewById(R.id.web_card);
+        CardView video_button = (CardView) promptView.findViewById(R.id.video_card);
+        CardView image_button = (CardView) promptView.findViewById(R.id.image_card);
+        CardView ad_button = (CardView) promptView.findViewById(R.id.ad_card);
+
+        web_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d("Yasir", "clicked on web creation");
+
+                Intent i = new Intent(mCtx, creativeWebCreation.class);
+                mCtx.startActivity(i);
+                alertD.dismiss();
+
+            }
+        });
+        video_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d("Yasir", "clicked on video creation");
+                alertD.dismiss();
+            }
+        });
+        image_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d("Yasir", "clicked on image creation");
+                alertD.dismiss();
+            }
+        });
+        ad_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d("Yasir", "clicked on ad creation");
+                alertD.dismiss();
             }
         });
     }

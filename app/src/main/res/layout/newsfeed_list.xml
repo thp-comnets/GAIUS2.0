@@ -9,18 +9,18 @@
         android:id="@+id/relativeLayout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingStart="40dp"
+        android:paddingStart="20dp"
         android:layout_marginTop="10dp"
         android:paddingEnd="10dp">
 
         <android.support.v7.widget.CardView
             android:id="@+id/imageViewCardView"
             android:layout_width="match_parent"
-            android:layout_height="330dp"
+            android:layout_height="290dp"
             app:cardCornerRadius="10dp"
             android:layout_margin="10dp"
             app:cardElevation="5dp"
-            app:contentPaddingLeft="40dp"
+            app:contentPaddingLeft="30dp"
             app:contentPaddingRight="10dp"
             app:contentPaddingTop="15dp"
             >
@@ -33,24 +33,50 @@
                 android:orientation="vertical"
                 android:gravity="center_vertical">
 
-                <TextView
-                    android:id="@+id/textViewName"
+                <RelativeLayout
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="10dp"
-                    android:text="John Doe"
-                    android:textStyle="bold"
-                    android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
-                    android:textColor="#000000" />
+                    android:layout_height="wrap_content">
 
-                <TextView
-                    android:id="@+id/textViewUpdateTime"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="10dp"
-                    android:text="10min ago"
-                    android:textAppearance="@style/Base.TextAppearance.AppCompat.Small"
-                    android:paddingBottom="5dp"/>
+                    <TextView
+                        android:id="@+id/textViewName"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
+                        android:text="John Doe"
+                        android:textStyle="bold"
+                        android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
+                        android:textColor="#000000" />
+
+                    <TextView
+                        android:id="@+id/textViewUpdateTime"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/textViewName"
+                        android:layout_marginStart="10dp"
+                        android:text="10min ago"
+                        android:textAppearance="@style/Base.TextAppearance.AppCompat.Small"
+                        android:paddingBottom="5dp"/>
+
+                    <ImageView
+                        android:id="@+id/like"
+                        android:layout_marginTop="10dp"
+                        android:layout_toLeftOf="@+id/share"
+                        android:layout_width="wrap_content"
+                        android:layout_height="24dp"
+                        android:layout_marginEnd="10dp"
+                        app:srcCompat="@drawable/ic_like" />
+
+                    <ImageView
+                        android:id="@+id/share"
+                        android:layout_marginTop="10dp"
+                        android:layout_width="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:layout_height="24dp"
+                        android:layout_marginEnd="10dp"
+                        app:srcCompat="@drawable/ic_share"/>
+
+                </RelativeLayout>
+
 
                 <android.support.v7.widget.CardView
                     android:layout_width="match_parent"
@@ -99,28 +125,6 @@
                     android:textAppearance="@style/Base.TextAppearance.AppCompat.Small"
                     android:textColor="#000000" />
 
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:layout_gravity="end">
-
-                    <ImageView
-                        android:id="@+id/like"
-                        android:layout_width="wrap_content"
-                        android:layout_height="24dp"
-                        android:layout_marginEnd="10dp"
-                        app:srcCompat="@drawable/ic_like" />
-
-                    <ImageView
-                        android:id="@+id/share"
-                        android:layout_width="wrap_content"
-                        android:layout_height="24dp"
-                        android:layout_marginEnd="10dp"
-                        app:srcCompat="@drawable/ic_share"/>
-
-                </LinearLayout>
-
             </LinearLayout>
 
         </android.support.v7.widget.CardView>
@@ -132,10 +136,11 @@
         android:id="@+id/avatarView"
         android:layout_width="60dp"
         android:layout_height="60dp"
-        app:civ_border_color="#ffffff"
-        app:civ_border_width="3dp"
-        android:layout_marginTop="-300dp"
-        android:layout_marginStart="20dp"
+        app:civ_fill_color="#ffffff"
+        app:civ_border_color="#000000"
+        app:civ_border_width="1dp"
+        android:layout_marginTop="-280dp"
+        android:layout_marginStart="10dp"
         />
 
 </LinearLayout>

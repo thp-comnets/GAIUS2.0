@@ -7,4 +7,127 @@
 
     <string name="notification_title">Object Upload</string>
 
+    <string name="submit_button">Submit</string>
+    <string name="title_my_content">My Channels</string>
+    <string name="title_create_ad">My Ads</string>
+    <string name="title_notifications">Settings</string>
+    <string name="menu_publish">Next</string>
+    <string name="menu_delete">Delete</string>
+    <string name="menu_search">Search</string>
+    <string name="menu_clear_cache">Clearing cache</string>
+    <string name="menu_refresh">Refresh</string>
+
+    <string name="menu_settings">Settings</string>
+    <!--Fidelity seekbar-->
+    <!--<string name="seekbar_summary">Summary</string>-->
+    <string name="seekbar_dialog_message">Set the quality of the images retrieved from the edge server</string>
+    <string name="seekbar_title">Fidelity level</string>
+
+    <!--Login and Register-->
+    <string name="hint_dob">Age (optional)</string>
+    <string name="hint_password">Password</string>
+    <string name="hint_password2">Repeat password</string>
+    <string name="hint_email">Email</string>
+    <string name="hint_gender">Gender (optional):</string>
+    <string name="hint_token">Received token</string>
+    <string name="hint_new_password">New password</string>
+    <string name="hint_title">Title</string>
+    <string name="hint_description">Description</string>
+    <string name="btn_next">Next</string>
+
+    <string name="error_name">Name can\'t be empty</string>
+    <string name="error_channel">Channel name can\'t be empty</string>
+    <string name="error_email">Email can\'t be empty</string>
+    <string name="error_email_format">Email has invalid format</string>
+    <string name="error_age">Age not valid</string>
+    <string name="error_password_length">Password must be longer than 6 characters</string>
+    <string name="error_password_mismatch">Passwords don\'t match</string>
+    <string name="error_password_empty">Password can\'t be empty</string>
+    <string name="error_token_empty">Token can\'t be empty</string>
+
+
+    <string name="avatar">Avatar</string>
+    <string name="male">Male</string>
+    <string name="female">Female</string>
+    <string name="btn_sign_up">Register</string>
+    <string name="err_msg_name">Please enter a name</string>
+    <string name="err_msg_email">Please enter a valid Email</string>
+    <string name="err_msg_password">Enter a Password</string>
+    <string name="btn_login">Login</string>
+    <string name="btn_update">Update</string>
+    <string name="btn_send_token">Request password reset</string>
+    <string name="btn_reset_password">Reset password</string>
+    <string name="logout">Logout</string>
+    <string name="login_summary">Logout from this device</string>
+    <string name="account_summary">Change account details</string>
+    <string name="account">Account</string>
+    <string name="link_signup">Don\'t have an account yet?\n</string>
+    <string name="link_signup2">Register now! </string>
+    <string name="link_signup3">It\'s free</string>
+
+    <string name="link_login">Already have an account? Login</string>
+    <string name="link_forgot_password">Forgot password?</string>
+
+    <string name="token_sent">Token has been sent to your email address</string>
+
+    <string name="dialog_processing">Processing your request...</string>
+
+    <string name="toast_update_success">Your account was successfully updated</string>
+    <string name="toast_create_success">Your account was successfully created</string>
+    <string name="title_activity_my_content_list_view">MyContentListViewActivity</string>
+
+    <string name="toast_drag">Press and hold to start dragging</string>
+    <string name="name">Name</string>
+    <string name="channel">Channel</string>
+    <string name="email">Email</string>
+    <string name="try_again">Try again</string>
+    <string name="ad_image">Image (required):</string>
+    <string name="ad_text">Text (required):</string>
+    <string name="ad_video">Video (optional):</string>
+    <string name="ad_text_error">Enter text</string>
+    <string name="dialog_login">Logging you in...</string>
+    <string name="dialog_sending_token">Sending password reset...</string>
+    <string name="dialog_login_new_password">Logging you in with new password...</string>
+    <string name="ad_link">Link:</string>
+    <string name="menu_save">Save</string>
+    <string name="toast_back">Press BACK again to discard the current page</string>
+    <string name="error_description">Please enter a description</string>
+    <string name="toast_logged_out">Successfully logged out</string>
+
+    <string name="select_color">Select color</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
+    <string name="select_font">Select font</string>
+    <string name="fabtitlevideo">Video</string>
+    <string name="fabtitleimage">Image</string>
+    <string name="fabtitletext">Text</string>
+    <string name="fabtitlerectangle">Rectangle</string>
+    <string name="fabtitlebackground">Background</string>
+    <string name="delte_confirm">Do you really want to delete this item?</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="country">Country</string>
+    <string name="country_message">Set the content country</string>
+    <string name="IntroTitle1">Welcome!</string>
+    <string name="IntroTitle2">Local Community Internet</string>
+    <string name="IntroTitle3">GAIUS, Your new Gateway to Local Content</string>
+    <string name="IntroTitle4">Massive Saving</string>
+    <string name="IntroDesc1">Aren\'t you tired of waiting forever to view a webpage?</string>
+    <string name="IntroDesc2">Do you want to create your own content and advertisements for free?</string>
+    <string name="IntroDesc3">Build your own page in seconds without the need for any technical knowledge</string>
+    <string name="IntroDesc4">Browse community pages for less data consumption, and faster browsing experience</string>
+    <string name="page_details">Page details</string>
+    <string name="instagram">instagram</string>
+    <string name="content_template">Content Template</string>
+    <string name="lock_unlock">lock/unlock</string>
+    <string name="content_Intro_title1">Important Disclaimer</string>
+    <string name="content_Intro_text1">You are going to create your first content. Before you start, we would like to make you aware of some basic information. Everything you are going to create is going to be publicly available for everyone to see within your community. The page you are about to create will appear under your general channel name.</string>
+    <string name="content_Intro_title2">Page Information</string>
+    <string name="content_Intro_text2">The first thing you need to do is to input some information about your page. You need to specify the name of the page and give a short description. The description will be used by our search engine. You can also choose one of our built-in templates that can help set the basic page look.</string>
+    <string name="content_Intro_title3">Page Creation</string>
+    <string name="content_Intro_text3">Once inside the creation phase, click the + sign to see the basic tools that can help you create your page. You see that you can add a text, a photo, or a video resource to your page. In addition, you can also change the background color, or import images directly from your Instagram account.</string>
+    <string name="title_activity_mobile_registration">MobileRegistration</string>
+    <string name="sign_up">Sign up</string>
+    <string name="phone_number">Phone number</string>
+
 </resources>

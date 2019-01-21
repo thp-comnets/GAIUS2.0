@@ -1,8 +1,10 @@
 package com.gaiusnetworks.gaius;
 
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -10,6 +12,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
@@ -63,10 +66,10 @@ public class ContentFragment extends Fragment {
     private void loadItems() {
 
         //adding the product to product list
-        contentList.add(new Content(0, "Web", R.drawable.ic_web_animation));
-        contentList.add(new Content(1, "Videos", R.drawable.ic_video_animation));
-        contentList.add(new Content(2, "Photos", R.drawable.ic_photos_animation));
-        contentList.add(new Content(3, "Advertise", R.drawable.ic_ads_animation));
+        contentList.add(new Content(0, "Browse Web", R.drawable.ic_web_animation));
+        contentList.add(new Content(1, "Browse Videos", R.drawable.ic_video_animation));
+        contentList.add(new Content(2, "Browse Photos", R.drawable.ic_photos_animation));
+        contentList.add(new Content(3, "Create Content", R.drawable.ic_create));
 
         //creating adapter object and setting it to recyclerview
         ContentsAdapter adapter = new ContentsAdapter(getContext(), contentList);

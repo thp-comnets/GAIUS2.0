@@ -165,8 +165,6 @@ public class creativeWebCreation extends AppCompatActivity implements TextEditor
 
         @Override
         public void onEntityDoubleTap(@NonNull MotionEntity entity) {
-//            TextEntity textEntity = currentTextEntity();
-
             if (entity instanceof TextEntity) {
                 startTextEntityEditing();
             } else if (entity instanceof RectEntity) {
@@ -479,7 +477,7 @@ public class creativeWebCreation extends AppCompatActivity implements TextEditor
         fab7.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                editPageDetails();
+//                editPageDetails();
                 closeFABMenu();
             }
         });
@@ -564,60 +562,60 @@ public class creativeWebCreation extends AppCompatActivity implements TextEditor
         super.onResume();
     }
 
-    public void editPageDetails() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Edit page details");
-
-        LinearLayout layout = new LinearLayout(this);
-        layout.setOrientation(LinearLayout.VERTICAL);
-
-        iconImageView = new ImageView(this);
-
-        if (pageIcon != null) {
-            iconImageView.setImageBitmap(pageIcon);
-        }
-        else{
-            iconImageView.setImageResource(R.drawable.ic_photo_size_select_actual_black_48dp);
-        }
-        layout.addView(iconImageView);
-
-        iconImageView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent galleryIntent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                startActivityForResult(galleryIntent, PICK_ICON_REQUEST);
-            }
-        });
-
-
-        final EditText title = new EditText(this);
-        title.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_NORMAL);
-        title.setText(pageName);
-        layout.addView(title); // Notice this is an add method
-
-        final EditText description = new EditText(this);
-        description.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_NORMAL);
-        description.setText(pageDescription);
-        layout.addView(description); // Notice this is an add method
-
-        builder.setView(layout); // Again this is a set method, not add
-
-        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                pageName = title.getText().toString();
-                pageDescription = description.getText().toString();
-            }
-        });
-        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.cancel();
-            }
-        });
-
-        builder.show();
-    }
+//    public void editPageDetails() {
+//        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+//        builder.setTitle("Edit page details");
+//
+//        LinearLayout layout = new LinearLayout(this);
+//        layout.setOrientation(LinearLayout.VERTICAL);
+//
+//        iconImageView = new ImageView(this);
+//
+//        if (pageIcon != null) {
+//            iconImageView.setImageBitmap(pageIcon);
+//        }
+//        else{
+//            iconImageView.setImageResource(R.drawable.ic_photo_size_select_actual_black_48dp);
+//        }
+//        layout.addView(iconImageView);
+//
+//        iconImageView.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                Intent galleryIntent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+//                startActivityForResult(galleryIntent, PICK_ICON_REQUEST);
+//            }
+//        });
+//
+//
+//        final EditText title = new EditText(this);
+//        title.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_NORMAL);
+//        title.setText(pageName);
+//        layout.addView(title); // Notice this is an add method
+//
+//        final EditText description = new EditText(this);
+//        description.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_NORMAL);
+//        description.setText(pageDescription);
+//        layout.addView(description); // Notice this is an add method
+//
+//        builder.setView(layout); // Again this is a set method, not add
+//
+//        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+//            @Override
+//            public void onClick(DialogInterface dialog, int which) {
+//                pageName = title.getText().toString();
+//                pageDescription = description.getText().toString();
+//            }
+//        });
+//        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+//            @Override
+//            public void onClick(DialogInterface dialog, int which) {
+//                dialog.cancel();
+//            }
+//        });
+//
+//        builder.show();
+//    }
 
     private void requestPage(final String mPageUrl) {
         String tmpUrl = BASE_URL + "index.maml?url=" + mPageUrl + "&fidelity=1" + "&resolution=" + ResourceHelper.getScreenWidth(this) + "&noADs=1";
@@ -1396,8 +1394,6 @@ public class creativeWebCreation extends AppCompatActivity implements TextEditor
                 iconImageView.setImageBitmap(bitmap);
 
                 iconPath = ResourceHelper.saveBitmapCompressed(getApplicationContext(), iconUri, bitmap);
-//                Log.d(Constants.TAG, "savedBitmap " + filePath);
-//                Toast.makeText(DynamicChannelListViewActivity.this, "Clearing cache", Toast.LENGTH_SHORT).show();
                 ImageLoader.getInstance().clearDiskCache();
                 ImageLoader.getInstance().clearMemoryCache();
 
@@ -1405,7 +1401,15 @@ public class creativeWebCreation extends AppCompatActivity implements TextEditor
 
             if (requestCode == PICK_ICON_REQUEST) {
                 iconUri = data.getData();
-                ImageCropFunction();
+                iconImageView.setImageURI(iconUri);
+                Bitmap bitmap = null;
+                try {
+                    bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), iconUri);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                iconPath = ResourceHelper.saveBitmapCompressed(getApplicationContext(), iconUri, bitmap);
+//                ImageCropFunction(); #fixme: make the cropping functionality work
             }
         }
 
@@ -1506,11 +1510,39 @@ public class creativeWebCreation extends AppCompatActivity implements TextEditor
         }
     }
 
+    public boolean filledFields(View view) {
+        boolean haveContent = true;
+        EditText editTextPagename = view.findViewById(R.id.title_edittext);
+        EditText editTextDescription = view.findViewById(R.id.description_edittext);
+        TextInputLayout editTextPagenameLayout = view.findViewById(R.id.title_edittext_layout) ;
+        TextInputLayout editTextDescriptionLayout = view.findViewById(R.id.description_edittext_layout);
+
+        if (editTextDescription.getText().length() == 0) {
+            editTextDescriptionLayout.setError(getString(R.string.error_description));
+            haveContent = false;
+        } else {
+            editTextDescriptionLayout.setErrorEnabled(false);
+        }
+        if (editTextPagename.getText().length() == 0) {
+            editTextPagenameLayout.setError(getString(R.string.error_name));
+            haveContent = false;
+        } else {
+            editTextPagenameLayout.setErrorEnabled(false);
+        }
+
+        if (!haveContent) {
+            return false;
+        }
+
+        pageName = editTextPagename.getText().toString();
+        pageDescription = editTextDescription.getText().toString();
+        return true;
+    }
+
     public boolean onOptionsItemSelected (MenuItem item)
     {
-
         LayoutInflater layoutInflater = LayoutInflater.from(this);
-        View promptView = layoutInflater.inflate(R.layout.submit_content_popup, null);
+        final View promptView = layoutInflater.inflate(R.layout.submit_content_popup, null);
         final AlertDialog alertD = new AlertDialog.Builder(this).create();
         alertD.setView(promptView);
         alertD.show();
@@ -1518,114 +1550,42 @@ public class creativeWebCreation extends AppCompatActivity implements TextEditor
         Button cancel_button = (Button) promptView.findViewById(R.id.cancel_button);
         Button save_button = (Button) promptView.findViewById(R.id.save_button);
         Button publish_button = (Button) promptView.findViewById(R.id.publish_button);
+        iconImageView = promptView.findViewById(R.id.logo);
 
-        iconImageView = findViewById(R.id.logo);
+        iconImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent galleryIntent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                startActivityForResult(galleryIntent, PICK_ICON_REQUEST);
+            }
+        });
 
+        cancel_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                alertD.dismiss();
+            }
+        });
 
         save_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                boolean haveContent = true;
-                final EditText editTextPagename = findViewById(R.id.name_edittext);
-                final EditText editTextDescription = findViewById(R.id.description_edittext);
-                final TextInputLayout editTextPagenameLayout = findViewById(R.id.title_edittext_layout) ;
-                final TextInputLayout editTextDescriptionLayout = findViewById(R.id.description_edittext_layout);
-
-                if (editTextDescription.getText().length() == 0) {
-                    editTextDescriptionLayout.setError(getString(R.string.error_description));
-                    haveContent = false;
-                } else {
-                    editTextDescriptionLayout.setErrorEnabled(false);
+                if (filledFields(promptView)) {
+                    alertD.dismiss();
+                    submitPage(false);
                 }
-                if (editTextPagename.getText().length() == 0) {
-                    editTextPagenameLayout.setError(getString(R.string.error_name));
-                    haveContent = false;
-                } else {
-                    editTextPagenameLayout.setErrorEnabled(false);
-                }
-
-                if (!haveContent) {
-                    return;
-                }
-                submitPage(false);
             }
         });
 
         publish_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                boolean haveContent = true;
-                final EditText editTextPagename = findViewById(R.id.name_edittext);
-                final EditText editTextDescription = findViewById(R.id.description_edittext);
-                final TextInputLayout editTextPagenameLayout = findViewById(R.id.title_edittext_layout) ;
-                final TextInputLayout editTextDescriptionLayout = findViewById(R.id.description_edittext_layout);
-
-                if (editTextDescription.getText().length() == 0) {
-                    editTextDescriptionLayout.setError(getString(R.string.error_description));
-                    haveContent = false;
-                } else {
-                    editTextDescriptionLayout.setErrorEnabled(false);
+                if (filledFields(promptView)) {
+                    alertD.dismiss();
+                    submitPage(true);
                 }
-                if (editTextPagename.getText().length() == 0) {
-                    editTextPagenameLayout.setError(getString(R.string.error_name));
-                    haveContent = false;
-                } else {
-                    editTextPagenameLayout.setErrorEnabled(false);
-                }
-
-                if (!haveContent) {
-                    return;
-                }
-                submitPage(true);
             }
         });
-
-//        iconImageView.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Intent galleryIntent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-//                startActivityForResult(galleryIntent, PICK_ICON_REQUEST);
-//            }
-//        });
-
-//        CardView web_button = (CardView) promptView.findViewById(R.id.web_card);
-//        CardView video_button = (CardView) promptView.findViewById(R.id.video_card);
-//        CardView image_button = (CardView) promptView.findViewById(R.id.image_card);
-//        CardView ad_button = (CardView) promptView.findViewById(R.id.ad_card);
-//
-//        web_button.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Log.d("Yasir", "clicked on web creation");
-//
-//                Intent i = new Intent(getApplicationContext(), creativeWebCreation.class);
-//                getApplicationContext().startActivity(i);
-//                alertD.dismiss();
-//
-//            }
-//        });
-//        video_button.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Log.d("Yasir", "clicked on video creation");
-//                alertD.dismiss();
-//            }
-//        });
-//        image_button.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Log.d("Yasir", "clicked on image creation");
-//                alertD.dismiss();
-//            }
-//        });
-//        ad_button.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Log.d("Yasir", "clicked on ad creation");
-//                alertD.dismiss();
-//            }
-//        });
-
 
         return false;
     }

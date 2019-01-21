@@ -70,6 +70,7 @@ public class ContentFragment extends Fragment {
         contentList.add(new Content(1, "Browse Videos", R.drawable.ic_video_animation));
         contentList.add(new Content(2, "Browse Photos", R.drawable.ic_photos_animation));
         contentList.add(new Content(3, "Create Content", R.drawable.ic_create));
+        contentList.add(new Content(4, "My Content", R.drawable.ic_my_content));
 
         //creating adapter object and setting it to recyclerview
         ContentsAdapter adapter = new ContentsAdapter(getContext(), contentList);

@@ -111,7 +111,7 @@ import static net.gotev.uploadservice.Placeholders.UPLOADED_FILES;
 import static net.gotev.uploadservice.Placeholders.UPLOAD_RATE;
 
 
-public class creativeWebCreation extends AppCompatActivity implements TextEditorDialogFragment.OnTextLayerCallback {
+public class CreativeWebCreation extends AppCompatActivity implements TextEditorDialogFragment.OnTextLayerCallback {
 
     public static final int IMAGE_BITMAP =0;
     public static final int VIDEO_BITMAP =1;
@@ -419,7 +419,7 @@ public class creativeWebCreation extends AppCompatActivity implements TextEditor
                         color = ((ColorDrawable) background).getColor();
                     }
                     ColorPickerDialogBuilder
-                            .with(creativeWebCreation.this)
+                            .with(CreativeWebCreation.this)
                             .setTitle(R.string.select_color)
                             .initialColor(color)
                             .showAlphaSlider(false)
@@ -465,7 +465,7 @@ public class creativeWebCreation extends AppCompatActivity implements TextEditor
 //                }
                 Toast.makeText (getApplicationContext(), "This feature might not work. Currently its by invite only!", Toast.LENGTH_LONG).show ();
                 if (!motionView.disableMovement) {
-                    InstagramPhotoPicker.startPhotoPickerForResult(creativeWebCreation.this, CLIENT_ID, REDIRECT_URI, REQUEST_CODE_INSTAGRAM_PICKER);
+                    InstagramPhotoPicker.startPhotoPickerForResult(CreativeWebCreation.this, CLIENT_ID, REDIRECT_URI, REQUEST_CODE_INSTAGRAM_PICKER);
                 }
                 closeFABMenu();
             }
@@ -966,7 +966,7 @@ public class creativeWebCreation extends AppCompatActivity implements TextEditor
         }
 
         ColorPickerDialogBuilder
-                .with(creativeWebCreation.this)
+                .with(CreativeWebCreation.this)
                 .setTitle(R.string.select_color)
                 .initialColor(rectEntity.getColor())
                 .wheelType(ColorPickerView.WHEEL_TYPE.CIRCLE)
@@ -1113,7 +1113,7 @@ public class creativeWebCreation extends AppCompatActivity implements TextEditor
         int initialColor = textEntity.getLayer().getFont().getColor();
 
         ColorPickerDialogBuilder
-                .with(creativeWebCreation.this)
+                .with(CreativeWebCreation.this)
                 .setTitle(R.string.select_color)
                 .initialColor(initialColor)
                 .wheelType(ColorPickerView.WHEEL_TYPE.CIRCLE)
@@ -1411,7 +1411,7 @@ public class creativeWebCreation extends AppCompatActivity implements TextEditor
         }
 
         if (requestCode == REQUEST_CODE_INSTAGRAM_PICKER) {
-            if (resultCode == creativeWebCreation.RESULT_OK) {
+            if (resultCode == CreativeWebCreation.RESULT_OK) {
                 InstagramPhoto[] instagramPhotos = InstagramPhotoPicker.getResultPhotos(data);
 
                 for (int i = 0; i < instagramPhotos.length; ++i) {

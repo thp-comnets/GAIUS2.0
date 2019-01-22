@@ -31,8 +31,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.gaius.gaiusapp.utils.Constants;
-
 import net.gotev.uploadservice.MultipartUploadRequest;
 import net.gotev.uploadservice.ServerResponse;
 import net.gotev.uploadservice.UploadInfo;
@@ -253,7 +251,7 @@ public class ContentFragment extends Fragment implements View.OnClickListener {
                     @Override
                     public void onClick(View v) {
                         alertD2.dismiss();
-                        Intent i = new Intent(getContext(), creativeWebCreation.class);
+                        Intent i = new Intent(getContext(), SimpleWebCreation.class);
                         getContext().startActivity(i);
                     }
                 });
@@ -262,7 +260,7 @@ public class ContentFragment extends Fragment implements View.OnClickListener {
                     @Override
                     public void onClick(View v) {
                         alertD2.dismiss();
-                        Intent i = new Intent(getContext(), creativeWebCreation.class);
+                        Intent i = new Intent(getContext(), CreativeWebCreation.class);
                         getContext().startActivity(i);
                     }
                 });

@@ -2,6 +2,7 @@ package com.gaius.gaiusapp;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -47,10 +48,15 @@ public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ItemViewHold
                 break;
             case "video":
                 holder.videoView.setVisibility(View.VISIBLE);
+                holder.videoView.setUp(item.getVideoPath(), "", Jzvd.SCREEN_WINDOW_LIST);
                 holder.videoView.thumbImageView.setImageBitmap(item.getVideoBitmap());
-                holder.videoView.setUp(item.getVideoPath(), "", Jzvd.SCREEN_WINDOW_NORMAL);
+
                 break;
         }
+
+        holder.moveUP.setTag(position);
+        holder.moveUP.setOnClickListener(mOnClickListener);
+
 //        holder.textViewTitle.setText(item.getTitle());
 //        holder.imageView.setImageResource(item.getImage());
 //
@@ -68,6 +74,7 @@ public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ItemViewHold
         TextView textView;
         ImageView imageView;
         JzvdStd videoView;
+        ImageView moveUP;
 
         public ItemViewHolder(View itemView) {
             super(itemView);
@@ -75,6 +82,7 @@ public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ItemViewHold
             textView = itemView.findViewById(R.id.item_text);
             imageView = itemView.findViewById(R.id.item_image);
             videoView = itemView.findViewById(R.id.item_video);
+            moveUP = itemView.findViewById(R.id.moveUP);
         }
     }
 }

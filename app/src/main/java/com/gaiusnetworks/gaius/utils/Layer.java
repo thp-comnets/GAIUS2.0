@@ -1,7 +1,6 @@
-package com.gaiusnetworks.gaius.utils;
+package com.gaius.gaiusapp.utils;
 
 import android.support.annotation.FloatRange;
-import android.util.Log;
 
 public class Layer {
 

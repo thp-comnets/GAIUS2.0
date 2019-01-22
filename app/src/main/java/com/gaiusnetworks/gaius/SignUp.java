@@ -1,4 +1,4 @@
-package com.gaiusnetworks.gaius;
+package com.gaius.gaiusapp;
 
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -9,7 +9,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.media.Image;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -24,7 +23,8 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.gaiusnetworks.gaius.utils.ResourceHelper;
+
+import com.gaius.gaiusapp.utils.ResourceHelper;
 
 import net.gotev.uploadservice.MultipartUploadRequest;
 import net.gotev.uploadservice.ServerResponse;
@@ -41,7 +41,7 @@ import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static com.gaiusnetworks.gaius.utils.ResourceHelper.getResizedBitmap;
+import static com.gaius.gaiusapp.utils.ResourceHelper.getResizedBitmap;
 import static net.gotev.uploadservice.Placeholders.ELAPSED_TIME;
 import static net.gotev.uploadservice.Placeholders.PROGRESS;
 import static net.gotev.uploadservice.Placeholders.TOTAL_FILES;
@@ -227,7 +227,7 @@ public class SignUp extends AppCompatActivity {
         }
     }
 
-    private void registerUser(final String name,  final String channel, final String email, final String password,
+    private void registerUser(final String name, final String channel, final String email, final String password,
                               final String gender, final String dob, final boolean edit, final String phoneNumber) {
 
         Log.d("yasir", "RegisterActivity: register user: " + name + " " + channel + " " + email + " " + " " + URL_FOR_REGISTRATION);

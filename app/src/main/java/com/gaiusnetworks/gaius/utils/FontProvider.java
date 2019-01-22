@@ -1,4 +1,4 @@
-package com.gaiusnetworks.gaius.utils;
+package com.gaius.gaiusapp.utils;
 
 import android.content.res.Resources;
 import android.graphics.Typeface;

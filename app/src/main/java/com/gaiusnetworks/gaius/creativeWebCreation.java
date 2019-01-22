@@ -1,4 +1,4 @@
-package com.gaiusnetworks.gaius;
+package com.gaius.gaiusapp;
 
 import android.Manifest;
 import android.animation.Animator;
@@ -39,8 +39,6 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.CursorLoader;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.CardView;
-import android.text.InputType;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -62,27 +60,27 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.HurlStack;
 import com.android.volley.toolbox.Volley;
-
 import com.flask.colorpicker.ColorPickerView;
 import com.flask.colorpicker.builder.ColorPickerClickListener;
 import com.flask.colorpicker.builder.ColorPickerDialogBuilder;
-import com.gaiusnetworks.gaius.adapters.FontsAdapter;
-import com.gaiusnetworks.gaius.utils.Constants;
-import com.gaiusnetworks.gaius.utils.CustomScrollView;
-import com.gaiusnetworks.gaius.utils.Font;
-import com.gaiusnetworks.gaius.utils.FontProvider;
-import com.gaiusnetworks.gaius.utils.Layer;
-import com.gaiusnetworks.gaius.utils.MamlPageBuilder;
-import com.gaiusnetworks.gaius.utils.ResourceHelper;
-import com.gaiusnetworks.gaius.utils.TextLayer;
-import com.gaiusnetworks.gaius.widget.MotionView;
-import com.gaiusnetworks.gaius.widget.TextEditorDialogFragment;
-import com.gaiusnetworks.gaius.widget.entity.ImageEntity;
-import com.gaiusnetworks.gaius.widget.entity.MotionEntity;
-import com.gaiusnetworks.gaius.widget.entity.RectEntity;
-import com.gaiusnetworks.gaius.widget.entity.TextEntity;
-import com.theartofdev.edmodo.cropper.CropImage;
+
+import com.gaius.gaiusapp.adapters.FontsAdapter;
+import com.gaius.gaiusapp.utils.Constants;
+import com.gaius.gaiusapp.utils.CustomScrollView;
+import com.gaius.gaiusapp.utils.Font;
+import com.gaius.gaiusapp.utils.FontProvider;
+import com.gaius.gaiusapp.utils.Layer;
+import com.gaius.gaiusapp.utils.MamlPageBuilder;
+import com.gaius.gaiusapp.utils.ResourceHelper;
+import com.gaius.gaiusapp.utils.TextLayer;
+import com.gaius.gaiusapp.widget.MotionView;
+import com.gaius.gaiusapp.widget.TextEditorDialogFragment;
+import com.gaius.gaiusapp.widget.entity.ImageEntity;
+import com.gaius.gaiusapp.widget.entity.MotionEntity;
+import com.gaius.gaiusapp.widget.entity.RectEntity;
+import com.gaius.gaiusapp.widget.entity.TextEntity;
 import com.nostra13.universalimageloader.core.ImageLoader;
+import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
 
 import net.gotev.uploadservice.MultipartUploadRequest;
@@ -92,7 +90,6 @@ import net.gotev.uploadservice.UploadNotificationConfig;
 import net.gotev.uploadservice.UploadService;
 import net.gotev.uploadservice.UploadStatusDelegate;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 

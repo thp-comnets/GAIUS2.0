@@ -1,4 +1,4 @@
-package com.gaiusnetworks.gaius.widget.entity;
+package com.gaius.gaiusapp.widget.entity;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -9,7 +9,7 @@ import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.gaiusnetworks.gaius.utils.Layer;
+import com.gaius.gaiusapp.utils.Layer;
 
 
 public class ImageEntity extends MotionEntity {
@@ -18,7 +18,8 @@ public class ImageEntity extends MotionEntity {
     private Bitmap bitmap;
     private Layer layer;
     private Paint paint;
-    @Nullable private Integer x,y;
+    @Nullable
+    private Integer x,y;
 
     public ImageEntity(@NonNull Layer layer,
                        @NonNull Bitmap bitmap,

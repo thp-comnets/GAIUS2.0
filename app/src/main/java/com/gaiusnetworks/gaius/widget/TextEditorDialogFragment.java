@@ -1,4 +1,4 @@
-package com.gaiusnetworks.gaius.widget;
+package com.gaius.gaiusapp.widget;
 
 import android.app.Activity;
 import android.app.Dialog;
@@ -18,7 +18,7 @@ import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 
-import com.gaiusnetworks.gaius.R;
+import com.gaius.gaiusapp.R;
 
 /**
  * Transparent Dialog Fragment, with no title and no background

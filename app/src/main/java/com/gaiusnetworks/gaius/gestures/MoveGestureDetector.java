@@ -1,4 +1,4 @@
-package com.gaiusnetworks.gaius.gestures;
+package com.gaius.gaiusapp.gestures;
 
 import android.content.Context;
 import android.graphics.PointF;

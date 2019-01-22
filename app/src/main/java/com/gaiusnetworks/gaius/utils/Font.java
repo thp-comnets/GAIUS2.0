@@ -1,4 +1,4 @@
-package com.gaiusnetworks.gaius.utils;
+package com.gaius.gaiusapp.utils;
 
 public class Font {
 

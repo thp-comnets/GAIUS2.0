@@ -1,6 +1,4 @@
-package com.gaiusnetworks.gaius;
-
-import android.graphics.drawable.Drawable;
+package com.gaius.gaiusapp;
 
 public class Content {
     private int id;

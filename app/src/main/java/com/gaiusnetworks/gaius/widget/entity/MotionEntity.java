@@ -1,4 +1,4 @@
-package com.gaiusnetworks.gaius.widget.entity;
+package com.gaius.gaiusapp.widget.entity;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -13,9 +13,9 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.widget.TextView;
 
-import com.gaiusnetworks.gaius.utils.Layer;
-import com.gaiusnetworks.gaius.utils.MathUtils;
-import com.gaiusnetworks.gaius.R;
+import com.gaius.gaiusapp.R;
+import com.gaius.gaiusapp.utils.Layer;
+import com.gaius.gaiusapp.utils.MathUtils;
 
 @SuppressWarnings({"WeakerAccess"})
 public abstract class MotionEntity {

@@ -1,4 +1,4 @@
-package com.gaiusnetworks.gaius.widget;
+package com.gaius.gaiusapp.widget;
 
 import android.annotation.TargetApi;
 import android.content.Context;
@@ -22,14 +22,13 @@ import android.view.ScaleGestureDetector;
 import android.view.View;
 import android.widget.FrameLayout;
 
-import com.gaiusnetworks.gaius.gestures.MoveGestureDetector;
-import com.gaiusnetworks.gaius.gestures.RotateGestureDetector;
-import com.gaiusnetworks.gaius.widget.entity.MotionEntity;
+import com.gaius.gaiusapp.R;
+import com.gaius.gaiusapp.gestures.MoveGestureDetector;
+import com.gaius.gaiusapp.gestures.RotateGestureDetector;
+import com.gaius.gaiusapp.widget.entity.MotionEntity;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import com.gaiusnetworks.gaius.R;
 
 public class MotionView  extends FrameLayout {
 

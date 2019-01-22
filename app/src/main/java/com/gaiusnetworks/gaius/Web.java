@@ -1,4 +1,4 @@
-package com.gaiusnetworks.gaius;
+package com.gaius.gaiusapp;
 
 public class Web {
     private int id;

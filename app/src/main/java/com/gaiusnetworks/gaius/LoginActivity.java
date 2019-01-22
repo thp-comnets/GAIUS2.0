@@ -1,4 +1,4 @@
-package com.gaiusnetworks.gaius;
+package com.gaius.gaiusapp;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -112,7 +112,7 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    private void loginUser( final String email, final String password, final Boolean automaticLogin) {
+    private void loginUser(final String email, final String password, final Boolean automaticLogin) {
         // Tag used to cancel the request
         String cancel_req_tag = "login";
         StringRequest strReq = new StringRequest(Request.Method.POST,

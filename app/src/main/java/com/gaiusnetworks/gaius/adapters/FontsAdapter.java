@@ -1,4 +1,4 @@
-package com.gaiusnetworks.gaius.adapters;
+package com.gaius.gaiusapp.adapters;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -8,7 +8,8 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
-import com.gaiusnetworks.gaius.utils.FontProvider;
+
+import com.gaius.gaiusapp.utils.FontProvider;
 
 import java.util.List;
 

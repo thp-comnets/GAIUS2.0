@@ -1,4 +1,4 @@
-package com.gaiusnetworks.gaius.widget.entity;
+package com.gaius.gaiusapp.widget.entity;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -12,8 +12,8 @@ import android.text.Layout;
 import android.text.StaticLayout;
 import android.text.TextPaint;
 
-import com.gaiusnetworks.gaius.utils.FontProvider;
-import com.gaiusnetworks.gaius.utils.TextLayer;
+import com.gaius.gaiusapp.utils.FontProvider;
+import com.gaius.gaiusapp.utils.TextLayer;
 
 
 public class TextEntity extends MotionEntity {

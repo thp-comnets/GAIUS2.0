@@ -1,4 +1,4 @@
-package com.gaiusnetworks.gaius.utils;
+package com.gaius.gaiusapp.utils;
 
 public class Constants {
     public static String TEMPDIR = "MyFolder/Images";

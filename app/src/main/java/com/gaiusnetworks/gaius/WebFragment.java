@@ -1,4 +1,4 @@
-package com.gaiusnetworks.gaius;
+package com.gaius.gaiusapp;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;

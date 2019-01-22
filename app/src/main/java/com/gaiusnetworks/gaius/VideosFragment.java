@@ -1,9 +1,8 @@
-package com.gaiusnetworks.gaius;
+package com.gaius.gaiusapp;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -23,8 +22,6 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import cn.jzvd.Jzvd;
 
 public class VideosFragment extends Fragment {
     private static String URL = "http://91.230.41.34:8080/test/listVideos2.py";

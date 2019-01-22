@@ -1,4 +1,4 @@
-package com.gaiusnetworks.gaius;
+package com.gaius.gaiusapp;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
@@ -15,14 +15,15 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
-import com.gaiusnetworks.gaius.utils.LogOut;
+
+import com.gaius.gaiusapp.utils.LogOut;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import cn.jzvd.Jzvd;
 
-import static com.gaiusnetworks.gaius.utils.Constants.MULTIPLE_PERMISSIONS;
+import static com.gaius.gaiusapp.utils.Constants.MULTIPLE_PERMISSIONS;
 
 public class MainActivity extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener {
 

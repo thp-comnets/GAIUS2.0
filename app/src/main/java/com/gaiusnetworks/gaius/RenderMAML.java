@@ -1,4 +1,4 @@
-package com.gaiusnetworks.gaius;
+package com.gaius.gaiusapp;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -28,8 +28,8 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.Volley;
-import com.gaiusnetworks.gaius.utils.FontProvider;
-import com.gaiusnetworks.gaius.utils.ResourceHelper;
+import com.gaius.gaiusapp.utils.FontProvider;
+import com.gaius.gaiusapp.utils.ResourceHelper;
 
 import org.json.JSONException;
 import org.json.JSONObject;

@@ -1,7 +1,6 @@
-package com.gaiusnetworks.gaius;
+package com.gaius.gaiusapp;
 
 import android.content.Context;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;

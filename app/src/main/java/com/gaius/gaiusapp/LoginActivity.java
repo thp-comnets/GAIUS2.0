@@ -28,7 +28,7 @@ import java.util.Map;
 public class LoginActivity extends AppCompatActivity {
     private String URL_FOR_LOGIN;
     private Button customSigninButton;
-    private TextView custom_signup_button;
+    private TextView custom_signup_button, forgotpassword_button;
     private EditText loginInputEmail, loginInputPassword;
     SharedPreferences prefs;
 
@@ -79,6 +79,15 @@ public class LoginActivity extends AppCompatActivity {
                 Intent i = new Intent(getApplicationContext(), SignUp.class);
                 startActivity(i);
                 }
+        });
+
+        forgotpassword_button = (TextView) findViewById(R.id.custom_forgotpassword);
+        forgotpassword_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(getApplicationContext(), ForgotPassword.class);
+                startActivity(i);
+            }
         });
     }
 

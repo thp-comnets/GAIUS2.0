@@ -41,6 +41,12 @@
         </activity>
 
         <activity
+            android:name=".ForgotPassword"
+            android:launchMode="singleTask"
+            android:theme="@style/AppTheme">
+        </activity>
+
+        <activity
             android:name=".RenderMAML"
             android:launchMode="singleTask"
             android:theme="@style/AppTheme">

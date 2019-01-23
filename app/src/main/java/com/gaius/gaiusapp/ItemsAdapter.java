@@ -54,8 +54,8 @@ public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ItemViewHold
                 break;
         }
 
-        holder.moveUP.setTag(position);
-        holder.moveUP.setOnClickListener(mOnClickListener);
+//        holder.moveUP.setTag(position);
+//        holder.moveUP.setOnClickListener(mOnClickListener);
 
 //        holder.textViewTitle.setText(item.getTitle());
 //        holder.imageView.setImageResource(item.getImage());
@@ -74,7 +74,6 @@ public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ItemViewHold
         TextView textView;
         ImageView imageView;
         JzvdStd videoView;
-        ImageView moveUP;
 
         public ItemViewHolder(View itemView) {
             super(itemView);
@@ -82,7 +81,6 @@ public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ItemViewHold
             textView = itemView.findViewById(R.id.item_text);
             imageView = itemView.findViewById(R.id.item_image);
             videoView = itemView.findViewById(R.id.item_video);
-            moveUP = itemView.findViewById(R.id.moveUP);
         }
     }
 }

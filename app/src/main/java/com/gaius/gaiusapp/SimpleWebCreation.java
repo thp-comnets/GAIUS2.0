@@ -163,19 +163,7 @@ class SimpleWebCreation extends AppCompatActivity implements View.OnClickListene
 
     @Override
     public void onClick(View v) {
-        int pos = (Integer) v.getTag();
 
-        Log.d("yasir", "pos: "+pos);
-
-        if (pos != 0) {
-            Item item = itemList.get(pos);
-            itemList.remove(pos);
-            itemList.add(pos-1, item);
-            adapter.notifyItemMoved(pos, pos-1);
-            recyclerView.invalidate();
-
-            v.setTag(pos-1);
-        }
     }
 }
 

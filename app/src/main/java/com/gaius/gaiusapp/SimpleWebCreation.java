@@ -30,8 +30,7 @@ import java.util.List;
 class SimpleWebCreation extends AppCompatActivity implements View.OnClickListener, OnStartDragListener {
     List<Item> itemList;
     RecyclerView recyclerView;
-    CardView textButton, imageButton, videoButton;
-    TextView textHeaderButton, textParagrahButton;
+    CardView imageButton, videoButton, textHeaderButton, textParagrahButton;
     ItemsAdapter adapter;
     private final int PICK_IMAGE_REQUEST = 1;
     private final int PICK_VIDEO_REQUEST = 2;
@@ -53,7 +52,7 @@ class SimpleWebCreation extends AppCompatActivity implements View.OnClickListene
         itemList.add(new Item (0, "text", "",null, null));
 
 
-        textHeaderButton = findViewById(R.id.header_item);
+        textHeaderButton = findViewById(R.id.text_header_card);
         textHeaderButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -66,7 +65,7 @@ class SimpleWebCreation extends AppCompatActivity implements View.OnClickListene
             }
         });
 
-        textParagrahButton = findViewById(R.id.paragrah_item);
+        textParagrahButton = findViewById(R.id.text_paragraph_card);
         textParagrahButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

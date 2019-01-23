@@ -22,7 +22,7 @@ public class Item {
         this.imagePath = imageUrl;
         this.videoPath = videoUrl;
         this.imageBitmap = BitmapFactory.decodeFile(this.imagePath);
-        this.videoBitmap = ThumbnailUtils.createVideoThumbnail(this.videoPath, MediaStore.Images.Thumbnails.MINI_KIND);
+        this.videoBitmap = ThumbnailUtils.createVideoThumbnail(this.videoPath, MediaStore.Images.Thumbnails.FULL_SCREEN_KIND);
     }
 
     public int getId() {
@@ -32,6 +32,8 @@ public class Item {
     public String getType() { return type; }
 
     public String getText() { return text; }
+
+    public void setText(String text) { this.text=text; }
 
     public String getImagePath() { return imagePath; }
 

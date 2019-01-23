@@ -2,11 +2,12 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.gaius.gaiusapp.MainActivity"
     android:orientation="vertical">
 
     <RelativeLayout
-        android:id="@+id/linearLayout"
+        android:id="@+id/relative_layout"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="5dp"
@@ -15,28 +16,34 @@
         android:orientation="vertical"
         android:gravity="center_vertical">
 
-        <TextView
-            android:id="@+id/item_text"
-            android:layout_width="fill_parent"
-            android:layout_height="match_parent"
-            android:text="Text Sample fd gfjk djkh jkdfhg jkdgj kdh jkhg jkdfhgjk"
-            android:textStyle="bold"
-            android:textColor="#000000"
-            android:textSize="20dp"
+        <ImageView
+            android:id="@+id/item_delete"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:translationZ="100dp"
+            android:src="@drawable/minus"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"/>
+        <EditText
+            android:id="@+id/edit_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/white"
+            android:hint="Type something"
             android:visibility="gone"/>
 
         <ImageView
-            android:layout_below="@+id/item_text"
+            android:layout_below="@+id/edit_text"
             android:id="@+id/item_image"
             android:layout_width="fill_parent"
-            android:layout_height="match_parent"
+            android:layout_height="200dp"
             android:visibility="gone"/>
 
         <cn.jzvd.JzvdStd
             android:layout_below="@+id/item_image"
             android:id="@+id/item_video"
             android:layout_width="fill_parent"
-            android:layout_height="match_parent"
+            android:layout_height="200dp"
             android:visibility="gone"/>
 
     </RelativeLayout>

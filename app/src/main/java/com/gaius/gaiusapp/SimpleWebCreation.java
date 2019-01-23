@@ -1,50 +1,39 @@
 package com.gaius.gaiusapp;
 
-import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.media.ThumbnailUtils;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.support.design.widget.BottomNavigationView;
-import android.support.v4.app.Fragment;
 import android.support.v4.content.CursorLoader;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ImageButton;
-import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
+import com.gaius.gaiusapp.helper.OnStartDragListener;
+import com.gaius.gaiusapp.helper.SimpleItemTouchHelperCallback;
 import com.gaius.gaiusapp.utils.ResourceHelper;
-import com.theartofdev.edmodo.cropper.CropImage;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import cn.jzvd.Jzvd;
-import cn.jzvd.JzvdStd;
 
-class SimpleWebCreation extends AppCompatActivity implements View.OnClickListener {
+class SimpleWebCreation extends AppCompatActivity implements View.OnClickListener, OnStartDragListener {
     List<Item> itemList;
     RecyclerView recyclerView;
     CardView textButton, imageButton, videoButton;
     ItemsAdapter adapter;
     private final int PICK_IMAGE_REQUEST = 1;
     private final int PICK_VIDEO_REQUEST = 2;
+    private ItemTouchHelper mItemTouchHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,14 +48,15 @@ class SimpleWebCreation extends AppCompatActivity implements View.OnClickListene
         itemList = new ArrayList<>();
 
         //adding the product to product list
-        itemList.add(new Item (0, "text", "Hello World Hello World Hello World Hello World Hello World",null, null));
-        itemList.add(new Item (1, "text", "Hello World Hello World Hello World Hello World Hello World",null, null));
+        itemList.add(new Item (0, "text", "",null, null));
 
         textButton = findViewById(R.id.text_card);
         textButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                itemList.add(itemList.size(), new Item (itemList.size(), "text", "Sample",null, null));
+                Log.d("yasir","adding text at "+itemList.size());
+
+                itemList.add(itemList.size(), new Item (itemList.size(), "text", "",null, null));
                 adapter.notifyItemInserted(itemList.size()-1);
                 recyclerView.scrollToPosition(itemList.size()-1);
                 recyclerView.invalidate();
@@ -94,8 +84,12 @@ class SimpleWebCreation extends AppCompatActivity implements View.OnClickListene
         });
 
         //creating adapter object and setting it to recyclerview
-        adapter = new ItemsAdapter(getApplication(), itemList, this);
+        adapter = new ItemsAdapter(this, itemList, this);
         recyclerView.setAdapter(adapter);
+
+        ItemTouchHelper.Callback callback = new SimpleItemTouchHelperCallback(adapter);
+        mItemTouchHelper = new ItemTouchHelper(callback);
+        mItemTouchHelper.attachToRecyclerView(recyclerView);
     }
 
     @Override
@@ -162,7 +156,36 @@ class SimpleWebCreation extends AppCompatActivity implements View.OnClickListene
     }
 
     @Override
-    public void onClick(View v) {
+    public void onStartDrag(RecyclerView.ViewHolder viewHolder) {
+        mItemTouchHelper.startDrag(viewHolder);
+    }
+
+    @Override
+    public void onClick(View view) {
+        int id = (Integer) view.getTag();
+
+        for (int childCount = recyclerView.getChildCount(), i = 0; i < childCount; ++i) {
+            final ItemsAdapter.ItemViewHolder holder = (ItemsAdapter.ItemViewHolder) recyclerView.getChildViewHolder(recyclerView.getChildAt(i));
+
+            int itemID = (Integer) holder.deleteButton.getTag();
+
+            for (int j=0; j<itemList.size(); j++) {
+                if (itemList.get(j).getId() == itemID) {
+                    itemList.get(i).setText(holder.editText.getText() + "");
+                }
+            }
+        }
+
+        for (int i=0; i<itemList.size(); i++) {
+            if (itemList.get(i).getId() == id ) {
+                Item item = itemList.get(i);
+                itemList.remove(item);
+                adapter.notifyItemRemoved(i);
+                recyclerView.setAdapter(adapter);
+
+                return;
+            }
+        }
 
     }
 }

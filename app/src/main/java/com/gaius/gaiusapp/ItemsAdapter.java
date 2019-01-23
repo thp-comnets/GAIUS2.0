@@ -6,15 +6,19 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.TextView;
+import android.widget.RelativeLayout;
+import com.gaius.gaiusapp.helper.ItemTouchHelperAdapter;
 
+import java.util.Collections;
 import java.util.List;
 
 import cn.jzvd.Jzvd;
 import cn.jzvd.JzvdStd;
 
-public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ItemViewHolder> {
+public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ItemViewHolder>
+        implements ItemTouchHelperAdapter {
 
     private Context mCtx;
     private List<Item> contentsList;
@@ -33,14 +37,15 @@ public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ItemViewHold
         return new ItemViewHolder(view);
     }
 
+
     @Override
-    public void onBindViewHolder(ItemViewHolder holder, int position) {
+    public void onBindViewHolder(final ItemViewHolder holder, int position) {
         Item item = contentsList.get(position);
 
         switch (item.getType()) {
             case "text":
-                holder.textView.setVisibility(View.VISIBLE);
-                holder.textView.setText(item.getText());
+                holder.editText.setVisibility(View.VISIBLE);
+                holder.editText.setText(item.getText());
                 break;
             case "image":
                 holder.imageView.setVisibility(View.VISIBLE);
@@ -50,18 +55,11 @@ public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ItemViewHold
                 holder.videoView.setVisibility(View.VISIBLE);
                 holder.videoView.setUp(item.getVideoPath(), "", Jzvd.SCREEN_WINDOW_LIST);
                 holder.videoView.thumbImageView.setImageBitmap(item.getVideoBitmap());
-
                 break;
         }
 
-//        holder.moveUP.setTag(position);
-//        holder.moveUP.setOnClickListener(mOnClickListener);
-
-//        holder.textViewTitle.setText(item.getTitle());
-//        holder.imageView.setImageResource(item.getImage());
-//
-//        holder.cardView.setTag(position);
-//        holder.cardView.setOnClickListener(mOnClickListener);
+        holder.deleteButton.setTag(item.getId());
+        holder.deleteButton.setOnClickListener(mOnClickListener);
     }
 
     @Override
@@ -71,16 +69,31 @@ public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ItemViewHold
 
     class ItemViewHolder extends RecyclerView.ViewHolder {
 
-        TextView textView;
-        ImageView imageView;
+        EditText editText;
+        ImageView imageView, deleteButton;
         JzvdStd videoView;
+        RelativeLayout relativeLayout;
 
         public ItemViewHolder(View itemView) {
             super(itemView);
 
-            textView = itemView.findViewById(R.id.item_text);
+            deleteButton = itemView.findViewById(R.id.item_delete);
+            editText = itemView.findViewById(R.id.edit_text);
             imageView = itemView.findViewById(R.id.item_image);
             videoView = itemView.findViewById(R.id.item_video);
+            relativeLayout = itemView.findViewById(R.id.relative_layout);
         }
+    }
+
+    @Override
+    public void onItemDismiss(int position) {
+    }
+
+    @Override
+    public boolean onItemMove(int fromPosition, int toPosition) {
+        Collections.swap(contentsList, fromPosition, toPosition);
+        notifyItemMoved(fromPosition, toPosition);
+
+        return true;
     }
 }

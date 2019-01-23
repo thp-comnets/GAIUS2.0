@@ -8,17 +8,18 @@ import android.provider.MediaStore;
 public class Item {
     private int id;
     private String type;
-    private String text;
+    private String text, textType;
     private Bitmap imageBitmap;
     private String imagePath;
     private Bitmap videoBitmap;
     private String videoPath;
 
 
-    public Item(int id, String type, String text, String imageUrl, String videoUrl) {
+    public Item(int id, String type, String textType, String imageUrl, String videoUrl) {
         this.id = id;
         this.type = type;
-        this.text = text;
+        this.text = "";
+        this.textType = textType;
         this.imagePath = imageUrl;
         this.videoPath = videoUrl;
         this.imageBitmap = BitmapFactory.decodeFile(this.imagePath);
@@ -32,6 +33,8 @@ public class Item {
     public String getType() { return type; }
 
     public String getText() { return text; }
+
+    public String getTextType() { return textType; }
 
     public void setText(String text) { this.text=text; }
 

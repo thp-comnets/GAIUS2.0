@@ -3,6 +3,7 @@ package com.gaius.gaiusapp;
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -46,6 +47,15 @@ public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ItemViewHold
             case "text":
                 holder.editText.setVisibility(View.VISIBLE);
                 holder.editText.setText(item.getText());
+
+                if (item.getTextType().contains("header")) {
+                    holder.editText.setTextSize(30);
+                    holder.editText.setGravity(Gravity.CENTER);
+                }
+                else if (item.getTextType().contains("paragraph")){
+                    holder.editText.setTextSize(20);
+                }
+
                 break;
             case "image":
                 holder.imageView.setVisibility(View.VISIBLE);

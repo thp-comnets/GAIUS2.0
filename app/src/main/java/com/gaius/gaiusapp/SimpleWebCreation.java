@@ -15,6 +15,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.gaius.gaiusapp.helper.OnStartDragListener;
@@ -30,6 +31,7 @@ class SimpleWebCreation extends AppCompatActivity implements View.OnClickListene
     List<Item> itemList;
     RecyclerView recyclerView;
     CardView textButton, imageButton, videoButton;
+    TextView textHeaderButton, textParagrahButton;
     ItemsAdapter adapter;
     private final int PICK_IMAGE_REQUEST = 1;
     private final int PICK_VIDEO_REQUEST = 2;
@@ -50,18 +52,45 @@ class SimpleWebCreation extends AppCompatActivity implements View.OnClickListene
         //adding the product to product list
         itemList.add(new Item (0, "text", "",null, null));
 
-        textButton = findViewById(R.id.text_card);
-        textButton.setOnClickListener(new View.OnClickListener() {
+
+        textHeaderButton = findViewById(R.id.header_item);
+        textHeaderButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Log.d("yasir","adding text at "+itemList.size());
 
-                itemList.add(itemList.size(), new Item (itemList.size(), "text", "",null, null));
+                itemList.add(itemList.size(), new Item (itemList.size(), "text","header",null, null));
                 adapter.notifyItemInserted(itemList.size()-1);
                 recyclerView.scrollToPosition(itemList.size()-1);
                 recyclerView.invalidate();
             }
         });
+
+        textParagrahButton = findViewById(R.id.paragrah_item);
+        textParagrahButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d("yasir","adding text at "+itemList.size());
+
+                itemList.add(itemList.size(), new Item (itemList.size(), "text","paragraph",null, null));
+                adapter.notifyItemInserted(itemList.size()-1);
+                recyclerView.scrollToPosition(itemList.size()-1);
+                recyclerView.invalidate();
+            }
+        });
+
+//        textButton = findViewById(R.id.text_card);
+//        textButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                Log.d("yasir","adding text at "+itemList.size());
+//
+//                itemList.add(itemList.size(), new Item (itemList.size(), "text", "",null, null));
+//                adapter.notifyItemInserted(itemList.size()-1);
+//                recyclerView.scrollToPosition(itemList.size()-1);
+//                recyclerView.invalidate();
+//            }
+//        });
 
         imageButton = findViewById(R.id.image_card);
         imageButton.setOnClickListener(new View.OnClickListener() {

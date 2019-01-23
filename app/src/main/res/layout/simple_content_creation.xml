@@ -24,6 +24,32 @@
         app:layout_behavior="com.gaius.gaiusapp.utils.FixedBottomViewBehavior"
         >
 
+        <TextView
+            android:id="@+id/header_item"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_margin="5dp"
+            android:textColor="@color/black"
+            android:textAlignment="center"
+            android:layout_gravity="center"
+            android:textSize="30dp"
+            android:background="@drawable/circle"
+            android:text="H"
+            android:gravity="center_vertical" />
+
+        <TextView
+            android:id="@+id/paragrah_item"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_margin="5dp"
+            android:textColor="@color/black"
+            android:textAlignment="center"
+            android:layout_gravity="center"
+            android:textSize="30dp"
+            android:background="@drawable/circle"
+            android:text="P"
+            android:gravity="center_vertical" />
+
         <android.support.v7.widget.CardView
             android:id="@+id/image_card"
             android:layout_width="60dp"
@@ -59,26 +85,6 @@
             </pl.droidsonroids.gif.GifImageView>
 
         </android.support.v7.widget.CardView>
-
-
-        <android.support.v7.widget.CardView
-            android:id="@+id/text_card"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            app:cardCornerRadius="10dp"
-            android:layout_margin="5dp"
-            android:elevation="10dp"
-            app:cardBackgroundColor="#ffffff">
-
-            <pl.droidsonroids.gif.GifImageView
-                android:id="@+id/textButton"
-                android:layout_width="60dp"
-                android:layout_height="60dp"
-                android:src="@drawable/ic_create">
-            </pl.droidsonroids.gif.GifImageView>
-
-        </android.support.v7.widget.CardView>
-
 
     </LinearLayout>
 

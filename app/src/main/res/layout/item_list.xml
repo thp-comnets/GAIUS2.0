@@ -40,14 +40,25 @@
             android:layout_below="@+id/edit_text"
             android:id="@+id/item_image"
             android:layout_width="fill_parent"
-            android:layout_height="200dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:background="@drawable/item_image_frame"
+            android:adjustViewBounds="true"
+            android:scaleType="fitCenter"
             android:visibility="gone"/>
 
         <cn.jzvd.JzvdStd
             android:layout_below="@+id/item_image"
             android:id="@+id/item_video"
             android:layout_width="fill_parent"
-            android:layout_height="200dp"
+            android:layout_height="wrap_content"
+            android:background="@drawable/item_image_frame"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:adjustViewBounds="true"
+            android:scaleType="fitCenter"
             android:visibility="gone"/>
 
     </RelativeLayout>

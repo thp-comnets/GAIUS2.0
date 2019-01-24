@@ -4,25 +4,37 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.design.widget.TextInputLayout;
 import android.support.v4.content.CursorLoader;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.gaius.gaiusapp.adapters.ItemsAdapter;
 import com.gaius.gaiusapp.classes.Item;
 import com.gaius.gaiusapp.helper.OnStartDragListener;
 import com.gaius.gaiusapp.helper.SimpleItemTouchHelperCallback;
+import com.gaius.gaiusapp.utils.MamlPageBuilder;
 import com.gaius.gaiusapp.utils.ResourceHelper;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,9 +45,15 @@ class SimpleWebCreation extends AppCompatActivity implements View.OnClickListene
     RecyclerView recyclerView;
     CardView imageButton, videoButton, textHeaderButton, textParagrahButton;
     ItemsAdapter adapter;
+    private String pageName;
+    private String pageDescription;
+    private final int PICK_ICON_REQUEST = 0;
     private final int PICK_IMAGE_REQUEST = 1;
     private final int PICK_VIDEO_REQUEST = 2;
     private ItemTouchHelper mItemTouchHelper;
+    private ImageView iconImageView;
+    private Uri iconUri;
+    private String iconPath;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,13 +62,13 @@ class SimpleWebCreation extends AppCompatActivity implements View.OnClickListene
         setContentView(R.layout.simple_content_creation);
 
         recyclerView = findViewById(R.id.simple_recylcerView);
-        recyclerView.setHasFixedSize(true);
+        recyclerView.setHasFixedSize(false);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         itemList = new ArrayList<>();
 
         //adding the product to product list
-        itemList.add(new Item (0, "text", "",null, null));
+        itemList.add(new Item (0,"text", "",null, null));
 
 
         textHeaderButton = findViewById(R.id.text_header_card);
@@ -210,6 +228,171 @@ class SimpleWebCreation extends AppCompatActivity implements View.OnClickListene
             }
         }
 
+    }
+
+    public boolean onCreateOptionsMenu (Menu menu)
+    {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.content_creator, menu);
+        return true;
+    }
+
+    public boolean onOptionsItemSelected (MenuItem item)
+    {
+        LayoutInflater layoutInflater = LayoutInflater.from(this);
+        final View promptView = layoutInflater.inflate(R.layout.submit_content_popup, null);
+        final AlertDialog alertD = new AlertDialog.Builder(this).create();
+        alertD.setView(promptView);
+        alertD.show();
+
+        Button cancel_button = (Button) promptView.findViewById(R.id.cancel_button);
+        Button save_button = (Button) promptView.findViewById(R.id.save_button);
+        Button publish_button = (Button) promptView.findViewById(R.id.publish_button);
+        iconImageView = promptView.findViewById(R.id.logo);
+
+        iconImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent galleryIntent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                startActivityForResult(galleryIntent, PICK_ICON_REQUEST);
+            }
+        });
+
+        cancel_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                alertD.dismiss();
+            }
+        });
+
+        save_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (filledFields(promptView)) {
+                    alertD.dismiss();
+                    submitPage(false);
+                }
+            }
+        });
+
+        publish_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (filledFields(promptView)) {
+                    alertD.dismiss();
+                    submitPage(true);
+                }
+            }
+        });
+
+        return false;
+    }
+
+    public boolean filledFields(View view) {
+        boolean haveContent = true;
+        EditText editTextPagename = view.findViewById(R.id.title_edittext);
+        EditText editTextDescription = view.findViewById(R.id.description_edittext);
+        TextInputLayout editTextPagenameLayout = view.findViewById(R.id.title_edittext_layout) ;
+        TextInputLayout editTextDescriptionLayout = view.findViewById(R.id.description_edittext_layout);
+
+        if (editTextDescription.getText().length() == 0) {
+            editTextDescriptionLayout.setError(getString(R.string.error_description));
+            haveContent = false;
+        } else {
+            editTextDescriptionLayout.setErrorEnabled(false);
+        }
+        if (editTextPagename.getText().length() == 0) {
+            editTextPagenameLayout.setError(getString(R.string.error_name));
+            haveContent = false;
+        } else {
+            editTextPagenameLayout.setErrorEnabled(false);
+        }
+
+        if (!haveContent) {
+            return false;
+        }
+
+        pageName = editTextPagename.getText().toString();
+        pageDescription = editTextDescription.getText().toString();
+        return true;
+    }
+
+    public void submitPage(boolean publish) {
+
+        MamlPageBuilder builder = new MamlPageBuilder();
+
+        ArrayList<String> imagePaths = new ArrayList<String>();
+        ArrayList<String> videoPaths = new ArrayList<String>();
+
+        builder.addBackground (String.format("#%06X", (0xFFFFFF & Color.WHITE)));
+
+        for (int childCount = adapter.getItemCount(), i = 0; i < childCount; ++i) {
+            Log.d("save", adapter.getItem(i).getType()+" "+adapter.getItem(i).getW()+ " "+adapter.getItem(i).getH());
+
+        }
+//            final ItemsAdapter.ItemViewHolder holder = (ItemsAdapter.ItemViewHolder) recyclerView.getChildViewHolder(recyclerView.getChildAt(0));
+//
+////            int itemID = (Integer) holder.deleteButton.getTag();
+////            for (int j = 0; j < itemList.size(); j++) {
+////                if (itemList.get(j).getId() == itemID) {
+////                    Item item = itemList.get(i);
+//
+//                    String[] filename;
+//                    int [] pos = new int[2];
+//                    int  itemWidth, itemHeight=0;
+//
+//            Log.d("save","type: " + holder.type);
+//
+//                    switch (holder.type) {
+//                        case "text":
+//                            holder.itemView.getLocationInWindow(pos);
+//                            itemWidth = holder.editText.getWidth();
+//                            itemHeight = holder.editText.getHeight();
+//
+//                            Log.d("GAIUS", holder.getLayoutPosition()+"");
+//
+//                            int fontSize = 20;
+//                            if (holder.textType.contains("header")) {
+//                                fontSize = 30;
+//                            }
+//                            builder.addText(holder.editText.getText().toString(), "Arial", fontSize , pos[0], pos[1], itemWidth, itemHeight, "#ffffff");
+//                            break;
+//
+//                        case "video":
+//                            holder.itemView.getLocationInWindow(pos);
+//                            itemWidth = holder.videoView.getWidth();
+//                            itemHeight = holder.videoView.getHeight();
+//
+////                            filename = new File("" + Uri.parse(item.getVideoPath())).getName().split("/");
+////                            videoPaths.add(item.getVideoPath());
+////                            builder.addVideo(filename[filename.length - 1], pos[0], pos[1], itemWidth, itemHeight);
+//                            break;
+//
+//                        case "image":
+//                            holder.itemView.getLocationInWindow(pos);
+//                            itemWidth = holder.imageView.getWidth();
+//                            itemHeight = holder.imageView.getHeight();
+////                            filename = new File("" + Uri.parse(item.getImagePath())).getName().split("/");
+////                            imagePaths.add(item.getImagePath());
+////                            builder.addImage(filename[filename.length - 1], pos[0], pos[1], itemWidth, itemHeight);
+//                            builder.addImage("xx", pos[0], pos[1], itemWidth, itemHeight);
+////                            break;
+////                            break;
+//                    }
+//            Log.d("save","moving: " + itemHeight);
+//
+//                    recyclerView.scrollBy(0,itemHeight);
+////                    break;
+////                }
+//            }
+////        }
+//
+//        if (builder.getObjectCount() > 0) {
+//            Log.d("save", "ContentBuilderActivity " + builder.getPageAsString());
+////            uploadMultipart(getApplicationContext(), imagePaths, videoPaths, builder.makeFile(Constants.TEMPDIR), publish);
+//        } else {
+//            Toast.makeText (getApplicationContext(), "No content added", Toast.LENGTH_SHORT).show ();
+//        }
     }
 }
 

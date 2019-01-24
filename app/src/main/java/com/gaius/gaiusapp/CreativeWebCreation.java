@@ -185,12 +185,6 @@ public class CreativeWebCreation extends AppCompatActivity implements TextEditor
     private DisplayMetrics mDisplayMetrics;
 
     CardView textButton, imageButton, videoButton, rectangleButton, backgroundButton, instagramButton;
-//    FloatingActionButton fab, fab1, fab2, fab3, fab4, fab5, fab6, fab7, fab8;
-//    LinearLayout fabLayout1, fabLayout2, fabLayout3, fabLayout4, fabLayout5, fabLayout6, fabLayout7, fabLayout8;
-//    View fabBGLayout;
-//    boolean isFABOpen=false;
-
-//    private ArrayList<TextView> FabTexts=null;
 
     private RequestQueue mRequestQueue;
     private String BASE_URL;
@@ -223,8 +217,6 @@ public class CreativeWebCreation extends AppCompatActivity implements TextEditor
     @SuppressLint("NewApi")
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-//        FabTexts = new ArrayList<>();
 
         setContentView(R.layout.activity_content_builder);
 
@@ -307,52 +299,6 @@ public class CreativeWebCreation extends AppCompatActivity implements TextEditor
         backgroundButton = findViewById(R.id.background_card);
         instagramButton = findViewById(R.id.instagram_card);
 
-//        fabLayout1= (LinearLayout) findViewById(R.id.fabLayout1);
-//        fabLayout2= (LinearLayout) findViewById(R.id.fabLayout2);
-//        fabLayout3= (LinearLayout) findViewById(R.id.fabLayout3);
-//        fabLayout4= (LinearLayout) findViewById(R.id.fabLayout4);
-//        fabLayout5= (LinearLayout) findViewById(R.id.fabLayout5);
-//        fabLayout6= (LinearLayout) findViewById(R.id.fabLayout6);
-//        fabLayout7= (LinearLayout) findViewById(R.id.fabLayout7);
-//        fabLayout8= (LinearLayout) findViewById(R.id.fabLayout8);
-//        fab = (FloatingActionButton) findViewById(R.id.fab);
-//        fab1 = (FloatingActionButton) findViewById(R.id.fab1);
-//        fab2= (FloatingActionButton) findViewById(R.id.fab2);
-//        fab3 = (FloatingActionButton) findViewById(R.id.fab3);
-//        fab4 = (FloatingActionButton) findViewById(R.id.fab4);
-//        fab5 = (FloatingActionButton) findViewById(R.id.fab5);
-//        fab6 = (FloatingActionButton) findViewById(R.id.fab6);
-//        fab7 = (FloatingActionButton) findViewById(R.id.fab7);
-//        fab8 = (FloatingActionButton) findViewById(R.id.fab8);
-//        fabBGLayout=findViewById(R.id.fabBGLayout);
-//
-//        FabTexts.add((TextView) findViewById(R.id.txt1));
-//        FabTexts.add((TextView) findViewById(R.id.txt2));
-//        FabTexts.add((TextView) findViewById(R.id.txt3));
-//        FabTexts.add((TextView) findViewById(R.id.txt4));
-//        FabTexts.add((TextView) findViewById(R.id.txt5));
-//        FabTexts.add((TextView) findViewById(R.id.txt6));
-//        FabTexts.add((TextView) findViewById(R.id.txt7));
-//        FabTexts.add((TextView) findViewById(R.id.txt8));
-
-//        fab.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                if(!isFABOpen){
-//                    showFABMenu();
-//                }else{
-//                    closeFABMenu();
-//                }
-//            }
-//        });
-
-//        fabBGLayout.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                closeFABMenu();
-//            }
-//        });
-
         textButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -431,20 +377,6 @@ public class CreativeWebCreation extends AppCompatActivity implements TextEditor
                                 @Override
                                 public void onClick(DialogInterface dialog, int selectedColor, Integer[] allColors) {
                                     motionView.setBackgroundColor(selectedColor);
-                                    String textColor;
-
-                                    // change the color of the fab text depending on the darkness of the background
-                                    // FabTexts
-                                    if (isColorDark(selectedColor)) {
-                                        textColor = "#ffffff";
-                                    }
-                                    else {
-                                        textColor = "#000000";
-                                    }
-
-//                                    for (int i=0; i < FabTexts.size(); i++) {
-//                                        FabTexts.get(i).setTextColor(Color.parseColor(textColor));
-//                                    }
                                 }
                             })
                             .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
@@ -472,31 +404,6 @@ public class CreativeWebCreation extends AppCompatActivity implements TextEditor
             }
         });
 
-//        fab7.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-////                editPageDetails();
-//                closeFABMenu();
-//            }
-//        });
-//
-//        fab8.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                if (motionView.disableMovement) {
-//                    motionView.disableMovement=false;
-//                    fab8.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#BA68C8")));
-//                    fab8.setImageDrawable(getResources().getDrawable(R.drawable.unlock));
-//                }
-//                else{
-//                    motionView.disableMovement=true;
-//                    fab8.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#CFD8DC")));
-//                    fab8.setImageDrawable(getResources().getDrawable(R.drawable.lock));
-//                }
-//
-//                closeFABMenu();
-//            }
-//        });
 
         mRequestQueue = Volley.newRequestQueue(getApplicationContext(), new HurlStack());
 
@@ -1193,25 +1100,6 @@ public class CreativeWebCreation extends AppCompatActivity implements TextEditor
             return null;
         }
     }
-//
-//    @Override
-//    public boolean onCreateOptionsMenu(Menu menu) {
-//        super.onCreateOptionsMenu(menu);
-//        getMenuInflater().inflate(R.menu.main_menu, menu);
-//        return true;
-//    }
-
-//    @Override
-//    public boolean onOptionsItemSelected(MenuItem item) {
-//        if (item.getItemId() == R.id.main_add_sticker) {
-//            Intent intent = new Intent(this, StickerSelectActivity.class);
-//            startActivityForResult(intent, SELECT_STICKER_REQUEST_CODE);
-//            return true;
-//        } else if (item.getItemId() == R.id.main_add_text) {
-//            addTextSticker();
-//        }
-//        return super.onOptionsItemSelected(item);
-//    }
 
     protected void addTextSticker() {
         TextLayer textLayer = createTextLayer();
@@ -1264,73 +1152,6 @@ public class CreativeWebCreation extends AppCompatActivity implements TextEditor
             }
         }
     }
-
-//    private void showFABMenu(){
-//        isFABOpen=true;
-//        fabLayout1.setVisibility(View.VISIBLE);
-//        fabLayout2.setVisibility(View.VISIBLE);
-//        fabLayout3.setVisibility(View.VISIBLE);
-//        fabLayout4.setVisibility(View.VISIBLE);
-//        fabLayout5.setVisibility(View.VISIBLE);
-//        fabLayout6.setVisibility(View.VISIBLE);
-//        fabLayout7.setVisibility(View.VISIBLE);
-//        fabLayout8.setVisibility(View.VISIBLE);
-//        fabBGLayout.setVisibility(View.VISIBLE);
-//
-//        fab.animate().rotationBy(180);
-//        fabLayout1.animate().translationY(-getResources().getDimension(R.dimen.standard_55));
-//        fabLayout2.animate().translationY(-getResources().getDimension(R.dimen.standard_100));
-//        fabLayout3.animate().translationY(-getResources().getDimension(R.dimen.standard_145));
-//        fabLayout4.animate().translationY(-getResources().getDimension(R.dimen.standard_190));
-//        fabLayout5.animate().translationY(-getResources().getDimension(R.dimen.standard_235));
-//        fabLayout6.animate().translationY(-getResources().getDimension(R.dimen.standard_280));
-//        fabLayout7.animate().translationY(-getResources().getDimension(R.dimen.standard_325));
-//        fabLayout8.animate().translationY(-getResources().getDimension(R.dimen.standard_370));
-//
-//    }
-//
-//    private void closeFABMenu(){
-//        isFABOpen=false;
-//        fabBGLayout.setVisibility(View.GONE);
-//        fab.animate().rotationBy(-180);
-//        fabLayout1.animate().translationY(0);
-//        fabLayout2.animate().translationY(0);
-//        fabLayout3.animate().translationY(0);
-//        fabLayout4.animate().translationY(0);
-//        fabLayout5.animate().translationY(0);
-//        fabLayout6.animate().translationY(0);
-//        fabLayout7.animate().translationY(0);
-//        fabLayout8.animate().translationY(0).setListener(new Animator.AnimatorListener() {
-//            @Override
-//            public void onAnimationStart(Animator animator) {
-//
-//            }
-//
-//            @Override
-//            public void onAnimationEnd(Animator animator) {
-//                if(!isFABOpen){
-//                    fabLayout1.setVisibility(View.GONE);
-//                    fabLayout2.setVisibility(View.GONE);
-//                    fabLayout3.setVisibility(View.GONE);
-//                    fabLayout4.setVisibility(View.GONE);
-//                    fabLayout5.setVisibility(View.GONE);
-//                    fabLayout6.setVisibility(View.GONE);
-//                    fabLayout7.setVisibility(View.GONE);
-//                    fabLayout8.setVisibility(View.GONE);
-//                }
-//            }
-//
-//            @Override
-//            public void onAnimationCancel(Animator animator) {
-//
-//            }
-//
-//            @Override
-//            public void onAnimationRepeat(Animator animator) {
-//
-//            }
-//        });
-//    }
 
     @Override
     @SuppressLint("NewApi")
@@ -1799,11 +1620,6 @@ public class CreativeWebCreation extends AppCompatActivity implements TextEditor
 
     @Override
     public void onBackPressed() {
-
-//        if(isFABOpen){
-//            closeFABMenu();
-//        }
-
         if (doubleBackToExitPressedOnce) {
             super.onBackPressed();
             return;

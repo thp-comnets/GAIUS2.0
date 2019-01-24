@@ -7,13 +7,15 @@ import android.provider.MediaStore;
 
 public class Item {
     private int id;
+    private int x;
+    private int w;
+    private int h;
     private String type;
     private String text, textType;
     private Bitmap imageBitmap;
     private String imagePath;
     private Bitmap videoBitmap;
     private String videoPath;
-
 
     public Item(int id, String type, String textType, String imageUrl, String videoUrl) {
         this.id = id;
@@ -48,5 +50,30 @@ public class Item {
 
     public Bitmap getImageBitmap() {
         return imageBitmap;
+    }
+
+
+    public int getX() {
+        return x;
+    }
+
+    public int getW() {
+        return w;
+    }
+
+    public int getH() {
+        return h;
+    }
+
+    public void setX(int x) {
+        this.x = x;
+    }
+
+    public void setW(int w) {
+        this.w = w;
+    }
+
+    public void setH(int h) {
+        this.h = h;
     }
 }

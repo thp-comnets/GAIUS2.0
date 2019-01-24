@@ -44,12 +44,18 @@ public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ItemViewHold
     @Override
     public void onBindViewHolder(final ItemViewHolder holder, int position) {
         Item item = contentsList.get(position);
+        int [] pos = new int[2];
 
         switch (item.getType()) {
             case "text":
                 holder.editText.setVisibility(View.VISIBLE);
                 holder.editText.setText(item.getText());
                 holder.editText.requestFocus();
+
+                item.setW(holder.editText.getWidth());
+                item.setH(holder.editText.getHeight());
+                holder.itemView.getLocationInWindow(pos);
+                item.setX(pos[0]);
 
                 if (item.getTextType().contains("header")) {
                     holder.editText.setTextSize(30);
@@ -63,11 +69,23 @@ public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ItemViewHold
             case "image":
                 holder.imageView.setVisibility(View.VISIBLE);
                 holder.imageView.setImageBitmap(item.getImageBitmap());
+
+                item.setW(holder.imageView.getWidth());
+                item.setH(holder.imageView.getHeight());
+                holder.imageView.getLocationInWindow(pos);
+                item.setX(pos[0]);
+
                 break;
             case "video":
                 holder.videoView.setVisibility(View.VISIBLE);
                 holder.videoView.setUp(item.getVideoPath(), "", Jzvd.SCREEN_WINDOW_LIST);
                 holder.videoView.thumbImageView.setImageBitmap(item.getVideoBitmap());
+
+                item.setW(holder.videoView.getWidth());
+                item.setH(holder.videoView.getHeight());
+                holder.videoView.getLocationInWindow(pos);
+                item.setX(pos[0]);
+
                 break;
         }
 
@@ -84,8 +102,8 @@ public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ItemViewHold
 
         public EditText editText;
         public ImageView imageView, deleteButton;
-        JzvdStd videoView;
-        RelativeLayout relativeLayout;
+        public JzvdStd videoView;
+        public RelativeLayout relativeLayout;
 
         public ItemViewHolder(View itemView) {
             super(itemView);
@@ -96,6 +114,10 @@ public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ItemViewHold
             videoView = itemView.findViewById(R.id.item_video);
             relativeLayout = itemView.findViewById(R.id.relative_layout);
         }
+    }
+
+    public Item getItem(int pos) {
+        return contentsList.get(pos);
     }
 
     @Override

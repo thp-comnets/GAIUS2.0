@@ -47,6 +47,7 @@ public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ItemViewHold
             case "text":
                 holder.editText.setVisibility(View.VISIBLE);
                 holder.editText.setText(item.getText());
+                holder.editText.requestFocus();
 
                 if (item.getTextType().contains("header")) {
                     holder.editText.setTextSize(30);

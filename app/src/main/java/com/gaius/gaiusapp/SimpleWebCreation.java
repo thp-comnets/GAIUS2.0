@@ -15,7 +15,6 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 import android.view.View;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.gaius.gaiusapp.helper.OnStartDragListener;
@@ -78,19 +77,6 @@ class SimpleWebCreation extends AppCompatActivity implements View.OnClickListene
             }
         });
 
-//        textButton = findViewById(R.id.text_card);
-//        textButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Log.d("yasir","adding text at "+itemList.size());
-//
-//                itemList.add(itemList.size(), new Item (itemList.size(), "text", "",null, null));
-//                adapter.notifyItemInserted(itemList.size()-1);
-//                recyclerView.scrollToPosition(itemList.size()-1);
-//                recyclerView.invalidate();
-//            }
-//        });
-
         imageButton = findViewById(R.id.image_card);
         imageButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -142,6 +128,7 @@ class SimpleWebCreation extends AppCompatActivity implements View.OnClickListene
                 adapter.notifyItemInserted(itemList.size() - 1);
                 recyclerView.scrollToPosition(itemList.size() - 1);
                 recyclerView.invalidate();
+
             } else if (requestCode == PICK_VIDEO_REQUEST) {
                 Uri fileUri = data.getData();
                 String[] videoFile = getVideoPath(fileUri);
@@ -192,14 +179,21 @@ class SimpleWebCreation extends AppCompatActivity implements View.OnClickListene
     public void onClick(View view) {
         int id = (Integer) view.getTag();
 
+        recyclerView.invalidate();
+        Log.d("yasir","\n\ntotal children count: "+recyclerView.getChildCount());
+
         for (int childCount = recyclerView.getChildCount(), i = 0; i < childCount; ++i) {
             final ItemsAdapter.ItemViewHolder holder = (ItemsAdapter.ItemViewHolder) recyclerView.getChildViewHolder(recyclerView.getChildAt(i));
 
             int itemID = (Integer) holder.deleteButton.getTag();
 
+            Log.d("yasir","item number: "+itemID);
+
             for (int j=0; j<itemList.size(); j++) {
                 if (itemList.get(j).getId() == itemID) {
                     itemList.get(i).setText(holder.editText.getText() + "");
+                    Log.d("yasir","setting text: "+holder.editText.getText());
+                    break;
                 }
             }
         }
@@ -210,7 +204,6 @@ class SimpleWebCreation extends AppCompatActivity implements View.OnClickListene
                 itemList.remove(item);
                 adapter.notifyItemRemoved(i);
                 recyclerView.setAdapter(adapter);
-
                 return;
             }
         }

@@ -1,4 +1,4 @@
-package com.gaius.gaiusapp;
+package com.gaius.gaiusapp.classes;
 
 public class Video {
     private int id, views;

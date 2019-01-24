@@ -1,4 +1,4 @@
-package com.gaius.gaiusapp;
+package com.gaius.gaiusapp.classes;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;

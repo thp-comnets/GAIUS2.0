@@ -1,4 +1,4 @@
-package com.gaius.gaiusapp;
+package com.gaius.gaiusapp.adapters;
 
 import android.content.Context;
 import android.content.Intent;
@@ -15,6 +15,9 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.signature.ObjectKey;
+import com.gaius.gaiusapp.NewsFeed;
+import com.gaius.gaiusapp.R;
+import com.gaius.gaiusapp.RenderMAML;
 
 import java.util.List;
 

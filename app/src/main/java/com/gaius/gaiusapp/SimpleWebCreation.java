@@ -17,6 +17,8 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
+import com.gaius.gaiusapp.adapters.ItemsAdapter;
+import com.gaius.gaiusapp.classes.Item;
 import com.gaius.gaiusapp.helper.OnStartDragListener;
 import com.gaius.gaiusapp.helper.SimpleItemTouchHelperCallback;
 import com.gaius.gaiusapp.utils.ResourceHelper;

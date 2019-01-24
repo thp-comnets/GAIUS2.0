@@ -1,8 +1,7 @@
-package com.gaius.gaiusapp;
+package com.gaius.gaiusapp.adapters;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,6 +9,9 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+
+import com.gaius.gaiusapp.classes.Item;
+import com.gaius.gaiusapp.R;
 import com.gaius.gaiusapp.helper.ItemTouchHelperAdapter;
 
 import java.util.Collections;
@@ -78,10 +80,10 @@ public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ItemViewHold
         return contentsList.size();
     }
 
-    class ItemViewHolder extends RecyclerView.ViewHolder {
+    public class ItemViewHolder extends RecyclerView.ViewHolder {
 
-        EditText editText;
-        ImageView imageView, deleteButton;
+        public EditText editText;
+        public ImageView imageView, deleteButton;
         JzvdStd videoView;
         RelativeLayout relativeLayout;
 

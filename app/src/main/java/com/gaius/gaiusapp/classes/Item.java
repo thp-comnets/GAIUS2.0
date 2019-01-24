@@ -4,14 +4,18 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.ThumbnailUtils;
 import android.provider.MediaStore;
+import android.view.View;
 
 public class Item {
+
     private int id;
+    private View view;
     private int x;
     private int w;
     private int h;
     private String type;
     private String text, textType;
+    private int fontSize;
     private Bitmap imageBitmap;
     private String imagePath;
     private Bitmap videoBitmap;
@@ -30,6 +34,18 @@ public class Item {
 
     public int getId() {
         return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public View getView() {
+        return view;
+    }
+
+    public void setView(View v) {
+        this.view = v;
     }
 
     public String getType() { return type; }
@@ -75,5 +91,14 @@ public class Item {
 
     public void setH(int h) {
         this.h = h;
+    }
+
+
+    public int getFontSize() {
+        return fontSize;
+    }
+
+    public void setFontSize(int fontSize) {
+        this.fontSize = fontSize;
     }
 }

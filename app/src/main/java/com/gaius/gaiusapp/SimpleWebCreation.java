@@ -68,7 +68,7 @@ class SimpleWebCreation extends AppCompatActivity implements View.OnClickListene
         itemList = new ArrayList<>();
 
         //adding the product to product list
-        itemList.add(new Item (0,"text", "",null, null));
+        itemList.add(new Item (0,"text", "paragraph",null, null));
 
 
         textHeaderButton = findViewById(R.id.text_header_card);
@@ -80,7 +80,7 @@ class SimpleWebCreation extends AppCompatActivity implements View.OnClickListene
                 itemList.add(itemList.size(), new Item (itemList.size(), "text","header",null, null));
                 adapter.notifyItemInserted(itemList.size()-1);
                 recyclerView.scrollToPosition(itemList.size()-1);
-                recyclerView.invalidate();
+//                recyclerView.invalidate();
             }
         });
 
@@ -88,12 +88,12 @@ class SimpleWebCreation extends AppCompatActivity implements View.OnClickListene
         textParagrahButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.d("yasir","adding text at "+itemList.size());
+                Log.d("yasir","adding text2 at "+itemList.size());
 
                 itemList.add(itemList.size(), new Item (itemList.size(), "text","paragraph",null, null));
                 adapter.notifyItemInserted(itemList.size()-1);
                 recyclerView.scrollToPosition(itemList.size()-1);
-                recyclerView.invalidate();
+//                recyclerView.invalidate();
             }
         });
 
@@ -239,6 +239,7 @@ class SimpleWebCreation extends AppCompatActivity implements View.OnClickListene
 
     public boolean onOptionsItemSelected (MenuItem item)
     {
+        recyclerView.clearFocus(); //clear focus to make sure text is saved
         LayoutInflater layoutInflater = LayoutInflater.from(this);
         final View promptView = layoutInflater.inflate(R.layout.submit_content_popup, null);
         final AlertDialog alertD = new AlertDialog.Builder(this).create();
@@ -325,10 +326,29 @@ class SimpleWebCreation extends AppCompatActivity implements View.OnClickListene
         ArrayList<String> videoPaths = new ArrayList<String>();
 
         builder.addBackground (String.format("#%06X", (0xFFFFFF & Color.WHITE)));
+        Log.d("save", adapter.getItemCount()+"");
+        String[] filename;
+        int yPos = 0;
+        for (int i = 0; i < adapter.getItemCount(); i++) {
+            Item item = adapter.getItem(i);
+            Log.d("save", i+ " "+ adapter.getItem(i).getType()+" "+adapter.getItem(i).getW()+ " "+adapter.getItem(i).getH());
+            switch (item.getType()) {
+                case "text":
+                    builder.addText(item.getText(), "Arial", item.getFontSize(), item.getX(), yPos, item.getW(), item.getH(), "#ffffff");
+                    break;
+                case "image":
+                    filename = new File("" + Uri.parse(item.getImagePath())).getName().split("/");
+                    imagePaths.add(item.getImagePath());
+                    builder.addImage(filename[filename.length - 1], item.getX(),yPos, item.getW(), item.getH());
 
-        for (int childCount = adapter.getItemCount(), i = 0; i < childCount; ++i) {
-            Log.d("save", adapter.getItem(i).getType()+" "+adapter.getItem(i).getW()+ " "+adapter.getItem(i).getH());
-
+                    break;
+                case "video":
+                    filename = new File("" + Uri.parse(item.getVideoPath())).getName().split("/");
+                    videoPaths.add(item.getVideoPath());
+                    builder.addVideo(filename[filename.length - 1], item.getX(), yPos, item.getW(), item.getH());
+                    break;
+            }
+            yPos += item.getH();
         }
 //            final ItemsAdapter.ItemViewHolder holder = (ItemsAdapter.ItemViewHolder) recyclerView.getChildViewHolder(recyclerView.getChildAt(0));
 //
@@ -387,12 +407,12 @@ class SimpleWebCreation extends AppCompatActivity implements View.OnClickListene
 //            }
 ////        }
 //
-//        if (builder.getObjectCount() > 0) {
-//            Log.d("save", "ContentBuilderActivity " + builder.getPageAsString());
-////            uploadMultipart(getApplicationContext(), imagePaths, videoPaths, builder.makeFile(Constants.TEMPDIR), publish);
-//        } else {
-//            Toast.makeText (getApplicationContext(), "No content added", Toast.LENGTH_SHORT).show ();
-//        }
+        if (builder.getObjectCount() > 0) {
+            Log.d("save", "ContentBuilderActivity " + builder.getPageAsString());
+//            uploadMultipart(getApplicationContext(), imagePaths, videoPaths, builder.makeFile(Constants.TEMPDIR), publish);
+        } else {
+            Toast.makeText (getApplicationContext(), "No content added", Toast.LENGTH_SHORT).show ();
+        }
     }
 }
 

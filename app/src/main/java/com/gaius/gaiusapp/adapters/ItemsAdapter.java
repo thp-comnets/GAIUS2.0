@@ -2,6 +2,7 @@ package com.gaius.gaiusapp.adapters;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,7 +22,7 @@ import cn.jzvd.Jzvd;
 import cn.jzvd.JzvdStd;
 
 public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ItemViewHolder>
-        implements ItemTouchHelperAdapter {
+        implements ItemTouchHelperAdapter, View.OnLayoutChangeListener, View.OnFocusChangeListener {
 
     private Context mCtx;
     private List<Item> contentsList;
@@ -43,37 +44,34 @@ public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ItemViewHold
 
     @Override
     public void onBindViewHolder(final ItemViewHolder holder, int position) {
-        Item item = contentsList.get(position);
-        int [] pos = new int[2];
+        final Item item = contentsList.get(position);
 
         switch (item.getType()) {
             case "text":
                 holder.editText.setVisibility(View.VISIBLE);
-                holder.editText.setText(item.getText());
                 holder.editText.requestFocus();
-
-                item.setW(holder.editText.getWidth());
-                item.setH(holder.editText.getHeight());
-                holder.itemView.getLocationInWindow(pos);
-                item.setX(pos[0]);
+                holder.editText.setOnFocusChangeListener(this);
 
                 if (item.getTextType().contains("header")) {
                     holder.editText.setTextSize(30);
+                    item.setFontSize(30);
                     holder.editText.setGravity(Gravity.CENTER);
                 }
                 else if (item.getTextType().contains("paragraph")){
                     holder.editText.setTextSize(20);
+                    item.setFontSize(20);
                 }
+
+                item.setView(holder.editText);
+                holder.editText.addOnLayoutChangeListener(this);
 
                 break;
             case "image":
                 holder.imageView.setVisibility(View.VISIBLE);
                 holder.imageView.setImageBitmap(item.getImageBitmap());
 
-                item.setW(holder.imageView.getWidth());
-                item.setH(holder.imageView.getHeight());
-                holder.imageView.getLocationInWindow(pos);
-                item.setX(pos[0]);
+                item.setView(holder.imageView);
+                holder.imageView.addOnLayoutChangeListener(this);
 
                 break;
             case "video":
@@ -81,11 +79,8 @@ public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ItemViewHold
                 holder.videoView.setUp(item.getVideoPath(), "", Jzvd.SCREEN_WINDOW_LIST);
                 holder.videoView.thumbImageView.setImageBitmap(item.getVideoBitmap());
 
-                item.setW(holder.videoView.getWidth());
-                item.setH(holder.videoView.getHeight());
-                holder.videoView.getLocationInWindow(pos);
-                item.setX(pos[0]);
-
+                item.setView(holder.videoView);
+                holder.videoView.addOnLayoutChangeListener(this);
                 break;
         }
 
@@ -96,6 +91,26 @@ public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ItemViewHold
     @Override
     public int getItemCount() {
         return contentsList.size();
+    }
+
+    @Override
+    public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
+        for (Item it: contentsList) {
+            if (it.getView().equals(v)) {
+                it.setH(v.getHeight());
+                it.setW(v.getWidth());
+                it.setX(left);
+            }
+        }
+    }
+
+    @Override
+    public void onFocusChange(View v, boolean hasFocus) {
+        for (Item it: contentsList) {
+            if (it.getView().equals(v)) {
+                it.setText(((EditText) v).getText().toString());
+            }
+        }
     }
 
     public class ItemViewHolder extends RecyclerView.ViewHolder {

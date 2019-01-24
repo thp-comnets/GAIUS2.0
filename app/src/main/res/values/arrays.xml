@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="fidelityArray">
+        <item>Low</item>
+        <item>Medium</item>
+        <item>High</item>
+    </string-array>
+
+    <string-array name="fidelityValues">
+        <item>low</item>
+        <item>medium</item>
+        <item>high</item>
+    </string-array>
+</resources>

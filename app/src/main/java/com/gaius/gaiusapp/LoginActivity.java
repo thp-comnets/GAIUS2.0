@@ -139,6 +139,7 @@ public class LoginActivity extends AppCompatActivity {
                         editor.putString("email", email);
                         editor.putString("password", password);
 
+//                        editor.putString("fidelity_level", "high"); //fixme: hardcoded fidelity
 //                        editor.putString("account_name", jObj.getJSONObject("user").getString("name"));
 //                        editor.putString("account_channel", jObj.getJSONObject("user").getString("channel"));
 //                        editor.putString("account_email", jObj.getJSONObject("user").getString("email"));

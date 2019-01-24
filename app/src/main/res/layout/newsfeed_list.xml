@@ -125,6 +125,13 @@
                     android:textAppearance="@style/Base.TextAppearance.AppCompat.Small"
                     android:textColor="#000000" />
 
+                <!--<pl.droidsonroids.gif.GifImageView-->
+                    <!--android:id="@+id/views"-->
+                    <!--android:layout_width="24dp"-->
+                    <!--android:layout_height="24dp"-->
+                    <!--android:src="@drawable/ic_views">-->
+                <!--</pl.droidsonroids.gif.GifImageView>-->
+
             </LinearLayout>
 
         </android.support.v7.widget.CardView>

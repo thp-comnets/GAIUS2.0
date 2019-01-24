@@ -1,6 +1,7 @@
 package com.gaius.gaiusapp;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -149,6 +150,9 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
             LogOut.logout(getApplicationContext());
             finish();
         }
+        else if (id == R.id.settingsButton) {
+            startActivity(new Intent(MainActivity.this, PreferencesActivity.class));
+        }
         return super.onOptionsItemSelected(item);
     }
 
@@ -205,5 +209,4 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         super.onPause();
         Jzvd.releaseAllVideos();
     }
-
 }

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!--<ListPreference-->
+        <!--android:entries="@array/countrtiesArray"-->
+        <!--android:entryValues="@array/countrtiesValues"-->
+        <!--android:key="country"-->
+        <!--android:summary="@string/country_message"-->
+        <!--android:title="@string/country" />-->
+
+    <com.gaius.gaiusapp.utils.SeekBarPreference
+        android:defaultValue="high"
+        android:dialogMessage="@string/seekbar_dialog_message"
+        android:entries="@array/fidelityArray"
+        android:entryValues="@array/fidelityValues"
+        android:key="fidelity_level"
+        android:summary="@string/seekbar_dialog_message"
+        android:title="@string/seekbar_title" />
+
+    <PreferenceCategory android:title="@string/account">
+        <Preference
+            android:key="account"
+            android:title="@string/account"
+            android:summary="@string/account_summary" >
+            <!--<intent android:action="com.gaius.gaiusapp.login" />-->
+        </Preference>
+    </PreferenceCategory>
+
+</PreferenceScreen>

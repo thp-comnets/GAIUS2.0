@@ -15,6 +15,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -138,92 +139,92 @@ public class RenderMAML extends AppCompatActivity {
                             }
                         }
 
-//                        else if (type.equals("stats")) {
-//                            FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-//                            params.setMarginStart(50);
-//                            params.topMargin = Integer.parseInt(parser.getString("y"));
-//
-//                            View view = getLayoutInflater().inflate(R.layout.activity_maml_views_likes, root, false);
-//
-//                            final String pageLiked = parser.getString("pageLiked");
-//
-//                            String text = parser.getString("views");
-//                            TextView mViews = view.findViewById(R.id.views);
-//                            mViews.setText(text + " views");
-//
-//                            final TextView mLikes = view.findViewById(R.id.likesCounter);
-//                            text = parser.getString("likes");
-//                            mLikes.setText(text);
-//
-//                            final ImageView shareView = view.findViewById(R.id.share);
-//                            shareView.setOnClickListener(new View.OnClickListener() {
-//                                @Override
-//                                public void onClick(View v) {
-//
-//                                    Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
-//                                    sharingIntent.setType("text/plain");
-//                                    String shareBody = "http://gaiusnetworks.com/page/"+mPageUrl.replace("./content/","");
-//                                    String shareSub = "Check this page on GAIUS";
-//                                    sharingIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, shareSub);
-//                                    sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, shareBody);
-//                                    startActivity(Intent.createChooser(sharingIntent, "Share using"));
-//                                }
-//                            });
-//
-//
-//                            final ImageView likeImageView = view.findViewById(R.id.imageViewLikes);
-//                            Log.d("thp", "MamlPageActivity: user liked page " + pageLiked);
-//                            if (pageLiked.contains("true")) {
-//                                likeImageView.setImageResource(R.drawable.liked);
-//                            } else if (pageLiked.contains("false")) {
-//
-//                                likeImageView.setOnClickListener(new View.OnClickListener() {
-//                                    @Override
-//                                    public void onClick(final View v) {
-//                                        final VolleyCallback callback = new VolleyCallback() {
-//                                            @Override
-//                                            public void onSuccess(final String result) {
-//                                                if (result.contains("Success")) {
-//                                                    mLikes.setText((Integer.parseInt(mLikes.getText().toString()) + 1) + "");
-//                                                    likeImageView.setImageResource(R.drawable.liked);
-//                                                    likeImageView.setOnClickListener(null);
-//                                                }
-//                                            }
-//                                        };
-//                                        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-//                                        if (!prefs.getString("account_userID", "null").equals("null")) {
-//                                            String url = mUrl + "like.py?url=" + mPageUrl + "&userid=" + prefs.getString("account_userID", "null");
-//                                            Log.d("MAML", "MamlPageActivity: user liked page " + url);
-//                                            InputStreamVolleyRequest request = new InputStreamVolleyRequest(Request.Method.GET, url,
-//                                                    new Response.Listener<byte[]>() {
-//                                                        @Override
-//                                                        public void onResponse(byte[] response) {
-//                                                            try {
-//                                                                if (response != null) {
-//                                                                    response_var = new String(response);
-//                                                                    callback.onSuccess(response_var);
-//                                                                }
-//                                                            } catch (Exception e) {
-//                                                                e.printStackTrace();
-//                                                            }
-//                                                        }
-//                                                    }, new Response.ErrorListener() {
-//                                                @Override
-//                                                public void onErrorResponse(VolleyError error) {
-//                                                    Log.d("MAML", "MamlPageActivity: onErrorResponse from " + mUrl);
-//                                                    Toast.makeText(getApplicationContext(), "Error Response: " + error, Toast.LENGTH_LONG).show();
-//                                                    error.printStackTrace();
-//                                                }
-//                                            }, null);
-//                                            request.setShouldCache(false);
-//                                            mRequestQueue.add(request);
-//                                        }
-//                                    }
-//                                });
-//                            }
-//
-//                            root.addView(view, params);
-//                        }
+                        else if (type.equals("stats")) {
+                            FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                            params.setMarginStart(50);
+                            params.topMargin = Integer.parseInt(parser.getString("y"));
+
+                            View view = getLayoutInflater().inflate(R.layout.activity_maml_views_likes, root, false);
+
+                            final String pageLiked = parser.getString("pageLiked");
+
+                            String text = parser.getString("views");
+                            TextView mViews = view.findViewById(R.id.views);
+                            mViews.setText(text + " views");
+
+                            final TextView mLikes = view.findViewById(R.id.likesCounter);
+                            text = parser.getString("likes");
+                            mLikes.setText(text);
+
+                            final ImageView shareView = view.findViewById(R.id.share);
+                            shareView.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+
+                                    Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
+                                    sharingIntent.setType("text/plain");
+                                    String shareBody = "http://gaiusnetworks.com/page/"+mPageUrl.replace("./content/","");
+                                    String shareSub = "Check this page on GAIUS";
+                                    sharingIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, shareSub);
+                                    sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, shareBody);
+                                    startActivity(Intent.createChooser(sharingIntent, "Share using"));
+                                }
+                            });
+
+
+                            final ImageView likeImageView = view.findViewById(R.id.imageViewLikes);
+                            Log.d("thp", "MamlPageActivity: user liked page " + pageLiked);
+                            if (pageLiked.contains("true")) {
+                                likeImageView.setImageResource(R.drawable.ic_like); //fixme: change icon of liked
+                            } else if (pageLiked.contains("false")) {
+
+                                likeImageView.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(final View v) {
+                                        final VolleyCallback callback = new VolleyCallback() {
+                                            @Override
+                                            public void onSuccess(final String result) {
+                                                if (result.contains("Success")) {
+                                                    mLikes.setText((Integer.parseInt(mLikes.getText().toString()) + 1) + "");
+                                                    likeImageView.setImageResource(R.drawable.ic_like); //fixme: change icon of liked
+                                                    likeImageView.setOnClickListener(null);
+                                                }
+                                            }
+                                        };
+                                        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+                                        if (!prefs.getString("account_userID", "null").equals("null")) {
+                                            String url = mUrl + "like.py?url=" + mPageUrl + "&userid=" + prefs.getString("account_userID", "null");
+                                            Log.d("MAML", "MamlPageActivity: user liked page " + url);
+                                            InputStreamVolleyRequest request = new InputStreamVolleyRequest(Request.Method.GET, url,
+                                                    new Response.Listener<byte[]>() {
+                                                        @Override
+                                                        public void onResponse(byte[] response) {
+                                                            try {
+                                                                if (response != null) {
+                                                                    response_var = new String(response);
+                                                                    callback.onSuccess(response_var);
+                                                                }
+                                                            } catch (Exception e) {
+                                                                e.printStackTrace();
+                                                            }
+                                                        }
+                                                    }, new Response.ErrorListener() {
+                                                @Override
+                                                public void onErrorResponse(VolleyError error) {
+                                                    Log.d("MAML", "MamlPageActivity: onErrorResponse from " + mUrl);
+                                                    Toast.makeText(getApplicationContext(), "Error Response: " + error, Toast.LENGTH_LONG).show();
+                                                    error.printStackTrace();
+                                                }
+                                            }, null);
+                                            request.setShouldCache(false);
+                                            mRequestQueue.add(request);
+                                        }
+                                    }
+                                });
+                            }
+
+                            root.addView(view, params);
+                        }
                         else {
                             Log.d("MAML", "MamlPageActivity: Can't identify this type " + type);
                         }

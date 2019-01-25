@@ -1,4 +1,4 @@
-package com.gaius.gaiusapp;
+package com.gaius.gaiusapp.classes;
 
 public class NewsFeed {
     private int id;
@@ -10,8 +10,9 @@ public class NewsFeed {
     private String description;
     private String url;
     private String type;
+    private Boolean showAvatar;
 
-    public NewsFeed (int id, String name, String updateTime, String avatar, String image, String title, String description, String url, String type) {
+    public NewsFeed (int id, String name, String updateTime, String avatar, String image, String title, String description, String url, String type, Boolean showAvatar) {
         this.id = id;
         this.name = name;
         this.updateTime = updateTime;
@@ -21,7 +22,9 @@ public class NewsFeed {
         this.description = description;
         this.url = url;
         this.type = type;
+        this.showAvatar = showAvatar;
     }
+
 
     public int getId() {
         return id;
@@ -55,4 +58,7 @@ public class NewsFeed {
 
     public String getType() {return type; }
 
+    public Boolean getShowAvatar() {
+        return showAvatar;
+    }
 }

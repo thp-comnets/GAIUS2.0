@@ -23,6 +23,8 @@ import com.android.volley.toolbox.Volley;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.gaius.gaiusapp.adapters.NewsFeedAdapter;
+import com.gaius.gaiusapp.classes.Item;
+import com.gaius.gaiusapp.classes.NewsFeed;
 import com.gaius.gaiusapp.utils.LogOut;
 
 import org.json.JSONArray;
@@ -136,13 +138,15 @@ public class userFragment extends Fragment {
                                         newsFeed.getString("title"),
                                         newsFeed.getString("description"),
                                         newsFeed.getString("url"),
-                                        newsFeed.getString("type")
+                                        newsFeed.getString("type"),
+                                        false
                                 ));
                             }
 
                             //creating adapter object and setting it to recyclerview
                             NewsFeedAdapter adapter = new NewsFeedAdapter(getContext(), pagesList);
                             recyclerView.setAdapter(adapter);
+
                         } catch (JSONException e) {
                             e.printStackTrace();
                             Log.d("Yasir","Json error "+e);

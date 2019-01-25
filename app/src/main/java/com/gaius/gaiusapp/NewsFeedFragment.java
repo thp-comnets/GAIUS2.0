@@ -20,6 +20,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.gaius.gaiusapp.adapters.NewsFeedAdapter;
+import com.gaius.gaiusapp.classes.NewsFeed;
 import com.gaius.gaiusapp.utils.LogOut;
 
 import org.json.JSONArray;
@@ -40,7 +41,7 @@ public class NewsFeedFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
-        return inflater.inflate(R.layout.fragment_home, null);
+        return inflater.inflate(R.layout.fragment_newsfeed, null);
     }
 
     @Override
@@ -95,7 +96,8 @@ public class NewsFeedFragment extends Fragment {
                                         newsFeed.getString("title"),
                                         newsFeed.getString("description"),
                                         newsFeed.getString("url"),
-                                        newsFeed.getString("type")
+                                        newsFeed.getString("type"),
+                                        true
                                 ));
                             }
 

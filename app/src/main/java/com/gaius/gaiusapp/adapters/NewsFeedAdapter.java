@@ -11,11 +11,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.signature.ObjectKey;
-import com.gaius.gaiusapp.NewsFeed;
+import com.gaius.gaiusapp.classes.Item;
+import com.gaius.gaiusapp.classes.NewsFeed;
 import com.gaius.gaiusapp.R;
 import com.gaius.gaiusapp.RenderMAML;
 
@@ -48,21 +50,28 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.newsFe
         RequestOptions requestOptions = new RequestOptions();
         requestOptions.error(R.drawable.ic_avatar);
 
-        if (newsfeed.getAvatar().contains("None")) {
-            //loading the image
-            Glide.with(mCtx)
-                    .load(R.drawable.ic_avatar)
-                    .into(holder.avatarView);
-        }
-        else{
-            //loading the image
-            Glide.with(mCtx)
-                    .setDefaultRequestOptions(requestOptions)
-                    .load(newsfeed.getAvatar())
+        if (newsfeed.getShowAvatar() == true) {
+            if (newsfeed.getAvatar().contains("None")) {
+                //loading the image
+                Glide.with(mCtx)
+                        .load(R.drawable.ic_avatar)
+                        .into(holder.avatarView);
+            }
+            else{
+                //loading the image
+                Glide.with(mCtx)
+                        .setDefaultRequestOptions(requestOptions)
+                        .load(newsfeed.getAvatar())
 //                .apply(new RequestOptions().signature(new ObjectKey("signature string")))
-                    .apply(new RequestOptions().signature(new ObjectKey(System.currentTimeMillis())))
-                    .into(holder.avatarView);
+                        .apply(new RequestOptions().signature(new ObjectKey(System.currentTimeMillis())))
+                        .into(holder.avatarView);
+            }
         }
+        else {
+            holder.avatarView.setVisibility(View.GONE);
+            holder.textViewName.setVisibility(View.GONE);
+        }
+
 
 
         if (newsfeed.getType().contains("page")) {
@@ -104,15 +113,64 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.newsFe
                 @Override
                 public void onClick(View v) {
                     NewsFeed n = newsFeedList.get((Integer) v.getTag());
-
                     Bundle bundle = new Bundle();
                     Intent i = new Intent(mCtx, RenderMAML.class);
-
                     bundle.putSerializable("BASEURL", "http://91.230.41.34:8080/test/");
                     bundle.putSerializable("URL", n.getUrl());
                     i.putExtras(bundle);
                     mCtx.startActivity(i);
+                }
+            });
 
+            holder.shareButton.setTag(position);
+            holder.shareButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    NewsFeed n = newsFeedList.get((Integer) v.getTag());
+                    Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
+                    sharingIntent.setType("text/plain");
+                    String shareBody = "http://gaiusnetworks.com/page/"+n.getUrl().replace("./content/","");
+                    String shareSub = "Check this page on GAIUS";
+                    sharingIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, shareSub);
+                    sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, shareBody);
+                    mCtx.startActivity(Intent.createChooser(sharingIntent, "Share using"));
+                }
+            });
+
+            holder.likeButton.setTag(position);
+            holder.likeButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    NewsFeed n = newsFeedList.get((Integer) v.getTag());
+                    Toast.makeText(mCtx, "You have liked this item", Toast.LENGTH_LONG).show();
+                }
+            });
+
+        }
+        else if (newsfeed.getType().contains("video")) {
+            // video sharing
+
+            holder.shareButton.setTag(position);
+            holder.shareButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    NewsFeed n = newsFeedList.get((Integer) v.getTag());
+                    Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
+                    sharingIntent.setType("text/plain");
+                    String shareBody = "http://gaiusnetworks.com/"+n.getUrl();
+                    String shareSub = "Check this video on GAIUS";
+                    sharingIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, shareSub);
+                    sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, shareBody);
+                    mCtx.startActivity(Intent.createChooser(sharingIntent, "Share using"));
+                }
+            });
+
+            holder.likeButton.setTag(position);
+            holder.likeButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    NewsFeed n = newsFeedList.get((Integer) v.getTag());
+                    Toast.makeText(mCtx, "You have liked this item", Toast.LENGTH_LONG).show();
                 }
             });
         }
@@ -123,11 +181,15 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.newsFe
         return newsFeedList.size();
     }
 
-    class newsFeedViewHolder extends RecyclerView.ViewHolder {
+    public NewsFeed getItem(int pos) {
+        return newsFeedList.get(pos);
+    }
+
+    public class newsFeedViewHolder extends RecyclerView.ViewHolder {
 
         CardView newsFeedCard;
         TextView textViewName, textViewUpdateTime, textViewTitle, textViewDescription;
-        ImageView avatarView, imageView;
+        ImageView avatarView, imageView, likeButton, shareButton;
         JzvdStd videoView;
 
         public newsFeedViewHolder(View itemView) {
@@ -141,6 +203,8 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.newsFe
             textViewTitle = itemView.findViewById(R.id.textViewTitle);
             textViewDescription = itemView.findViewById(R.id.textViewDescription);
             newsFeedCard =  itemView.findViewById(R.id.imageViewCardView);
+            likeButton = itemView.findViewById(R.id.like);
+            shareButton = itemView.findViewById(R.id.share);
         }
     }
 

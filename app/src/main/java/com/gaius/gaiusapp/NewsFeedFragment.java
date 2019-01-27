@@ -61,6 +61,14 @@ public class NewsFeedFragment extends Fragment {
         loadPages();
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        newsFeedList = new ArrayList<>();
+        loadPages();
+    }
+
     private void loadPages() {
         /*
          * Creating a String Request
@@ -97,6 +105,7 @@ public class NewsFeedFragment extends Fragment {
                                         newsFeed.getString("description"),
                                         newsFeed.getString("url"),
                                         newsFeed.getString("type"),
+                                        newsFeed.getString("liked"),
                                         true
                                 ));
                             }

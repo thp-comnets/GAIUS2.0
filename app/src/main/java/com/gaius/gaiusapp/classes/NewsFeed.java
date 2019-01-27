@@ -12,7 +12,11 @@ public class NewsFeed {
     private String type;
     private Boolean showAvatar;
 
-    public NewsFeed (int id, String name, String updateTime, String avatar, String image, String title, String description, String url, String type, Boolean showAvatar) {
+
+
+    private String liked;
+
+    public NewsFeed (int id, String name, String updateTime, String avatar, String image, String title, String description, String url, String type, String liked, Boolean showAvatar) {
         this.id = id;
         this.name = name;
         this.updateTime = updateTime;
@@ -23,6 +27,7 @@ public class NewsFeed {
         this.url = url;
         this.type = type;
         this.showAvatar = showAvatar;
+        this.liked = liked;
     }
 
 
@@ -60,5 +65,9 @@ public class NewsFeed {
 
     public Boolean getShowAvatar() {
         return showAvatar;
+    }
+
+    public String getLiked() {
+        return liked;
     }
 }

@@ -173,55 +173,58 @@ public class RenderMAML extends AppCompatActivity {
 
 
                             final ImageView likeImageView = view.findViewById(R.id.imageViewLikes);
-                            Log.d("thp", "MamlPageActivity: user liked page " + pageLiked);
-                            if (pageLiked.contains("true")) {
-                                likeImageView.setImageResource(R.drawable.ic_liked);
-                            } else if (pageLiked.contains("false")) {
 
-                                likeImageView.setOnClickListener(new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(final View v) {
-                                        final VolleyCallback callback = new VolleyCallback() {
-                                            @Override
-                                            public void onSuccess(final String result) {
-                                                if (result.contains("Success")) {
-                                                    mLikes.setText((Integer.parseInt(mLikes.getText().toString()) + 1) + "");
-                                                    likeImageView.setImageResource(R.drawable.ic_liked);
-                                                    likeImageView.setOnClickListener(null);
-                                                }
-                                            }
-                                        };
-                                        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-                                        if (!prefs.getString("account_userID", "null").equals("null")) {
-                                            String url = mUrl + "like.py?url=" + mPageUrl + "&userid=" + prefs.getString("account_userID", "null");
-                                            Log.d("MAML", "MamlPageActivity: user liked page " + url);
-                                            InputStreamVolleyRequest request = new InputStreamVolleyRequest(Request.Method.GET, url,
-                                                    new Response.Listener<byte[]>() {
-                                                        @Override
-                                                        public void onResponse(byte[] response) {
-                                                            try {
-                                                                if (response != null) {
-                                                                    response_var = new String(response);
-                                                                    callback.onSuccess(response_var);
-                                                                }
-                                                            } catch (Exception e) {
-                                                                e.printStackTrace();
-                                                            }
-                                                        }
-                                                    }, new Response.ErrorListener() {
-                                                @Override
-                                                public void onErrorResponse(VolleyError error) {
-                                                    Log.d("MAML", "MamlPageActivity: onErrorResponse from " + mUrl);
-                                                    Toast.makeText(getApplicationContext(), "Error Response: " + error, Toast.LENGTH_LONG).show();
-                                                    error.printStackTrace();
-                                                }
-                                            }, null);
-                                            request.setShouldCache(false);
-                                            mRequestQueue.add(request);
-                                        }
-                                    }
-                                });
+                            if (pageLiked.equals("true")) {
+                                likeImageView.setImageResource(R.drawable.ic_liked);
                             }
+
+                            likeImageView.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(final View v) {
+                                    final VolleyCallback callback = new VolleyCallback() {
+                                        @Override
+                                        public void onSuccess(final String result) {
+
+                                            if (result.contains("Success") && result.contains("true")) {
+                                                mLikes.setText((Integer.parseInt(mLikes.getText().toString()) + 1) + "");
+                                                likeImageView.setImageResource(R.drawable.ic_liked);
+                                            }
+                                            else if (result.contains("Success") && result.contains("false")) {
+                                                mLikes.setText((Integer.parseInt(mLikes.getText().toString()) - 1) + "");
+                                                likeImageView.setImageResource(R.drawable.ic_like);
+                                            }
+                                        }
+                                    };
+
+                                    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+                                    String url = mUrl + "like.py?url=" + mPageUrl + "&token=" + prefs.getString("account_token", "null");
+                                    Log.d("MAML", "MamlPageActivity: user liked page " + url);
+
+                                    InputStreamVolleyRequest request = new InputStreamVolleyRequest(Request.Method.GET, url,
+                                            new Response.Listener<byte[]>() {
+                                                @Override
+                                                public void onResponse(byte[] response) {
+                                                    try {
+                                                        if (response != null) {
+                                                            response_var = new String(response);
+                                                            callback.onSuccess(response_var);
+                                                        }
+                                                    } catch (Exception e) {
+                                                        e.printStackTrace();
+                                                    }
+                                                }
+                                            }, new Response.ErrorListener() {
+                                        @Override
+                                        public void onErrorResponse(VolleyError error) {
+                                            Log.d("MAML", "MamlPageActivity: onErrorResponse from " + mUrl);
+                                            Toast.makeText(getApplicationContext(), "Error Response: " + error, Toast.LENGTH_LONG).show();
+                                            error.printStackTrace();
+                                        }
+                                    }, null);
+                                    request.setShouldCache(false);
+                                    mRequestQueue.add(request);
+                                }
+                            });
 
                             root.addView(view, params);
                         }

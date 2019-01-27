@@ -2,6 +2,7 @@ package com.gaius.gaiusapp;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -44,6 +45,7 @@ public class userFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
 
         return inflater.inflate(R.layout.fragment_user, null);
     }
@@ -67,6 +69,8 @@ public class userFragment extends Fragment {
 
             if (userID != null) {
                 URL += "?userID="+userID;
+                URL += "&token=" + prefs.getString("account_token", "null");
+
                 recyclerView.setTag("SubFriends");
             }
             bundle.clear();
@@ -139,6 +143,7 @@ public class userFragment extends Fragment {
                                         newsFeed.getString("description"),
                                         newsFeed.getString("url"),
                                         newsFeed.getString("type"),
+                                        newsFeed.getString("liked"),
                                         false
                                 ));
                             }

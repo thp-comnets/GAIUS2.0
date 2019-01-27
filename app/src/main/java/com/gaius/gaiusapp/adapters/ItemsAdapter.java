@@ -14,6 +14,7 @@ import android.widget.RelativeLayout;
 import com.gaius.gaiusapp.classes.Item;
 import com.gaius.gaiusapp.R;
 import com.gaius.gaiusapp.helper.ItemTouchHelperAdapter;
+import com.gaius.gaiusapp.utils.FontProvider;
 
 import java.util.Collections;
 import java.util.List;
@@ -28,7 +29,7 @@ public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ItemViewHold
     private List<Item> contentsList;
     private View.OnClickListener mOnClickListener;
 
-    public ItemsAdapter(Context mCtx, List<Item> contentsList, View.OnClickListener mOnClickListener) {
+    public ItemsAdapter(Context mCtx, List<Item> contentsList) {
         this.mCtx = mCtx;
         this.contentsList = contentsList;
         this.mOnClickListener = mOnClickListener;
@@ -49,8 +50,15 @@ public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ItemViewHold
         switch (item.getType()) {
             case "text":
                 holder.editText.setVisibility(View.VISIBLE);
+                holder.imageView.setVisibility(View.GONE);
+                holder.videoView.setVisibility(View.GONE);
+                item.setView(holder.editText);
+                holder.editText.setText("");
                 holder.editText.requestFocus();
                 holder.editText.setOnFocusChangeListener(this);
+
+                FontProvider fontProvider = new FontProvider(mCtx.getResources());;
+                holder.editText.setTypeface(fontProvider.getTypeface("Arial"));
 
                 if (item.getTextType().contains("header")) {
                     holder.editText.setTextSize(30);
@@ -62,12 +70,14 @@ public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ItemViewHold
                     item.setFontSize(20);
                 }
 
-                item.setView(holder.editText);
                 holder.editText.addOnLayoutChangeListener(this);
 
                 break;
             case "image":
+                holder.editText.setVisibility(View.GONE);
                 holder.imageView.setVisibility(View.VISIBLE);
+                holder.videoView.setVisibility(View.GONE);
+
                 holder.imageView.setImageBitmap(item.getImageBitmap());
 
                 item.setView(holder.imageView);
@@ -75,7 +85,10 @@ public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ItemViewHold
 
                 break;
             case "video":
+                holder.editText.setVisibility(View.GONE);
+                holder.imageView.setVisibility(View.GONE);
                 holder.videoView.setVisibility(View.VISIBLE);
+
                 holder.videoView.setUp(item.getVideoPath(), "", Jzvd.SCREEN_WINDOW_LIST);
                 holder.videoView.thumbImageView.setImageBitmap(item.getVideoBitmap());
 
@@ -84,8 +97,21 @@ public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ItemViewHold
                 break;
         }
 
-        holder.deleteButton.setTag(item.getId());
-        holder.deleteButton.setOnClickListener(mOnClickListener);
+        item.setDeleteView(holder.deleteButton);
+        holder.deleteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                for (int i=0; i<contentsList.size(); i++) {
+                    Item it = contentsList.get(i);
+                    if (it.getDeleteView().equals(v)) {
+                        contentsList.remove(it);
+                        notifyItemRemoved(i);
+                        break;
+                    }
+                }
+            }
+        });
+
     }
 
     @Override
@@ -107,7 +133,7 @@ public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ItemViewHold
     @Override
     public void onFocusChange(View v, boolean hasFocus) {
         for (Item it: contentsList) {
-            if (it.getView().equals(v)) {
+            if (it.getType().equals("text") && it.getView().equals(v)) {
                 it.setText(((EditText) v).getText().toString());
             }
         }

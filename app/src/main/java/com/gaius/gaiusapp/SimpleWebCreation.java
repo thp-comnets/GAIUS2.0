@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -25,6 +26,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -63,7 +65,7 @@ import static net.gotev.uploadservice.Placeholders.UPLOADED_FILES;
 import static net.gotev.uploadservice.Placeholders.UPLOAD_RATE;
 
 
-public class SimpleWebCreation extends AppCompatActivity implements View.OnClickListener, OnStartDragListener {
+public class SimpleWebCreation extends AppCompatActivity implements OnStartDragListener {
     List<Item> itemList;
     RecyclerView recyclerView;
     CardView imageButton, videoButton, textHeaderButton, textParagrahButton;
@@ -150,7 +152,7 @@ public class SimpleWebCreation extends AppCompatActivity implements View.OnClick
         });
 
         //creating adapter object and setting it to recyclerview
-        adapter = new ItemsAdapter(this, itemList, this);
+        adapter = new ItemsAdapter(this, itemList);
         recyclerView.setAdapter(adapter);
 
         ItemTouchHelper.Callback callback = new SimpleItemTouchHelperCallback(adapter);
@@ -229,41 +231,6 @@ public class SimpleWebCreation extends AppCompatActivity implements View.OnClick
     @Override
     public void onStartDrag(RecyclerView.ViewHolder viewHolder) {
         mItemTouchHelper.startDrag(viewHolder);
-    }
-
-    @Override
-    public void onClick(View view) {
-        int id = (Integer) view.getTag();
-
-        recyclerView.invalidate();
-        Log.d("yasir","\n\ntotal children count: "+recyclerView.getChildCount());
-
-        for (int childCount = recyclerView.getChildCount(), i = 0; i < childCount; ++i) {
-            final ItemsAdapter.ItemViewHolder holder = (ItemsAdapter.ItemViewHolder) recyclerView.getChildViewHolder(recyclerView.getChildAt(i));
-
-            int itemID = (Integer) holder.deleteButton.getTag();
-
-            Log.d("yasir","item number: "+itemID);
-
-            for (int j=0; j<itemList.size(); j++) {
-                if (itemList.get(j).getId() == itemID) {
-                    itemList.get(i).setText(holder.editText.getText() + "");
-                    Log.d("yasir","setting text: "+holder.editText.getText());
-                    break;
-                }
-            }
-        }
-
-        for (int i=0; i<itemList.size(); i++) {
-            if (itemList.get(i).getId() == id ) {
-                Item item = itemList.get(i);
-                itemList.remove(item);
-                adapter.notifyItemRemoved(i);
-                recyclerView.setAdapter(adapter);
-                return;
-            }
-        }
-
     }
 
     public boolean onCreateOptionsMenu (Menu menu)
@@ -354,6 +321,16 @@ public class SimpleWebCreation extends AppCompatActivity implements View.OnClick
         return true;
     }
 
+    public int convertToPixles(int value) {
+        Resources r = getResources();
+        float px = TypedValue.applyDimension(
+                TypedValue.COMPLEX_UNIT_DIP,
+                value,
+                r.getDisplayMetrics()
+        );
+        return (int) px;
+    }
+
     public void submitPage(boolean publish) {
 
         MamlPageBuilder builder = new MamlPageBuilder();
@@ -364,13 +341,14 @@ public class SimpleWebCreation extends AppCompatActivity implements View.OnClick
         builder.addBackground (String.format("#%06X", (0xFFFFFF & Color.WHITE)));
         Log.d("save", adapter.getItemCount()+"");
         String[] filename;
-        int yPos = 0;
+        int yPos = convertToPixles(5);
+
         for (int i = 0; i < adapter.getItemCount(); i++) {
             Item item = adapter.getItem(i);
             Log.d("save", i+ " "+ adapter.getItem(i).getType()+" "+adapter.getItem(i).getW()+ " "+adapter.getItem(i).getH());
             switch (item.getType()) {
                 case "text":
-                    builder.addText(item.getText(), "Arial", (float) (item.getFontSize()*3.3), item.getX(), yPos, item.getW(), item.getH(), "#000000");
+                    builder.addText(item.getText(), "Arial", (float) convertToPixles(item.getFontSize()), item.getX(), yPos, item.getW(), item.getH(), "#000000");
                     break;
                 case "image":
                     filename = new File("" + Uri.parse(item.getImagePath())).getName().split("/");
@@ -384,7 +362,7 @@ public class SimpleWebCreation extends AppCompatActivity implements View.OnClick
                     builder.addVideo(filename[filename.length - 1], item.getX(), yPos, item.getW(), item.getH());
                     break;
             }
-            yPos += item.getH();
+            yPos += item.getH() + convertToPixles(5);
         }
 
         if (builder.getObjectCount() > 0) {

@@ -21,6 +21,8 @@ public class Item {
     private Bitmap videoBitmap;
     private String videoPath;
 
+    private View deleteView;
+
     public Item(int id, String type, String textType, String imageUrl, String videoUrl) {
         this.id = id;
         this.type = type;
@@ -101,4 +103,13 @@ public class Item {
     public void setFontSize(int fontSize) {
         this.fontSize = fontSize;
     }
+
+    public View getDeleteView() {
+        return deleteView;
+    }
+
+    public void setDeleteView(View deleteView) {
+        this.deleteView = deleteView;
+    }
+
 }

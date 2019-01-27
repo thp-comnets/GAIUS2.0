@@ -169,7 +169,8 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onErrorResponse(VolleyError error) {
                 if (!automaticLogin) {
-                    Log.e("User Login", "Login Error: " + error.getMessage());
+                    Log.d("User Login", "Login Error: " + error.getMessage());
+                    Log.d("User Login", "token "+prefs.getString("account_token", "XXXXX"));
                     Toast.makeText(getApplicationContext(),
                             error.getMessage(), Toast.LENGTH_LONG).show();
                 }

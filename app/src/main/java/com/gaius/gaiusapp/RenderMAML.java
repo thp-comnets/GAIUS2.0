@@ -175,7 +175,7 @@ public class RenderMAML extends AppCompatActivity {
                             final ImageView likeImageView = view.findViewById(R.id.imageViewLikes);
                             Log.d("thp", "MamlPageActivity: user liked page " + pageLiked);
                             if (pageLiked.contains("true")) {
-                                likeImageView.setImageResource(R.drawable.ic_like); //fixme: change icon of liked
+                                likeImageView.setImageResource(R.drawable.ic_liked);
                             } else if (pageLiked.contains("false")) {
 
                                 likeImageView.setOnClickListener(new View.OnClickListener() {
@@ -186,7 +186,7 @@ public class RenderMAML extends AppCompatActivity {
                                             public void onSuccess(final String result) {
                                                 if (result.contains("Success")) {
                                                     mLikes.setText((Integer.parseInt(mLikes.getText().toString()) + 1) + "");
-                                                    likeImageView.setImageResource(R.drawable.ic_like); //fixme: change icon of liked
+                                                    likeImageView.setImageResource(R.drawable.ic_liked);
                                                     likeImageView.setOnClickListener(null);
                                                 }
                                             }

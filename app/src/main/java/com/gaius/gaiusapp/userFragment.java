@@ -69,7 +69,7 @@ public class userFragment extends Fragment {
 
             if (userID != null) {
                 URL += "?userID="+userID;
-                URL += "&token=" + prefs.getString("account_token", "null");
+                URL += "&token=" + prefs.getString("token", "null");
 
                 recyclerView.setTag("SubFriends");
             }

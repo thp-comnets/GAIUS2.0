@@ -70,7 +70,7 @@ public class RenderMAML extends AppCompatActivity {
 
         prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
         fidelity = prefs.getString("fidelity_level", "high");
-        token = prefs.getString("account_token", "null");
+        token = prefs.getString("token", "null");
         mRequestQueue = Volley.newRequestQueue(getApplicationContext());
 
         // request and parse the index.maml page
@@ -197,7 +197,7 @@ public class RenderMAML extends AppCompatActivity {
                                     };
 
                                     SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-                                    String url = mUrl + "like.py?url=" + mPageUrl + "&token=" + prefs.getString("account_token", "null");
+                                    String url = mUrl + "like.py?url=" + mPageUrl + "&token=" + prefs.getString("token", "null");
                                     Log.d("MAML", "MamlPageActivity: user liked page " + url);
 
                                     InputStreamVolleyRequest request = new InputStreamVolleyRequest(Request.Method.GET, url,

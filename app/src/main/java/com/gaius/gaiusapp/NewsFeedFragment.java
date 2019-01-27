@@ -50,7 +50,7 @@ public class NewsFeedFragment extends Fragment {
         noFriends = view.findViewById(R.id.noFriends);
 
         prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
-        token = prefs.getString("account_token", "null");
+        token = prefs.getString("token", "null");
         URL_PRODUCTS = "http://91.230.41.34:8080/test/listPages.py?token="+token;
 
         recyclerView =  getView().findViewById(R.id.recylcerView);

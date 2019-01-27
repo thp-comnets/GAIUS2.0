@@ -74,6 +74,12 @@
             android:theme="@style/AppTheme">
         </activity>
 
+        <activity
+            android:name=".ProfileUpdateActivity"
+            android:launchMode="singleTask"
+            android:theme="@style/AppTheme">
+        </activity>
+
 
     </application>
 </manifest>

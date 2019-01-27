@@ -140,7 +140,7 @@ public class SignUp extends AppCompatActivity {
         }
 
         registerUser(signupInputName.getText().toString(),
-                "TBD",
+                signupInputName.getText().toString()+"'s Channel",
                 signupInputEmail.getText().toString(),
                 signupInputPassword.getText().toString(),
                 "none",
@@ -300,7 +300,13 @@ public class SignUp extends AppCompatActivity {
                                     editor.putString("name", jObj.getJSONObject("user").getString("name"));
                                     editor.putString("email", jObj.getJSONObject("user").getString("email"));
                                     editor.putString("password", password);
-                                    editor.putString("account_token", jObj.getJSONObject("user").getString("token"));
+                                    editor.putString("token", jObj.getJSONObject("user").getString("token"));
+                                    editor.putString("channel", jObj.getJSONObject("user").getString("channel"));
+                                    editor.putString("gender", jObj.getJSONObject("user").getString("gender"));
+                                    editor.putString("age", jObj.getJSONObject("user").getString("age"));
+                                    editor.putString("userID", jObj.getJSONObject("user").getString("userID"));
+                                    editor.putString("number", jObj.getJSONObject("user").getString("phoneNumber"));
+
                                     editor.commit();
 
                                     finish();

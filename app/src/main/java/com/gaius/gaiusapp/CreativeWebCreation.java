@@ -1409,7 +1409,7 @@ public class CreativeWebCreation extends AppCompatActivity implements TextEditor
         try {
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
             MultipartUploadRequest request = new MultipartUploadRequest(context, uploadId, BASE_URL + "upload.py")
-                    .addParameter("token", prefs.getString("account_token", "null"))
+                    .addParameter("token", prefs.getString("token", "null"))
                     .addParameter("resolution", ""+ ResourceHelper.getScreenWidth(this))
                     .setUtf8Charset()
                     .setNotificationConfig(getNotificationConfig(uploadId, R.string.notification_title))

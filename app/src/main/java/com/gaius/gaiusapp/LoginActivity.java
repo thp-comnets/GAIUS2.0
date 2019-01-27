@@ -135,18 +135,15 @@ public class LoginActivity extends AppCompatActivity {
 
                     if (!error) {
                         SharedPreferences.Editor editor = prefs.edit();
-                        editor.putString("account_token", jObj.getJSONObject("user").getString("token"));
+                        editor.putString("token", jObj.getJSONObject("user").getString("token"));
                         editor.putString("email", email);
                         editor.putString("password", password);
-
-//                        editor.putString("fidelity_level", "high"); //fixme: hardcoded fidelity
-//                        editor.putString("account_name", jObj.getJSONObject("user").getString("name"));
-//                        editor.putString("account_channel", jObj.getJSONObject("user").getString("channel"));
-//                        editor.putString("account_email", jObj.getJSONObject("user").getString("email"));
-//                        editor.putString("account_gender", jObj.getJSONObject("user").getString("gender"));
-//                        editor.putString("account_age", jObj.getJSONObject("user").getString("age"));
-//                        editor.putString("account_userID", jObj.getJSONObject("user").getString("userID"));
-//                        editor.putString("account_number", jObj.getJSONObject("user").getString("phoneNumber"));
+                        editor.putString("name", jObj.getJSONObject("user").getString("name"));
+                        editor.putString("channel", jObj.getJSONObject("user").getString("channel"));
+                        editor.putString("gender", jObj.getJSONObject("user").getString("gender"));
+                        editor.putString("age", jObj.getJSONObject("user").getString("age"));
+                        editor.putString("userID", jObj.getJSONObject("user").getString("userID"));
+                        editor.putString("number", jObj.getJSONObject("user").getString("phoneNumber"));
                         editor.commit();
 
                         Intent i = new Intent(getApplicationContext(), MainActivity.class);
@@ -170,7 +167,7 @@ public class LoginActivity extends AppCompatActivity {
             public void onErrorResponse(VolleyError error) {
                 if (!automaticLogin) {
                     Log.d("User Login", "Login Error: " + error.getMessage());
-                    Log.d("User Login", "token "+prefs.getString("account_token", "XXXXX"));
+                    Log.d("User Login", "token "+prefs.getString("token", "XXXXX"));
                     Toast.makeText(getApplicationContext(),
                             error.getMessage(), Toast.LENGTH_LONG).show();
                 }

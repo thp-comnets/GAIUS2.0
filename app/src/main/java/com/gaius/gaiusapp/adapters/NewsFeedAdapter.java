@@ -175,7 +175,7 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.newsFe
                 NewsFeed n = newsFeedList.get((Integer) v.getTag());
                 SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mCtx);
 
-                String url = " http://91.230.41.34:8080/test/like.py?url=" + n.getUrl() + "&token=" + prefs.getString("account_token", "null");
+                String url = " http://91.230.41.34:8080/test/like.py?url=" + n.getUrl() + "&token=" + prefs.getString("token", "null");
                 StringRequest request = new StringRequest(Request.Method.GET, url,
                         new Response.Listener<String>() {
                             @Override

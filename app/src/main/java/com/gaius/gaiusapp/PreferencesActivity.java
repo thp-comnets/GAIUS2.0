@@ -64,29 +64,14 @@ public class PreferencesActivity extends AppCompatActivity {
                 }
             };
 
-//            Preference account = getPreferenceScreen().findPreference("account");
-//            account.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-//                @Override
-//                public boolean onPreferenceClick(Preference preference) {
-//
-//                    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
-//                    Intent intent;
-//                    if (prefs.getString("account_token", "null").equals("null")) {
-//                        //TODO launch login
-//                        intent = new Intent(getActivity(), LoginActivity.class);
-//                        intent.putExtra("REF", Constants.PREFERENCES_ACTIVITY);
-////                        return false;
-//                    } else {
-//                        intent = new Intent(getActivity(), RegisterActivity.class);
-//                        intent.putExtra("REF", Constants.PREFERENCES_ACTIVITY);
-//                        intent.putExtra("EDIT", "");
-//                    }
-//                    startActivity(intent);
-//
-//
-//                    return false;
-//                }
-//            });
+            Preference account = getPreferenceScreen().findPreference("account");
+            account.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                @Override
+                public boolean onPreferenceClick(Preference preference) {
+                    startActivity(new Intent(getActivity(), ProfileUpdateActivity.class));
+                    return false;
+                }
+            });
         }
 
         @Override

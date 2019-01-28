@@ -1,22 +1,38 @@
 package com.gaius.gaiusapp.adapters;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+import com.gaius.gaiusapp.FriendsFragment;
 import com.gaius.gaiusapp.classes.Friend;
 import com.gaius.gaiusapp.R;
 import com.gaius.gaiusapp.userFragment;
+import com.gaius.gaiusapp.utils.LogOut;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.List;
 
@@ -39,7 +55,7 @@ public class FriendsAdapter extends RecyclerView.Adapter<FriendsAdapter.FriendVi
 
     @Override
     public void onBindViewHolder(FriendViewHolder holder, int position) {
-        Friend friend = friendsList.get(position);
+        final Friend friend = friendsList.get(position);
 
         RequestOptions requestOptions = new RequestOptions();
         requestOptions.error(R.drawable.ic_avatar);
@@ -81,6 +97,56 @@ public class FriendsAdapter extends RecyclerView.Adapter<FriendsAdapter.FriendVi
             }
         });
 
+        switch (friend.getButtonType()) {
+            case "Remove":
+                break;
+            case "accept":
+                holder.mButton.setBackgroundTintList(mCtx.getResources().getColorStateList(R.color.green));
+                holder.mButton.setText("Accept");
+                break;
+            case "withdraw":
+                holder.mButton.setBackgroundTintList(mCtx.getResources().getColorStateList(R.color.blue_800));
+                holder.mButton.setText("Withdraw");
+                break;
+        }
+
+        holder.mButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mCtx);
+                String token = prefs.getString("token", "null");
+                String URL = "http://91.230.41.34:8080/test/modifyFriend.py?token=" + token + "&" + friend.getButtonType() + "=" + friend.getUserID();
+
+                StringRequest stringRequest = new StringRequest(Request.Method.GET, URL,
+                        new Response.Listener<String>() {
+                            @Override
+                            public void onResponse(String response) {
+                                Log.d("yasir", response);
+//                                try {
+//
+//                                } catch (JSONException e) {
+//                                    e.printStackTrace();
+//                                    Log.d("Yasir","Json error "+e);
+//
+//                                    if (response.contains("invalid token")) {
+//                                        LogOut.logout(mCtx);
+//                                        Toast.makeText(mCtx, "You have logged in from another device. Please login again.",
+//                                                Toast.LENGTH_LONG).show();
+//                                    }
+//                                }
+                            }
+                        },
+                        new Response.ErrorListener() {
+                            @Override
+                            public void onErrorResponse(VolleyError error) {
+                                Log.d("Yasir","Error "+error);
+                            }
+                        });
+                Log.d("Yasir","added request "+stringRequest);
+
+                Volley.newRequestQueue(mCtx).add(stringRequest);
+            }
+        });
+
     }
 
     @Override
@@ -93,6 +159,7 @@ public class FriendsAdapter extends RecyclerView.Adapter<FriendsAdapter.FriendVi
         TextView textViewName, textViewPhoneNumber;
         ImageView imageView;
         RelativeLayout layout;
+        Button mButton;
 
         public FriendViewHolder(View itemView) {
             super(itemView);
@@ -101,6 +168,7 @@ public class FriendsAdapter extends RecyclerView.Adapter<FriendsAdapter.FriendVi
             textViewPhoneNumber = itemView.findViewById(R.id.textViewPhoneNumber);
             imageView = itemView.findViewById(R.id.imageView);
             layout = itemView.findViewById(R.id.friend_layout);
+            mButton = itemView.findViewById(R.id.friend_button);
         }
     }
 }

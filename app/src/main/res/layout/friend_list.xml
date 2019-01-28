@@ -22,10 +22,11 @@
             app:civ_border_width="1dp"/>
 
         <LinearLayout
-            android:layout_width="fill_parent"
+            android:id="@+id/name_layout"
+            android:layout_width="wrap_content"
             android:layout_height="fill_parent"
             android:layout_toEndOf="@id/imageView"
-            android:layout_marginStart="50dp"
+            android:layout_marginStart="30dp"
             android:orientation="vertical"
             android:gravity="center_vertical">
 
@@ -47,6 +48,19 @@
                 android:textAppearance="@style/Base.TextAppearance.AppCompat.Small" />
 
         </LinearLayout>
+
+        <Button
+            android:id="@+id/friend_button"
+            android:layout_centerVertical="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="10dp"
+            android:textColor="@color/white"
+            android:textSize="10sp"
+            android:text="Remove"
+            android:backgroundTint="@color/red"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            />
 
     </RelativeLayout>
 

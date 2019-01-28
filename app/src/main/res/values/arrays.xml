@@ -11,4 +11,11 @@
         <item>medium</item>
         <item>high</item>
     </string-array>
+
+    <string-array name="titles" >
+        <item>Friends</item>
+        <item>Search</item>
+        <item>Requests</item>
+    </string-array>
+
 </resources>

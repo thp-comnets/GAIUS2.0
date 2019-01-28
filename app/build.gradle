@@ -44,5 +44,5 @@ dependencies {
 
     implementation 'com.github.jkennethcarino:RTextEditorView:0.1.1'
     implementation 'net.rimoto:intlphoneinput:1.0.1'
-
+    implementation 'com.github.devlight.navigationtabstrip:navigationtabstrip:1.0.4'
 }

@@ -3,39 +3,32 @@
     android:layout_width="fill_parent"
     android:layout_height="match_parent"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context="com.gaius.gaiusapp.MainActivity">
 
-    <RelativeLayout
-        android:id="@+id/noFriends"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:visibility="gone">
+    <com.gigamole.navigationtabstrip.NavigationTabStrip
+        android:id="@+id/top_navigation_bar"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        app:nts_color="#ffffff"
+        app:nts_size="15sp"
+        app:nts_weight="5dp"
+        app:nts_factor="1.0"
+        app:nts_titles="@array/titles"
+        app:nts_type="point"
+        app:nts_gravity="bottom"
+        app:nts_corners_radius="1.5dp"
+        app:nts_animation_duration="300"
+        app:nts_active_color="#ffffff"
+        app:nts_inactive_color="#a4a4a4"/>
 
-        <pl.droidsonroids.gif.GifImageView
-            android:id="@+id/lonely_animation"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_lonely">
-        </pl.droidsonroids.gif.GifImageView>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/lonely_animation"
-            android:paddingStart="50dp"
-            android:paddingEnd="50dp"
-            android:text="You don't have friends yet.\nPlease consider adding some."
-            android:textStyle="bold"
-            android:textColor="#000000"/>
-    </RelativeLayout>
-
-
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/recylcerView"
-        android:layout_width="fill_parent"
+    <FrameLayout
+        android:layout_below="@+id/top_navigation_bar"
+        android:id="@+id/tab_container"
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:layout_editor_absoluteX="745dp"
-        tools:layout_editor_absoluteY="-51dp" />
+        android:text="@string/title_home"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </RelativeLayout>

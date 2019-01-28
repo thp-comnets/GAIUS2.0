@@ -94,7 +94,8 @@ public class MyFriendsRequestsFragment extends Fragment {
                                         "current status",
                                         friend.getString("avatar"),
                                         friend.getString("userID"),
-                                        friend.getString("type")
+                                        friend.getString("type"),
+                                        false
                                 ));
                             }
 

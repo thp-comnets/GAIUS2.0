@@ -7,14 +7,16 @@ public class Friend {
     private String image;
     private String userID;
     private String buttonType;
+    private Boolean clickable;
 
-    public Friend(int id, String name, String phoneNumber, String image, String userID, String buttonType) {
+    public Friend(int id, String name, String phoneNumber, String image, String userID, String buttonType, Boolean clickable) {
         this.id = id;
         this.name = name;
         this.phoneNumber = phoneNumber;
         this.image = "http://91.230.41.34:8080/test/"+image;
         this.userID = userID;
         this.buttonType = buttonType;
+        this.clickable = clickable;
     }
 
     public int getId() {
@@ -37,5 +39,9 @@ public class Friend {
 
     public String getButtonType() {
         return buttonType;
+    }
+
+    public Boolean getClickable() {
+        return clickable;
     }
 }

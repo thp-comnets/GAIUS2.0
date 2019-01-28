@@ -78,24 +78,26 @@ public class FriendsAdapter extends RecyclerView.Adapter<FriendsAdapter.FriendVi
         holder.textViewName.setText(friend.getName());
         holder.textViewPhoneNumber.setText(friend.getPhoneNumber());
 
-        holder.layout.setTag(position);
-        holder.layout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Bundle bundle = new Bundle();
+        if (friend.getClickable()) {
+            holder.layout.setTag(position);
+            holder.layout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Bundle bundle = new Bundle();
 
-                Friend f = friendsList.get((Integer) v.getTag());
-                Fragment fragment = new userFragment();
-                bundle.putString("userID", f.getUserID());
-                bundle.putString("name", f.getName());
-                bundle.putString("avatar", f.getImage());
-                fragment.setArguments(bundle);
+                    Friend f = friendsList.get((Integer) v.getTag());
+                    Fragment fragment = new userFragment();
+                    bundle.putString("userID", f.getUserID());
+                    bundle.putString("name", f.getName());
+                    bundle.putString("avatar", f.getImage());
+                    fragment.setArguments(bundle);
 
-                ((AppCompatActivity) mCtx).getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.fragment_container, fragment)
-                        .commit();
-            }
-        });
+                    ((AppCompatActivity) mCtx).getSupportFragmentManager().beginTransaction()
+                            .replace(R.id.fragment_container, fragment)
+                            .commit();
+                }
+            });
+        }
 
         switch (friend.getButtonType()) {
             case "Remove":

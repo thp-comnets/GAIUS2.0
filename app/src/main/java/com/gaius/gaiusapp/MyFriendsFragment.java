@@ -94,7 +94,8 @@ public class MyFriendsFragment extends Fragment {
                                         "current status",
                                         friend.getString("avatar"),
                                         friend.getString("userID"),
-                                        "remove"
+                                        "remove",
+                                        true
                                 ));
                             }
 

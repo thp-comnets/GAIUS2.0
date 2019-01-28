@@ -6,7 +6,6 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.ActivityInfo;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.preference.PreferenceManager;
@@ -18,10 +17,11 @@ import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -34,7 +34,6 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.gaius.gaiusapp.adapters.FriendsAdapter;
 import com.gaius.gaiusapp.classes.Friend;
-import com.gaius.gaiusapp.utils.Constants;
 import com.gaius.gaiusapp.utils.LogOut;
 
 import net.gotev.uploadservice.MultipartUploadRequest;
@@ -47,14 +46,11 @@ import net.gotev.uploadservice.UploadStatusDelegate;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.w3c.dom.Document;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -73,6 +69,8 @@ public class searchFriendsFragment extends Fragment {
     public static Context context;
     List<Friend> friendList, friendList2;
     RecyclerView recyclerView, recyclerView2;
+    RelativeLayout noFriendsSearch;
+    TextView importFriendsTitle;
 
     @Nullable
     @Override
@@ -84,6 +82,8 @@ public class searchFriendsFragment extends Fragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
         context = getActivity().getApplicationContext();
+        noFriendsSearch = getView().findViewById(R.id.noFriends);
+        importFriendsTitle = getView().findViewById(R.id.contacts_title);
 
         recyclerView = getView().findViewById(R.id.recylcerView);
         recyclerView.setHasFixedSize(true);
@@ -94,14 +94,13 @@ public class searchFriendsFragment extends Fragment {
         recyclerView2.setLayoutManager(new LinearLayoutManager(getContext()));
 
         friendList = new ArrayList<>();
-        friendList2 = new ArrayList<>();
 
         UploadService.NAMESPACE = BuildConfig.APPLICATION_ID;
         UploadService.NAMESPACE = "com.gaius.contentupload";
 
         loadPossibleFriends();
 
-        final TextView searchName  = getView().findViewById(R.id.search_name_edittext);
+        final EditText searchName  = getView().findViewById(R.id.search_name_edittext);
         ImageView searchButton = getView().findViewById(R.id.search_button);
 
         searchButton.setOnClickListener(new View.OnClickListener() {
@@ -111,13 +110,17 @@ public class searchFriendsFragment extends Fragment {
             }
         });
 
-//        Button searchContactsButton = view.findViewById(R.id.search_friends_button);
-//        searchContactsButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                loadPossibleFriends();
-//            }
-//        });
+        searchName.setOnKeyListener(new View.OnKeyListener() {
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                if ((event.getAction() == KeyEvent.ACTION_DOWN) &&
+                        (keyCode == KeyEvent.KEYCODE_ENTER)) {
+                    searchFriend(searchName.getText().toString());
+                    return true;
+                }
+                return false;
+            }
+        });
+
     }
 
     public void loadPossibleFriends() {
@@ -138,9 +141,10 @@ public class searchFriendsFragment extends Fragment {
                 String phoneNumber = phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
 
                 phoneNumber = phoneNumber.replace("+","00").replace("(","").replace(")","").replace("-","").replace(" ","").replace("/","");
-                if (!phoneNumber.substring(0, 2).contains("00") && phoneNumber.substring(0, 1).contains("0")) {
-                    phoneNumber = "00971"+phoneNumber.substring(1,phoneNumber.length());
-                }
+// fixme: need to figure out a way to give international code for numbers without a +(code)
+//                if (!phoneNumber.substring(0, 2).contains("00") && phoneNumber.substring(0, 1).contains("0")) {
+//                    phoneNumber = "00971"+phoneNumber.substring(1,phoneNumber.length());
+//                }
 
                 if (! phoneNumbers.contains(phoneNumber)) {
                     phoneNumbers.add(phoneNumber);
@@ -205,9 +209,12 @@ public class searchFriendsFragment extends Fragment {
                                     //converting the string to json array object
                                     JSONArray array = new JSONArray(serverResponse.getBodyAsString());
 
-//                                    if (array.length() == 0 ) {
-//                                        noFriends.setVisibility(View.VISIBLE);
-//                                    }
+                                    if (array.length() == 0 ) {
+                                        importFriendsTitle.setVisibility(View.GONE);
+                                    }
+                                    else {
+                                        importFriendsTitle.setVisibility(View.VISIBLE);
+                                    }
 
                                     //traversing through all the object
                                     for (int i = 0; i < array.length(); i++) {
@@ -222,7 +229,8 @@ public class searchFriendsFragment extends Fragment {
                                                 "current status",
                                                 friend.getString("avatar"),
                                                 friend.getString("userID"),
-                                                friend.getString("type")
+                                                friend.getString("type"),
+                                                false
                                         ));
                                     }
 
@@ -319,8 +327,17 @@ public class searchFriendsFragment extends Fragment {
                     @Override
                     public void onResponse(String response) {
                         try {
+                            friendList2 = new ArrayList<>();
+
                             //converting the string to json array object
                             JSONArray array = new JSONArray(response);
+
+                            if (array.length() == 0 ) {
+                                noFriendsSearch.setVisibility(View.VISIBLE);
+                            }
+                            else {
+                                noFriendsSearch.setVisibility(View.GONE);
+                            }
 
                             //traversing through all the object
                             for (int i = 0; i < array.length(); i++) {
@@ -335,7 +352,8 @@ public class searchFriendsFragment extends Fragment {
                                         "current status",
                                         friend.getString("avatar"),
                                         friend.getString("userID"),
-                                        friend.getString("type")
+                                        friend.getString("type"),
+                                        false
                                 ));
                             }
 

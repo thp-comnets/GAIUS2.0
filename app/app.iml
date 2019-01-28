@@ -149,6 +149,7 @@
     <orderEntry type="library" name="Gradle: com.github.bumptech.glide:disklrucache:4.7.1@jar" level="project" />
     <orderEntry type="library" name="Gradle: com.nostra13.universalimageloader:universal-image-loader:1.9.5@jar" level="project" />
     <orderEntry type="library" name="Gradle: com.android.support:support-fragment-27.1.1" level="project" />
+    <orderEntry type="library" name="Gradle: com.github.devlight.navigationtabstrip:navigationtabstrip-1.0.4" level="project" />
     <orderEntry type="library" name="Gradle: com.github.QuadFlask:colorpicker-0.0.13" level="project" />
     <orderEntry type="library" name="Gradle: net.gotev:uploadservice-3.4.2" level="project" />
     <orderEntry type="library" name="Gradle: android.arch.core:runtime-1.1.0" level="project" />

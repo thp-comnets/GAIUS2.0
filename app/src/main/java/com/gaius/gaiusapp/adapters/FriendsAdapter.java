@@ -100,6 +100,10 @@ public class FriendsAdapter extends RecyclerView.Adapter<FriendsAdapter.FriendVi
         switch (friend.getButtonType()) {
             case "Remove":
                 break;
+            case "connect":
+                holder.mButton.setBackgroundTintList(mCtx.getResources().getColorStateList(R.color.amber_600));
+                holder.mButton.setText("Connect");
+                break;
             case "accept":
                 holder.mButton.setBackgroundTintList(mCtx.getResources().getColorStateList(R.color.green));
                 holder.mButton.setText("Accept");

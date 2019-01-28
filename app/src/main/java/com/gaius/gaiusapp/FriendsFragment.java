@@ -58,6 +58,8 @@ public class FriendsFragment extends Fragment {
                         loadFragment(fragment);
                         break;
                     case 1:
+                        fragment = new searchFriendsFragment();
+                        loadFragment(fragment);
                         break;
                     case 2:
                         fragment = new MyFriendsRequestsFragment();

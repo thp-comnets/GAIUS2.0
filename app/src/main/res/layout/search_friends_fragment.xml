@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <RelativeLayout
+        android:id="@+id/search_by_name"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
+        android:layout_marginStart="20dp">
+
+        <EditText
+            android:id="@+id/search_name_edittext"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:hint="Search by name" />
+
+        <ImageView
+            android:id="@+id/search_button"
+            android:layout_marginStart="20dp"
+            android:layout_toEndOf="@+id/search_name_edittext"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:src="@android:drawable/ic_menu_search"/>
+    </RelativeLayout>
+
+    <android.support.v7.widget.RecyclerView
+        android:layout_below="@+id/search_by_name"
+        android:id="@+id/recylcerView_search"
+        android:layout_width="fill_parent"
+        android:layout_height="200dp"
+        tools:layout_editor_absoluteX="745dp"
+        tools:layout_editor_absoluteY="-51dp" />
+
+    <!--<Button-->
+        <!--android:layout_below="@+id/search_by_name"-->
+        <!--android:id="@+id/search_friends_button"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:text="Search Contacts"-->
+        <!--android:layout_centerHorizontal="true"-->
+        <!--android:layout_marginBottom="20dp"/>-->
+
+    <TextView
+        android:id="@+id/contacts_title"
+        android:layout_marginTop="20dp"
+        android:layout_marginStart="20dp"
+        android:layout_below="@+id/recylcerView_search"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="From your contacts"
+        android:layout_marginBottom="10dp"/>
+
+    <android.support.v7.widget.RecyclerView
+        android:layout_below="@+id/contacts_title"
+        android:id="@+id/recylcerView"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        tools:layout_editor_absoluteX="745dp"
+        tools:layout_editor_absoluteY="-51dp" />
+
+</RelativeLayout>

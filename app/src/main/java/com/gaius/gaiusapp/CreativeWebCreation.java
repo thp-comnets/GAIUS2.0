@@ -105,6 +105,7 @@ import java.util.UUID;
 import ly.kite.instagramphotopicker.InstagramPhoto;
 import ly.kite.instagramphotopicker.InstagramPhotoPicker;
 
+import static com.gaius.gaiusapp.utils.ResourceHelper.getResizedBitmap;
 import static net.gotev.uploadservice.Placeholders.ELAPSED_TIME;
 import static net.gotev.uploadservice.Placeholders.PROGRESS;
 import static net.gotev.uploadservice.Placeholders.TOTAL_FILES;
@@ -123,7 +124,7 @@ public class CreativeWebCreation extends AppCompatActivity implements TextEditor
     static final String CLIENT_ID = "2e07e447804249ce820409d3c43338f5";
     static final String REDIRECT_URI = "http://gaiusnetworks.com/app/instagram-callback";
 
-
+    public AlertDialog alertDSubmit = null;
     public int insagram_images_y = 0;
     public int tmpW = 0;
     public int tmpH = 0;
@@ -457,61 +458,6 @@ public class CreativeWebCreation extends AppCompatActivity implements TextEditor
         isWriteStoragePermissionGranted();
         super.onResume();
     }
-
-//    public void editPageDetails() {
-//        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-//        builder.setTitle("Edit page details");
-//
-//        LinearLayout layout = new LinearLayout(this);
-//        layout.setOrientation(LinearLayout.VERTICAL);
-//
-//        iconImageView = new ImageView(this);
-//
-//        if (pageIcon != null) {
-//            iconImageView.setImageBitmap(pageIcon);
-//        }
-//        else{
-//            iconImageView.setImageResource(R.drawable.ic_photo_size_select_actual_black_48dp);
-//        }
-//        layout.addView(iconImageView);
-//
-//        iconImageView.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Intent galleryIntent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-//                startActivityForResult(galleryIntent, PICK_ICON_REQUEST);
-//            }
-//        });
-//
-//
-//        final EditText title = new EditText(this);
-//        title.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_NORMAL);
-//        title.setText(pageName);
-//        layout.addView(title); // Notice this is an add method
-//
-//        final EditText description = new EditText(this);
-//        description.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_NORMAL);
-//        description.setText(pageDescription);
-//        layout.addView(description); // Notice this is an add method
-//
-//        builder.setView(layout); // Again this is a set method, not add
-//
-//        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-//            @Override
-//            public void onClick(DialogInterface dialog, int which) {
-//                pageName = title.getText().toString();
-//                pageDescription = description.getText().toString();
-//            }
-//        });
-//        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-//            @Override
-//            public void onClick(DialogInterface dialog, int which) {
-//                dialog.cancel();
-//            }
-//        });
-//
-//        builder.show();
-//    }
 
     private void requestPage(final String mPageUrl) {
         String tmpUrl = BASE_URL + "index.maml?url=" + mPageUrl + "&fidelity=1" + "&resolution=" + ResourceHelper.getScreenWidth(this) + "&noADs=1";
@@ -1152,25 +1098,32 @@ public class CreativeWebCreation extends AppCompatActivity implements TextEditor
         if (resultCode == RESULT_OK) {
 
             if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
+
                 CropImage.ActivityResult result = CropImage.getActivityResult(data);
                 Bitmap bitmap = BitmapFactory.decodeFile(result.getUri().getPath());
 
-                // yasir resizing the selected image in case its bigger than 80% of the canvas width
-                if (bitmap.getWidth() > (int) (motionView.getWidth()*0.8)) {
-                    int width = (int) (motionView.getWidth()*0.8);
-                    int height = (int)((float)(width * bitmap.getHeight())/bitmap.getWidth());
-                    bitmap = Bitmap.createScaledBitmap(bitmap, width, height, false);
+                if (alertDSubmit != null && alertDSubmit.isShowing()) {
+                    iconPath = ResourceHelper.saveBitmapCompressed(getApplicationContext(), iconUri, bitmap);
+                    iconImageView.setImageBitmap(bitmap);
                 }
+                else {
+                    // yasir resizing the selected image in case its bigger than 80% of the canvas width
+                    if (bitmap.getWidth() > (int) (motionView.getWidth()*0.8)) {
+                        int width = (int) (motionView.getWidth()*0.8);
+                        int height = (int)((float)(width * bitmap.getHeight())/bitmap.getWidth());
+                        bitmap = Bitmap.createScaledBitmap(bitmap, width, height, false);
+                    }
 
-                // reset the tmp width and hegiht
-                tmpW = 0;
-                tmpH = 0;
+                    // reset the tmp width and hegiht
+                    tmpW = 0;
+                    tmpH = 0;
 
-                addBitmapToLayout(IMAGE_BITMAP, bitmap, result.getUri().getPath());
+                    addBitmapToLayout(IMAGE_BITMAP, bitmap, result.getUri().getPath());
+                }
             }
 
             if (requestCode == CropImage.PICK_IMAGE_CHOOSER_REQUEST_CODE ) {
-                Uri imageUri = CropImage.getPickImageResultUri(this, data);
+                final Uri imageUri = CropImage.getPickImageResultUri(this, data);
 
 //                // For API >= 23 we need to check specifically that we have permissions to read external storage.
                 if (CropImage.isReadExternalStoragePermissionsRequired(this, imageUri)) {
@@ -1179,8 +1132,54 @@ public class CreativeWebCreation extends AppCompatActivity implements TextEditor
                     requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, CropImage.PICK_IMAGE_PERMISSIONS_REQUEST_CODE);
 
                 } else {
-                    // no permissions required or already granted, can start crop image activity
-                    startCropImageActivity(imageUri);
+                    AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+                    builder.setTitle("Cropping");
+                    builder.setMessage("Do you want to crop the image?");
+
+                    builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+
+                        public void onClick(DialogInterface dialog, int which) {
+                            // Do nothing but close the dialog
+                            dialog.dismiss();
+
+                            // no permissions required or already granted, can start crop image activity
+                            startCropImageActivity(imageUri, false);
+                        }
+                    });
+
+                    builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            // Do nothing
+                            dialog.dismiss();
+
+                            Bitmap bitmap = null;
+                            try {
+                                bitmap = MediaStore.Images.Media.getBitmap(getContentResolver() , imageUri);
+                                bitmap = getResizedBitmap(bitmap,400);
+
+                                // yasir resizing the selected image in case its bigger than 80% of the canvas width
+                                if (bitmap.getWidth() > (int) (motionView.getWidth()*0.8)) {
+                                    int width = (int) (motionView.getWidth()*0.8);
+                                    int height = (int)((float)(width * bitmap.getHeight())/bitmap.getWidth());
+                                    bitmap = Bitmap.createScaledBitmap(bitmap, width, height, false);
+                                }
+
+                                // reset the tmp width and hegiht
+                                tmpW = 0;
+                                tmpH = 0;
+
+                                addBitmapToLayout(IMAGE_BITMAP, bitmap, ResourceHelper.saveBitmapCompressed(getApplicationContext(), imageUri, bitmap));
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    });
+
+                    AlertDialog alert = builder.create();
+                    alert.show();
                 }
             }
 
@@ -1197,29 +1196,22 @@ public class CreativeWebCreation extends AppCompatActivity implements TextEditor
                 addBitmapToLayout(VIDEO_BITMAP, selectedImage, filePath);
             }
 
-            if (requestCode == CROP_ICON_REQUEST) {
-                Bundle bundle = data.getExtras();
-                Bitmap bitmap = bundle.getParcelable("data");
-                pageIcon = bitmap;
-                iconImageView.setImageBitmap(bitmap);
-
-                iconPath = ResourceHelper.saveBitmapCompressed(getApplicationContext(), iconUri, bitmap);
-                ImageLoader.getInstance().clearDiskCache();
-                ImageLoader.getInstance().clearMemoryCache();
-
-            }
-
             if (requestCode == PICK_ICON_REQUEST) {
                 iconUri = data.getData();
-                iconImageView.setImageURI(iconUri);
-                Bitmap bitmap = null;
-                try {
-                    bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), iconUri);
-                } catch (IOException e) {
-                    e.printStackTrace();
+
+                Uri imageUri = CropImage.getPickImageResultUri(this, data);
+
+//                // For API >= 23 we need to check specifically that we have permissions to read external storage.
+                if (CropImage.isReadExternalStoragePermissionsRequired(this, imageUri)) {
+                    // request permissions and handle the result in onRequestPermissionsResult()
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                        requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, CropImage.PICK_IMAGE_PERMISSIONS_REQUEST_CODE);
+                    }
+
+                } else {
+                    // no permissions required or already granted, can start crop image activity
+                    startCropImageActivity(imageUri, true);
                 }
-                iconPath = ResourceHelper.saveBitmapCompressed(getApplicationContext(), iconUri, bitmap);
-//                ImageCropFunction(); #fixme: make the cropping functionality work
             }
         }
 
@@ -1236,8 +1228,14 @@ public class CreativeWebCreation extends AppCompatActivity implements TextEditor
         }
     }
 
-    private void startCropImageActivity(Uri imageUri) {
-        if (tmpW == 0 && tmpH == 0) {
+    private void startCropImageActivity(Uri imageUri, Boolean isIcon) {
+        if (isIcon) {
+            CropImage.activity(imageUri)
+                    .setGuidelines(CropImageView.Guidelines.ON)
+                    .setFixAspectRatio(true)
+                    .start(this);
+        }
+        else if (tmpW == 0 && tmpH == 0) {
             CropImage.activity(imageUri)
                     .setGuidelines(CropImageView.Guidelines.ON)
                     .start(this);
@@ -1246,10 +1244,8 @@ public class CreativeWebCreation extends AppCompatActivity implements TextEditor
             CropImage.activity(imageUri)
                     .setGuidelines(CropImageView.Guidelines.ON)
                     .setAspectRatio(tmpW,tmpH)
-//                .setFixAspectRatio(true)
                     .start(this);
         }
-
     }
 
     public boolean onCreateOptionsMenu (Menu menu)
@@ -1353,9 +1349,9 @@ public class CreativeWebCreation extends AppCompatActivity implements TextEditor
     {
         LayoutInflater layoutInflater = LayoutInflater.from(this);
         final View promptView = layoutInflater.inflate(R.layout.submit_content_popup, null);
-        final AlertDialog alertD = new AlertDialog.Builder(this).create();
-        alertD.setView(promptView);
-        alertD.show();
+        alertDSubmit = new AlertDialog.Builder(this).create();
+        alertDSubmit.setView(promptView);
+        alertDSubmit.show();
 
         Button cancel_button = (Button) promptView.findViewById(R.id.cancel_button);
         Button save_button = (Button) promptView.findViewById(R.id.save_button);
@@ -1373,7 +1369,7 @@ public class CreativeWebCreation extends AppCompatActivity implements TextEditor
         cancel_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                alertD.dismiss();
+                alertDSubmit.dismiss();
             }
         });
 
@@ -1381,7 +1377,7 @@ public class CreativeWebCreation extends AppCompatActivity implements TextEditor
             @Override
             public void onClick(View view) {
                 if (filledFields(promptView)) {
-                    alertD.dismiss();
+                    alertDSubmit.dismiss();
                     submitPage(false);
                 }
             }
@@ -1391,7 +1387,7 @@ public class CreativeWebCreation extends AppCompatActivity implements TextEditor
             @Override
             public void onClick(View view) {
                 if (filledFields(promptView)) {
-                    alertD.dismiss();
+                    alertDSubmit.dismiss();
                     submitPage(true);
                 }
             }
@@ -1626,28 +1622,6 @@ public class CreativeWebCreation extends AppCompatActivity implements TextEditor
                 doubleBackToExitPressedOnce=false;
             }
         }, 2000);
-    }
-
-    private void ImageCropFunction() {
-
-        try {
-            Intent CropIntent = new Intent("com.android.camera.action.CROP");
-
-            CropIntent.setDataAndType(iconUri, "image/*");
-
-            CropIntent.putExtra("crop", "true");
-//            CropIntent.putExtra("outputX", 280);
-//            CropIntent.putExtra("outputY", 280);
-            CropIntent.putExtra("aspectX", 1);
-            CropIntent.putExtra("aspectY", 1);
-            CropIntent.putExtra("scaleUpIfNeeded", true);
-            CropIntent.putExtra("return-data", true);
-
-            startActivityForResult(CropIntent, CROP_ICON_REQUEST);
-
-        } catch (ActivityNotFoundException e) {
-
-        }
     }
 
     public String loadJSONFromAsset(String file) {

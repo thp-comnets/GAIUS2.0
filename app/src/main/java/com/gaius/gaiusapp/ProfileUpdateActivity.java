@@ -391,6 +391,7 @@ public class ProfileUpdateActivity extends AppCompatActivity {
     private void startCropImageActivity(Uri imageUri) {
         CropImage.activity(imageUri)
                 .setGuidelines(CropImageView.Guidelines.ON)
+                .setAspectRatio(1,1)
                 .start(this);
     }
 

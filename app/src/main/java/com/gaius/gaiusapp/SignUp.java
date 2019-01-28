@@ -1,5 +1,6 @@
 package com.gaius.gaiusapp;
 
+import android.Manifest;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.ActivityNotFoundException;
@@ -8,8 +9,10 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
@@ -25,6 +28,8 @@ import android.widget.Toast;
 
 
 import com.gaius.gaiusapp.utils.ResourceHelper;
+import com.theartofdev.edmodo.cropper.CropImage;
+import com.theartofdev.edmodo.cropper.CropImageView;
 
 import net.gotev.uploadservice.MultipartUploadRequest;
 import net.gotev.uploadservice.ServerResponse;
@@ -50,8 +55,6 @@ import static net.gotev.uploadservice.Placeholders.UPLOAD_RATE;
 
 public class SignUp extends AppCompatActivity {
     private static final int PICK_ICON_REQUEST = 1;
-    private static final int CROP_ICON_REQUEST = 2;
-
     private String filePath, URL_FOR_REGISTRATION;
     private Uri avatarUri;
     private ImageView avatarImageView, loadingImageView;
@@ -76,9 +79,6 @@ public class SignUp extends AppCompatActivity {
         customSignupButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                Intent i = new Intent(getApplicationContext(), MainActivity.class);
-//
-//                startActivity(i);
                 submitForm();
             }
         });
@@ -154,77 +154,39 @@ public class SignUp extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (resultCode == RESULT_OK) {
-            if (requestCode == CROP_ICON_REQUEST) {
-                Bundle bundle = data.getExtras();
-                Bitmap bitmap = bundle.getParcelable("data");
-                bitmap = getResizedBitmap(bitmap,400);
-                avatarImageView.setImageBitmap(bitmap);
-
-                filePath = ResourceHelper.saveBitmapCompressed(getApplicationContext(), avatarUri, bitmap);
-
-            }
-
             if (requestCode == PICK_ICON_REQUEST) {
                 avatarUri = data.getData();
 
-                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                Uri imageUri = CropImage.getPickImageResultUri(this, data);
 
-                builder.setTitle("Cropping");
-                builder.setMessage("Do you want to crop the image?");
-
-                builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
-
-                    public void onClick(DialogInterface dialog, int which) {
-                        // Do nothing but close the dialog
-                        dialog.dismiss();
-                        ImageCropFunction();
+//                // For API >= 23 we need to check specifically that we have permissions to read external storage.
+                if (CropImage.isReadExternalStoragePermissionsRequired(this, imageUri)) {
+                    // request permissions and handle the result in onRequestPermissionsResult()
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                        requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, CropImage.PICK_IMAGE_PERMISSIONS_REQUEST_CODE);
                     }
-                });
 
-                builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                } else {
+                    // no permissions required or already granted, can start crop image activity
+                    startCropImageActivity(imageUri);
+                }
+            }
 
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        // Do nothing
-                        dialog.dismiss();
-                        Bitmap bitmap = null;
-                        try {
-                            bitmap = MediaStore.Images.Media.getBitmap(getContentResolver() , avatarUri);
-                            bitmap = getResizedBitmap(bitmap,400);
-                            avatarImageView.setImageBitmap(bitmap);
-                            filePath = ResourceHelper.saveBitmapCompressed(getApplicationContext(), avatarUri, bitmap);
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                });
+            if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
+                CropImage.ActivityResult result = CropImage.getActivityResult(data);
+                Bitmap bitmap = BitmapFactory.decodeFile(result.getUri().getPath());
 
-                AlertDialog alert = builder.create();
-                alert.show();
+                filePath = ResourceHelper.saveBitmapCompressed(getApplicationContext(), avatarUri, bitmap);
+                avatarImageView.setImageBitmap(bitmap);
             }
         }
     }
 
-    private void ImageCropFunction() {
-
-        try {
-            Intent CropIntent = new Intent("com.android.camera.action.CROP");
-
-            CropIntent.setDataAndType(avatarUri, "image/*");
-
-            CropIntent.putExtra("crop", "true");
-            CropIntent.putExtra("outputX", 200);
-            CropIntent.putExtra("outputY", 200);
-            CropIntent.putExtra("aspectX", 1);
-            CropIntent.putExtra("aspectY", 1);
-            CropIntent.putExtra("scaleUpIfNeeded", true);
-            CropIntent.putExtra("return-data", true);
-
-            startActivityForResult(CropIntent, CROP_ICON_REQUEST);
-
-        } catch (ActivityNotFoundException e) {
-
-        }
+    private void startCropImageActivity(Uri imageUri) {
+        CropImage.activity(imageUri)
+                .setGuidelines(CropImageView.Guidelines.ON)
+                .setAspectRatio(1,1)
+                .start(this);
     }
 
     private void registerUser(final String name, final String channel, final String email, final String password,

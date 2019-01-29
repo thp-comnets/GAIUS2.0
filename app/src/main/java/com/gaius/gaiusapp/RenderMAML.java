@@ -54,24 +54,44 @@ public class RenderMAML extends AppCompatActivity {
         String mPageUrl=null;
         String mNoAds=null;
         String campaign=null;
+        String hostIP;
+        String hostPort;
+        String hostPath;
 
         setContentView(R.layout.maml_page);
         super.onCreate(savedInstanceState);
 
-        final FrameLayout root = findViewById(R.id.root);
-
-        Intent intent = this.getIntent();
-        Bundle bundle = intent.getExtras();
-        mUrl =  (String) bundle.getSerializable("BASEURL");
-        adUrl =  (String) bundle.getSerializable("BASEURL");
-        mPageUrl =  (String) bundle.getSerializable("URL");
-        mNoAds =  (String) bundle.getSerializable("LOCAL_CONTENT");
-        campaign = (String) bundle.getSerializable("CAMPAIGN");
+        mRequestQueue = Volley.newRequestQueue(getApplicationContext());
 
         prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+        hostIP = prefs.getString("ip_edge", "91.230.41.34");
+        hostPort = prefs.getString("port_edge", "8080");
+        hostPath = prefs.getString("path_edge", "test");
         fidelity = prefs.getString("fidelity_level", "high");
         token = prefs.getString("token", "null");
-        mRequestQueue = Volley.newRequestQueue(getApplicationContext());
+
+        final FrameLayout root = findViewById(R.id.root);
+
+        Uri data = getIntent().getData();
+        if (data != null && data.toString().contains("http://gaiusnetworks.com/page/")) {
+            Intent intent = this.getIntent();
+            Bundle bundle = intent.getExtras();
+            mUrl =  "http://" + hostIP + ":" + hostPort + "/" + hostPath + "/";
+            adUrl = mUrl;
+//            adUrl =  (String) bundle.getSerializable("BASEURL");
+            mPageUrl =  "./content/" + data.toString().replace("http://gaiusnetworks.com/page/","");
+            mNoAds =  (String) bundle.getSerializable("LOCAL_CONTENT");
+            campaign = (String) bundle.getSerializable("CAMPAIGN");
+        }
+        else {
+            Intent intent = this.getIntent();
+            Bundle bundle = intent.getExtras();
+            mUrl =  (String) bundle.getSerializable("BASEURL");
+            adUrl =  (String) bundle.getSerializable("BASEURL");
+            mPageUrl =  (String) bundle.getSerializable("URL");
+            mNoAds =  (String) bundle.getSerializable("LOCAL_CONTENT");
+            campaign = (String) bundle.getSerializable("CAMPAIGN");
+        }
 
         // request and parse the index.maml page
         try {

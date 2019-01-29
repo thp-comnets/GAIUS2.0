@@ -70,6 +70,7 @@ public class SimpleWebCreation extends AppCompatActivity implements OnStartDragL
     RecyclerView recyclerView;
     CardView imageButton, videoButton, textHeaderButton, textParagrahButton;
     ItemsAdapter adapter;
+    private int itemsCnt = 0;
     private String pageName;
     private String pageDescription;
     private String BASE_URL;
@@ -102,8 +103,8 @@ public class SimpleWebCreation extends AppCompatActivity implements OnStartDragL
         itemList = new ArrayList<>();
 
         //adding the product to product list
-        itemList.add(new Item (0,"text", "paragraph",null, null));
-
+        itemList.add(new Item (itemsCnt,"text", "paragraph",null, null));
+        itemsCnt++;
 
         textHeaderButton = findViewById(R.id.text_header_card);
         textHeaderButton.setOnClickListener(new View.OnClickListener() {
@@ -111,10 +112,10 @@ public class SimpleWebCreation extends AppCompatActivity implements OnStartDragL
             public void onClick(View view) {
                 Log.d("yasir","adding text at "+itemList.size());
 
-                itemList.add(itemList.size(), new Item (itemList.size(), "text","header",null, null));
+                itemList.add(itemList.size(), new Item (itemsCnt, "text","header",null, null));
+                itemsCnt++;
                 adapter.notifyItemInserted(itemList.size()-1);
                 recyclerView.scrollToPosition(itemList.size()-1);
-//                recyclerView.invalidate();
             }
         });
 
@@ -124,10 +125,10 @@ public class SimpleWebCreation extends AppCompatActivity implements OnStartDragL
             public void onClick(View view) {
                 Log.d("yasir","adding text2 at "+itemList.size());
 
-                itemList.add(itemList.size(), new Item (itemList.size(), "text","paragraph",null, null));
+                itemList.add(itemList.size(), new Item (itemsCnt, "text","paragraph",null, null));
+                itemsCnt++;
                 adapter.notifyItemInserted(itemList.size()-1);
                 recyclerView.scrollToPosition(itemList.size()-1);
-//                recyclerView.invalidate();
             }
         });
 
@@ -182,7 +183,8 @@ public class SimpleWebCreation extends AppCompatActivity implements OnStartDragL
                 }
                 String imagePath = ResourceHelper.saveBitmapCompressed(getApplicationContext(), imageUri, bitmap);
 
-                itemList.add(itemList.size(), new Item(itemList.size(), "image", null, imagePath, null));
+                itemList.add(itemList.size(), new Item (itemsCnt, "image", null, imagePath, null));
+                itemsCnt++;
                 adapter.notifyItemInserted(itemList.size() - 1);
                 recyclerView.scrollToPosition(itemList.size() - 1);
                 recyclerView.invalidate();
@@ -199,7 +201,8 @@ public class SimpleWebCreation extends AppCompatActivity implements OnStartDragL
                     Toast.makeText(this, "Video size is larger than " + fileSize + " MB. Consider uploading a smaller video!", Toast.LENGTH_SHORT).show();
                 }
 
-                itemList.add(itemList.size(), new Item(itemList.size(), "video", null, null, filePath));
+                itemList.add(itemList.size(), new Item (itemsCnt, "video", null, null, filePath));
+                itemsCnt++;
                 adapter.notifyItemInserted(itemList.size() - 1);
                 recyclerView.scrollToPosition(itemList.size() - 1);
                 recyclerView.invalidate();

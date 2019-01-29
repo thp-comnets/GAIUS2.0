@@ -127,18 +127,12 @@ public class FriendsAdapter extends RecyclerView.Adapter<FriendsAdapter.FriendVi
                             @Override
                             public void onResponse(String response) {
                                 Log.d("yasir", response);
-//                                try {
-//
-//                                } catch (JSONException e) {
-//                                    e.printStackTrace();
-//                                    Log.d("Yasir","Json error "+e);
-//
-//                                    if (response.contains("invalid token")) {
-//                                        LogOut.logout(mCtx);
-//                                        Toast.makeText(mCtx, "You have logged in from another device. Please login again.",
-//                                                Toast.LENGTH_LONG).show();
-//                                    }
-//                                }
+
+                                if (response.contains("Success")) {
+                                    Log.d("yasir", "removing friend");
+                                    friendsList.remove(friend);
+                                    notifyDataSetChanged();
+                                }
                             }
                         },
                         new Response.ErrorListener() {

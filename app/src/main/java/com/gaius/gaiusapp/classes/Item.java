@@ -26,7 +26,6 @@ public class Item {
     public Item(int id, String type, String textType, String imageUrl, String videoUrl) {
         this.id = id;
         this.type = type;
-        this.text = "";
         this.textType = textType;
         this.imagePath = imageUrl;
         this.videoPath = videoUrl;

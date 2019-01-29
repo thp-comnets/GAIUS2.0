@@ -35,12 +35,18 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         // try to login first with saved/cached email and password
-        loginFromSaveData();
+//        loginFromSaveData();
 
         setContentView(R.layout.login_activity);
         super.onCreate(savedInstanceState);
 
         getSupportActionBar().hide();
+
+        prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+        String hostIP = prefs.getString("ip_edge", "91.230.41.34");
+        String hostPort = prefs.getString("port_edge", "8080");
+        String hostPath = prefs.getString("path_edge", "test");
+        URL_FOR_LOGIN = "http://" + hostIP + ":" + hostPort + "/" + hostPath + "/"+"login.php";
 
         VideoView view = (VideoView)findViewById(R.id.logo);
         String path = "android.resource://" + getPackageName() + "/" + R.raw.gaius_logo;
@@ -78,6 +84,7 @@ public class LoginActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent i = new Intent(getApplicationContext(), SignUp.class);
                 startActivity(i);
+                finish();
                 }
         });
 
@@ -100,26 +107,26 @@ public class LoginActivity extends AppCompatActivity {
         view.setVideoURI(Uri.parse(path));
         view.start();
 
-        loginFromSaveData();
+//        loginFromSaveData();
     }
 
-    private void loginFromSaveData() {
-        prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
-
-        String hostIP = prefs.getString("ip_edge", "91.230.41.34");
-        String hostPort = prefs.getString("port_edge", "8080");
-        String hostPath = prefs.getString("path_edge", "test");
-        String email = prefs.getString("email", null);
-        String password = prefs.getString("password",null);
-
-        URL_FOR_LOGIN = "http://" + hostIP + ":" + hostPort + "/" + hostPath + "/"+"login.php";
-
-        Log.d("yasir", "email and password"+ email + " " + password);
-
-        if (email != null && password != null) {
-            loginUser(email, password, true);
-        }
-    }
+//    private void loginFromSaveData() {
+//        prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+//
+//        String hostIP = prefs.getString("ip_edge", "91.230.41.34");
+//        String hostPort = prefs.getString("port_edge", "8080");
+//        String hostPath = prefs.getString("path_edge", "test");
+//        String email = prefs.getString("email", null);
+//        String password = prefs.getString("password",null);
+//
+//        URL_FOR_LOGIN = "http://" + hostIP + ":" + hostPort + "/" + hostPath + "/"+"login.php";
+//
+//        Log.d("yasir", "email and password"+ email + " " + password);
+//
+//        if (email != null && password != null) {
+//            loginUser(email, password, true);
+//        }
+//    }
 
     private void loginUser(final String email, final String password, final Boolean automaticLogin) {
         // Tag used to cancel the request
@@ -148,6 +155,7 @@ public class LoginActivity extends AppCompatActivity {
 
                         Intent i = new Intent(getApplicationContext(), MainActivity.class);
                         startActivity(i);
+                        finish();
 
                     } else {
                         if (!automaticLogin) {

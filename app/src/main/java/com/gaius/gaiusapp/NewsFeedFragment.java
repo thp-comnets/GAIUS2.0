@@ -1,5 +1,6 @@
 package com.gaius.gaiusapp;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -121,6 +122,8 @@ public class NewsFeedFragment extends Fragment {
                                 LogOut.logout(getContext());
                                 Toast.makeText(getContext(), "You have logged in from another device. Please login again.",
                                         Toast.LENGTH_LONG).show();
+                                Intent i = new Intent(getContext(), LoginActivity.class);
+                                startActivity(i);
                                 getActivity().finish();
                             }
                         }

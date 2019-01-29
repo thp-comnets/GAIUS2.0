@@ -1,38 +1,14 @@
 package com.gaius.gaiusapp;
 
-import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
-import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.DividerItemDecoration;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.RelativeLayout;
-import android.widget.Toast;
 
-import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
-import com.gaius.gaiusapp.adapters.FriendsAdapter;
-import com.gaius.gaiusapp.classes.Friend;
-import com.gaius.gaiusapp.utils.LogOut;
 import com.gigamole.navigationtabstrip.NavigationTabStrip;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class FriendsFragment extends Fragment {
     @Nullable
@@ -58,7 +34,7 @@ public class FriendsFragment extends Fragment {
                         loadFragment(fragment);
                         break;
                     case 1:
-                        fragment = new searchFriendsFragment();
+                        fragment = new MyFriendsSearchFragment();
                         loadFragment(fragment);
                         break;
                     case 2:

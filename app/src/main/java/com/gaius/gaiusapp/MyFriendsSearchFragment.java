@@ -62,7 +62,7 @@ import static net.gotev.uploadservice.Placeholders.PROGRESS;
 import static net.gotev.uploadservice.Placeholders.TOTAL_FILES;
 import static net.gotev.uploadservice.Placeholders.UPLOADED_FILES;
 
-public class searchFriendsFragment extends Fragment {
+public class MyFriendsSearchFragment extends Fragment {
     SharedPreferences prefs;
     public static File path;
     private static ProgressDialog progressDialog;
@@ -245,6 +245,8 @@ public class searchFriendsFragment extends Fragment {
                                         LogOut.logout(getContext());
                                         Toast.makeText(getContext(), "You have logged in from another device. Please login again.",
                                                 Toast.LENGTH_LONG).show();
+                                        Intent i = new Intent(getContext(), LoginActivity.class);
+                                        startActivity(i);
                                         getActivity().finish();
                                     }
                                 }

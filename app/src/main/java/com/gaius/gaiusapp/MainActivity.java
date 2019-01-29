@@ -2,8 +2,10 @@ package com.gaius.gaiusapp;
 
 import android.Manifest;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.ActivityCompat;
@@ -41,10 +43,20 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        SharedPreferences prefs;
+        prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        if (prefs.getString("token", null) == null) {
+            Intent i = new Intent(this, LoginActivity.class);
+            startActivity(i);
+            finish();
+            return;
+        }
+
         // asking the user for all required permissions
         checkPermissions ();
 
-        super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         //loading the default fragment
@@ -148,6 +160,8 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         if (id == R.id.logoutButton) {
             // do something here
             LogOut.logout(getApplicationContext());
+            Intent i = new Intent(this, LoginActivity.class);
+            startActivity(i);
             finish();
         }
         else if (id == R.id.settingsButton) {

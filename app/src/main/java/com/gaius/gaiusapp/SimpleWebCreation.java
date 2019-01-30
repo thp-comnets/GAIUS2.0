@@ -58,6 +58,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import static com.gaius.gaiusapp.utils.ResourceHelper.getResizedBitmap;
 import static net.gotev.uploadservice.Placeholders.ELAPSED_TIME;
 import static net.gotev.uploadservice.Placeholders.PROGRESS;
 import static net.gotev.uploadservice.Placeholders.TOTAL_FILES;
@@ -175,12 +176,15 @@ public class SimpleWebCreation extends AppCompatActivity implements OnStartDragL
         if (resultCode == RESULT_OK) {
             if (requestCode == PICK_IMAGE_REQUEST) {
                 Uri imageUri = data.getData();
+
                 Bitmap bitmap = null;
                 try {
                     bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), imageUri);
+                    bitmap = getResizedBitmap(bitmap,400);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+
                 String imagePath = ResourceHelper.saveBitmapCompressed(getApplicationContext(), imageUri, bitmap);
 
                 itemList.add(itemList.size(), new Item (itemsCnt, "image", null, imagePath, null));

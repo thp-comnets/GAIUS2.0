@@ -1,5 +1,6 @@
 package com.gaius.gaiusapp;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -11,8 +12,10 @@ import android.content.pm.ActivityInfo;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
@@ -44,6 +47,8 @@ import com.gaius.gaiusapp.helper.SimpleItemTouchHelperCallback;
 import com.gaius.gaiusapp.utils.Constants;
 import com.gaius.gaiusapp.utils.MamlPageBuilder;
 import com.gaius.gaiusapp.utils.ResourceHelper;
+import com.theartofdev.edmodo.cropper.CropImage;
+import com.theartofdev.edmodo.cropper.CropImageView;
 
 import net.gotev.uploadservice.MultipartUploadRequest;
 import net.gotev.uploadservice.ServerResponse;
@@ -180,7 +185,7 @@ public class SimpleWebCreation extends AppCompatActivity implements OnStartDragL
                 Bitmap bitmap = null;
                 try {
                     bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), imageUri);
-                    bitmap = getResizedBitmap(bitmap,400);
+                    bitmap = getResizedBitmap(bitmap,800);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -193,7 +198,9 @@ public class SimpleWebCreation extends AppCompatActivity implements OnStartDragL
                 recyclerView.scrollToPosition(itemList.size() - 1);
                 recyclerView.invalidate();
 
-            } else if (requestCode == PICK_VIDEO_REQUEST) {
+            }
+
+            else if (requestCode == PICK_VIDEO_REQUEST) {
                 Uri fileUri = data.getData();
                 String[] videoFile = getVideoPath(fileUri);
                 final String filePath = videoFile[0];
@@ -211,7 +218,42 @@ public class SimpleWebCreation extends AppCompatActivity implements OnStartDragL
                 recyclerView.scrollToPosition(itemList.size() - 1);
                 recyclerView.invalidate();
             }
+
+            else if (requestCode == PICK_ICON_REQUEST) {
+                iconUri = data.getData();
+
+                Uri imageUri = CropImage.getPickImageResultUri(this, data);
+
+//                // For API >= 23 we need to check specifically that we have permissions to read external storage.
+                if (CropImage.isReadExternalStoragePermissionsRequired(this, imageUri)) {
+                    // request permissions and handle the result in onRequestPermissionsResult()
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                        requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, CropImage.PICK_IMAGE_PERMISSIONS_REQUEST_CODE);
+                    }
+
+                } else {
+                    // no permissions required or already granted, can start crop image activity
+                    startCropImageActivity(imageUri);
+                }
+            }
+
+            else if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
+
+                CropImage.ActivityResult result = CropImage.getActivityResult(data);
+                Bitmap bitmap = BitmapFactory.decodeFile(result.getUri().getPath());
+                bitmap = getResizedBitmap(bitmap,200);
+
+                iconPath = ResourceHelper.saveBitmapCompressed(getApplicationContext(), iconUri, bitmap);
+                iconImageView.setImageBitmap(bitmap);
+            }
         }
+    }
+
+    private void startCropImageActivity(Uri imageUri) {
+        CropImage.activity(imageUri)
+                .setGuidelines(CropImageView.Guidelines.ON)
+                .setFixAspectRatio(true)
+                .start(this);
     }
 
     private String[] getVideoPath(Uri contentUri) {

@@ -39,7 +39,7 @@ public class MamlPageBuilder {
     }
 
     public void addText(String text, String font, float fontSize, int x, int y, int width, int height, String color) {
-        if (width == 0 || height == 0)
+        if (width == 0 || height == 0 || text == null)
             return;
         //text = text.replaceAll("(\\r|\\n|\\r\\n)+", "\\\\n");
         text = text.replaceAll("\n","<br>").replaceAll("\"","<doubleQuote>");

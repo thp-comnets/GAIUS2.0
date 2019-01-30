@@ -1103,6 +1103,7 @@ public class CreativeWebCreation extends AppCompatActivity implements TextEditor
                 Bitmap bitmap = BitmapFactory.decodeFile(result.getUri().getPath());
 
                 if (alertDSubmit != null && alertDSubmit.isShowing()) {
+                    bitmap = getResizedBitmap(bitmap,200);
                     iconPath = ResourceHelper.saveBitmapCompressed(getApplicationContext(), iconUri, bitmap);
                     iconImageView.setImageBitmap(bitmap);
                 }
@@ -1158,7 +1159,7 @@ public class CreativeWebCreation extends AppCompatActivity implements TextEditor
                             Bitmap bitmap = null;
                             try {
                                 bitmap = MediaStore.Images.Media.getBitmap(getContentResolver() , imageUri);
-                                bitmap = getResizedBitmap(bitmap,400);
+                                bitmap = getResizedBitmap(bitmap,800);
 
                                 // yasir resizing the selected image in case its bigger than 80% of the canvas width
                                 if (bitmap.getWidth() > (int) (motionView.getWidth()*0.8)) {

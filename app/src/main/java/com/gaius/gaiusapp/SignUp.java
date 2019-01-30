@@ -230,7 +230,7 @@ public class SignUp extends AppCompatActivity {
 
                             loadingImageView.setVisibility(View.GONE);
 
-                            Toast.makeText(getApplicationContext(),
+                            Toast.makeText(context,
                                     serverResponse.getHttpCode(), Toast.LENGTH_LONG).show();
                         }
 

@@ -8,7 +8,7 @@ android {
         applicationId "com.gaius.gaiusapp"
         minSdkVersion 17
         targetSdkVersion 27
-        versionCode 65
+        versionCode 67
         versionName "2.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary=true
@@ -42,8 +42,6 @@ dependencies {
     implementation 'petrov.kristiyan:colorpicker-library:1.1.8'
     implementation 'com.nostra13.universalimageloader:universal-image-loader:1.9.5'
 
-    implementation 'com.github.jkennethcarino:RTextEditorView:0.1.1'
     implementation 'net.rimoto:intlphoneinput:1.0.1'
     implementation 'com.github.devlight.navigationtabstrip:navigationtabstrip:1.0.4'
-    implementation 'com.github.woxthebox:draglistview:1.6.3'
 }

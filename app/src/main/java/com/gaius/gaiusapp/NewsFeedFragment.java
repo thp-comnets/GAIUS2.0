@@ -119,7 +119,7 @@ public class NewsFeedFragment extends Fragment {
                             Log.d("Yasir","Json error "+e);
 
                             if (response.contains("invalid token")) {
-                                LogOut.logout(getContext());
+                                LogOut.logout(getActivity());
                                 Toast.makeText(getContext(), "You have logged in from another device. Please login again.",
                                         Toast.LENGTH_LONG).show();
                                 Intent i = new Intent(getContext(), LoginActivity.class);

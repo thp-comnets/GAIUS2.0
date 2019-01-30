@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -10,7 +10,8 @@
     <android.support.v7.widget.RecyclerView
         android:id="@+id/simple_recylcerView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="80dp"
         tools:layout_editor_absoluteX="745dp"
         tools:layout_editor_absoluteY="-51dp"
         />
@@ -20,8 +21,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:animateLayoutChanges="true"
-        android:layout_below="@+id/simple_recylcerView"
-        app:layout_behavior="com.gaius.gaiusapp.utils.FixedBottomViewBehavior"
+        android:layout_centerInParent="true"
+        android:layout_alignParentBottom="true"
         android:scrollbars="none">
 
         <LinearLayout
@@ -156,94 +157,94 @@
                     />
             </android.support.v7.widget.CardView>
 
-            <android.support.v7.widget.CardView
-                android:id="@+id/x_card2"
-                android:layout_width="70dp"
-                android:layout_height="70dp"
-                app:cardCornerRadius="10dp"
-                android:layout_margin="5dp"
-                android:elevation="10dp"
-                app:cardBackgroundColor="#ffffff">
+            <!--<android.support.v7.widget.CardView-->
+                <!--android:id="@+id/x_card2"-->
+                <!--android:layout_width="70dp"-->
+                <!--android:layout_height="70dp"-->
+                <!--app:cardCornerRadius="10dp"-->
+                <!--android:layout_margin="5dp"-->
+                <!--android:elevation="10dp"-->
+                <!--app:cardBackgroundColor="#ffffff">-->
 
-                <pl.droidsonroids.gif.GifImageView
-                    android:layout_marginTop="7dp"
-                    android:layout_width="wrap_content"
-                    android:layout_height="35dp"
-                    android:src="@drawable/ic_ads_animation">
-                </pl.droidsonroids.gif.GifImageView>
+                <!--<pl.droidsonroids.gif.GifImageView-->
+                    <!--android:layout_marginTop="7dp"-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_height="35dp"-->
+                    <!--android:src="@drawable/ic_ads_animation">-->
+                <!--</pl.droidsonroids.gif.GifImageView>-->
 
-                <TextView
-                    android:layout_width="fill_parent"
-                    android:layout_height="19dp"
-                    android:text="xxxx"
-                    android:textSize="14dp"
-                    android:textColor="@color/black"
-                    android:textAlignment="center"
-                    android:layout_gravity="center_horizontal"
-                    android:layout_marginTop="50dp"
-                    android:background="#11000000"
-                    />
-            </android.support.v7.widget.CardView>
+                <!--<TextView-->
+                    <!--android:layout_width="fill_parent"-->
+                    <!--android:layout_height="19dp"-->
+                    <!--android:text="xxxx"-->
+                    <!--android:textSize="14dp"-->
+                    <!--android:textColor="@color/black"-->
+                    <!--android:textAlignment="center"-->
+                    <!--android:layout_gravity="center_horizontal"-->
+                    <!--android:layout_marginTop="50dp"-->
+                    <!--android:background="#11000000"-->
+                    <!--/>-->
+            <!--</android.support.v7.widget.CardView>-->
 
-            <android.support.v7.widget.CardView
-                android:id="@+id/x_card3"
-                android:layout_width="70dp"
-                android:layout_height="70dp"
-                app:cardCornerRadius="10dp"
-                android:layout_margin="5dp"
-                android:elevation="10dp"
-                app:cardBackgroundColor="#ffffff">
+            <!--<android.support.v7.widget.CardView-->
+                <!--android:id="@+id/x_card3"-->
+                <!--android:layout_width="70dp"-->
+                <!--android:layout_height="70dp"-->
+                <!--app:cardCornerRadius="10dp"-->
+                <!--android:layout_margin="5dp"-->
+                <!--android:elevation="10dp"-->
+                <!--app:cardBackgroundColor="#ffffff">-->
 
-                <pl.droidsonroids.gif.GifImageView
-                    android:layout_marginTop="7dp"
-                    android:layout_width="wrap_content"
-                    android:layout_height="35dp"
-                    android:src="@drawable/ic_web_animation">
-                </pl.droidsonroids.gif.GifImageView>
+                <!--<pl.droidsonroids.gif.GifImageView-->
+                    <!--android:layout_marginTop="7dp"-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_height="35dp"-->
+                    <!--android:src="@drawable/ic_web_animation">-->
+                <!--</pl.droidsonroids.gif.GifImageView>-->
 
-                <TextView
-                    android:layout_width="fill_parent"
-                    android:layout_height="19dp"
-                    android:text="xxxx"
-                    android:textSize="14dp"
-                    android:textColor="@color/black"
-                    android:textAlignment="center"
-                    android:layout_gravity="center_horizontal"
-                    android:layout_marginTop="50dp"
-                    android:background="#11000000"
-                    />
-            </android.support.v7.widget.CardView>
+                <!--<TextView-->
+                    <!--android:layout_width="fill_parent"-->
+                    <!--android:layout_height="19dp"-->
+                    <!--android:text="xxxx"-->
+                    <!--android:textSize="14dp"-->
+                    <!--android:textColor="@color/black"-->
+                    <!--android:textAlignment="center"-->
+                    <!--android:layout_gravity="center_horizontal"-->
+                    <!--android:layout_marginTop="50dp"-->
+                    <!--android:background="#11000000"-->
+                    <!--/>-->
+            <!--</android.support.v7.widget.CardView>-->
 
-            <android.support.v7.widget.CardView
-                android:id="@+id/x_card4"
-                android:layout_width="70dp"
-                android:layout_height="70dp"
-                app:cardCornerRadius="10dp"
-                android:layout_margin="5dp"
-                android:elevation="10dp"
-                app:cardBackgroundColor="#ffffff">
+            <!--<android.support.v7.widget.CardView-->
+                <!--android:id="@+id/x_card4"-->
+                <!--android:layout_width="70dp"-->
+                <!--android:layout_height="70dp"-->
+                <!--app:cardCornerRadius="10dp"-->
+                <!--android:layout_margin="5dp"-->
+                <!--android:elevation="10dp"-->
+                <!--app:cardBackgroundColor="#ffffff">-->
 
-                <pl.droidsonroids.gif.GifImageView
-                    android:layout_marginTop="7dp"
-                    android:layout_width="wrap_content"
-                    android:layout_height="35dp"
-                    android:src="@drawable/ic_creative_creation">
-                </pl.droidsonroids.gif.GifImageView>
+                <!--<pl.droidsonroids.gif.GifImageView-->
+                    <!--android:layout_marginTop="7dp"-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_height="35dp"-->
+                    <!--android:src="@drawable/ic_creative_creation">-->
+                <!--</pl.droidsonroids.gif.GifImageView>-->
 
-                <TextView
-                    android:layout_width="fill_parent"
-                    android:layout_height="19dp"
-                    android:text="xxxx"
-                    android:textSize="14dp"
-                    android:textColor="@color/black"
-                    android:textAlignment="center"
-                    android:layout_gravity="center_horizontal"
-                    android:layout_marginTop="50dp"
-                    android:background="#11000000"
-                    />
-            </android.support.v7.widget.CardView>
+                <!--<TextView-->
+                    <!--android:layout_width="fill_parent"-->
+                    <!--android:layout_height="19dp"-->
+                    <!--android:text="xxxx"-->
+                    <!--android:textSize="14dp"-->
+                    <!--android:textColor="@color/black"-->
+                    <!--android:textAlignment="center"-->
+                    <!--android:layout_gravity="center_horizontal"-->
+                    <!--android:layout_marginTop="50dp"-->
+                    <!--android:background="#11000000"-->
+                    <!--/>-->
+            <!--</android.support.v7.widget.CardView>-->
         </LinearLayout>
     </HorizontalScrollView>
 
 
-</android.support.design.widget.CoordinatorLayout>
+</RelativeLayout>

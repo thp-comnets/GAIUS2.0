@@ -271,6 +271,9 @@ public class SignUp extends AppCompatActivity {
 
                                     editor.commit();
 
+                                    Intent i = new Intent(getApplicationContext(), MainActivity.class);
+                                    startActivity(i);
+
                                     finish();
 
                                 } else {

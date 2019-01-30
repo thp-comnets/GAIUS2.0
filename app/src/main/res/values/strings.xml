@@ -107,13 +107,13 @@
     <string name="yes">Yes</string>
     <string name="no">No</string>
     <string name="country">Country</string>
-    <string name="country_message">Set the content country</string>
+    <string name="country_message">Set the contentCategory country</string>
     <string name="IntroTitle1">Welcome!</string>
     <string name="IntroTitle2">Local Community Internet</string>
     <string name="IntroTitle3">GAIUS, Your new Gateway to Local Content</string>
     <string name="IntroTitle4">Massive Saving</string>
     <string name="IntroDesc1">Aren\'t you tired of waiting forever to view a webpage?</string>
-    <string name="IntroDesc2">Do you want to create your own content and advertisements for free?</string>
+    <string name="IntroDesc2">Do you want to create your own contentCategory and advertisements for free?</string>
     <string name="IntroDesc3">Build your own page in seconds without the need for any technical knowledge</string>
     <string name="IntroDesc4">Browse community pages for less data consumption, and faster browsing experience</string>
     <string name="page_details">Page details</string>
@@ -121,7 +121,7 @@
     <string name="content_template">Content Template</string>
     <string name="lock_unlock">lock/unlock</string>
     <string name="content_Intro_title1">Important Disclaimer</string>
-    <string name="content_Intro_text1">You are going to create your first content. Before you start, we would like to make you aware of some basic information. Everything you are going to create is going to be publicly available for everyone to see within your community. The page you are about to create will appear under your general channel name.</string>
+    <string name="content_Intro_text1">You are going to create your first contentCategory. Before you start, we would like to make you aware of some basic information. Everything you are going to create is going to be publicly available for everyone to see within your community. The page you are about to create will appear under your general channel name.</string>
     <string name="content_Intro_title2">Page Information</string>
     <string name="content_Intro_text2">The first thing you need to do is to input some information about your page. You need to specify the name of the page and give a short description. The description will be used by our search engine. You can also choose one of our built-in templates that can help set the basic page look.</string>
     <string name="content_Intro_title3">Page Creation</string>

@@ -31,8 +31,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.gaius.gaiusapp.adapters.ContentsAdapter;
-import com.gaius.gaiusapp.classes.Content;
+import com.gaius.gaiusapp.adapters.ContentsCategoryAdapter;
+import com.gaius.gaiusapp.classes.ContentCategory;
 
 import net.gotev.uploadservice.MultipartUploadRequest;
 import net.gotev.uploadservice.ServerResponse;
@@ -56,7 +56,7 @@ import static net.gotev.uploadservice.Placeholders.UPLOADED_FILES;
 import static net.gotev.uploadservice.Placeholders.UPLOAD_RATE;
 
 public class ContentFragment extends Fragment implements View.OnClickListener {
-    List<Content> contentList;
+    List<ContentCategory> contentCategoryList;
     RecyclerView recyclerView;
     private final int PICK_VIDEO_REQUEST = 1;
 
@@ -76,7 +76,7 @@ public class ContentFragment extends Fragment implements View.OnClickListener {
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        contentList = new ArrayList<>();
+        contentCategoryList = new ArrayList<>();
 
         loadItems();
     }
@@ -84,14 +84,14 @@ public class ContentFragment extends Fragment implements View.OnClickListener {
     private void loadItems() {
 
         //adding the product to product list
-        contentList.add(new Content(0, "Browse Web", R.drawable.ic_web_animation));
-        contentList.add(new Content(1, "Browse Videos", R.drawable.ic_video_animation));
-        contentList.add(new Content(2, "Browse Photos", R.drawable.ic_photos_animation));
-        contentList.add(new Content(3, "Create Content", R.drawable.ic_create));
-        contentList.add(new Content(4, "My Content", R.drawable.ic_my_content));
+        contentCategoryList.add(new ContentCategory(0, "Browse Web", R.drawable.ic_web_animation));
+        contentCategoryList.add(new ContentCategory(1, "Browse Videos", R.drawable.ic_video_animation));
+        contentCategoryList.add(new ContentCategory(2, "Browse Photos", R.drawable.ic_photos_animation));
+        contentCategoryList.add(new ContentCategory(3, "Create Content", R.drawable.ic_create));
+        contentCategoryList.add(new ContentCategory(4, "My Content", R.drawable.ic_my_content));
 
         //creating adapter object and setting it to recyclerview
-        ContentsAdapter adapter = new ContentsAdapter(getContext(), contentList, this);
+        ContentsCategoryAdapter adapter = new ContentsCategoryAdapter(getContext(), contentCategoryList, this);
         recyclerView.setAdapter(adapter);
     }
 
@@ -200,24 +200,31 @@ public class ContentFragment extends Fragment implements View.OnClickListener {
 
     @Override
     public void onClick(View v) {
-        Content c = contentList.get((Integer) v.getTag());
+        ContentCategory c = contentCategoryList.get((Integer) v.getTag());
 
-        if (c.getTitle().contains("Browse Web")) {
+        if (c.getTitle().equals("Browse Web")) {
             Fragment fragment = new WebFragment();
 
             getActivity().getSupportFragmentManager().beginTransaction()
                     .replace(R.id.fragment_container, fragment)
                     .commit();
         }
-        else if (c.getTitle().contains("Browse Videos")) {
+        else if (c.getTitle().equals("Browse Videos")) {
             Fragment fragment = new VideosFragment();
 
             getActivity().getSupportFragmentManager().beginTransaction()
                     .replace(R.id.fragment_container, fragment)
                     .commit();
         }
-        else if (c.getTitle().contains("Create Content")) {
+        else if (c.getTitle().equals("Create Content")) {
             displayIntentOptions();
+        }
+        else if (c.getTitle().equals("My Content")) {
+            Fragment fragment = new MyContentFragment();
+
+            getActivity().getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.fragment_container, fragment)
+                    .commit();
         }
     }
 

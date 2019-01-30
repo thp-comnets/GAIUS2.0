@@ -1,6 +1,10 @@
 package com.gaius.gaiusapp.adapters;
 
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -13,6 +17,11 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.gaius.gaiusapp.classes.Item;
 import com.gaius.gaiusapp.R;
 import com.gaius.gaiusapp.helper.ItemTouchHelperAdapter;
@@ -100,15 +109,42 @@ public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ItemViewHold
         item.setDeleteView(holder.deleteButton);
         holder.deleteButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
-                for (int i=0; i<contentsList.size(); i++) {
-                    Item it = contentsList.get(i);
-                    if (it.getDeleteView().equals(v)) {
-                        contentsList.remove(it);
-                        notifyDataSetChanged();
-                        break;
+            public void onClick(final View v) {
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(mCtx);
+
+                builder.setTitle("Delete item");
+                builder.setMessage("Do you want to delete this item?");
+
+                builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+
+                    public void onClick(DialogInterface dialog, int which) {
+                        // Do nothing but close the dialog
+                        dialog.dismiss();
+
+                        for (int i=0; i<contentsList.size(); i++) {
+                            Item it = contentsList.get(i);
+                            if (it.getDeleteView().equals(v)) {
+                                contentsList.remove(it);
+                                notifyDataSetChanged();
+                                break;
+                            }
+                        }
                     }
-                }
+                });
+
+                builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        // Do nothing
+                        dialog.dismiss();
+                    }
+                });
+
+                AlertDialog alert = builder.create();
+                alert.show();
+
             }
         });
 

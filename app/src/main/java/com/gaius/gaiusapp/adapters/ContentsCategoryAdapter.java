@@ -9,18 +9,18 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.gaius.gaiusapp.classes.Content;
+import com.gaius.gaiusapp.classes.ContentCategory;
 import com.gaius.gaiusapp.R;
 
 import java.util.List;
 
-public class ContentsAdapter extends RecyclerView.Adapter<ContentsAdapter.ContentViewHolder> {
+public class ContentsCategoryAdapter extends RecyclerView.Adapter<ContentsCategoryAdapter.ContentViewHolder> {
 
     private Context mCtx;
-    private List<Content> contentsList;
+    private List<ContentCategory> contentsList;
     private View.OnClickListener mOnClickListener;
 
-    public ContentsAdapter(Context mCtx, List<Content> contentsList, View.OnClickListener mOnClickListener) {
+    public ContentsCategoryAdapter(Context mCtx, List<ContentCategory> contentsList, View.OnClickListener mOnClickListener) {
         this.mCtx = mCtx;
         this.contentsList = contentsList;
         this.mOnClickListener = mOnClickListener;
@@ -29,23 +29,23 @@ public class ContentsAdapter extends RecyclerView.Adapter<ContentsAdapter.Conten
     @Override
     public ContentViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(mCtx);
-        View view = inflater.inflate(R.layout.content_list, null);
+        View view = inflater.inflate(R.layout.content_category_list, null);
         return new ContentViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(ContentViewHolder holder, int position) {
-        Content content = contentsList.get(position);
+        ContentCategory contentCategory = contentsList.get(position);
 
-        holder.textViewTitle.setText(content.getTitle());
-        holder.imageView.setImageResource(content.getImage());
+        holder.textViewTitle.setText(contentCategory.getTitle());
+        holder.imageView.setImageResource(contentCategory.getImage());
 
         holder.cardView.setTag(position);
         holder.cardView.setOnClickListener(mOnClickListener);
 //        holder.cardView.setOnClickListener(new View.OnClickListener() {
 //            @Override
 //            public void onClick(View v) {
-//                Content c = contentsList.get((Integer) v.getTag());
+//                ContentCategory c = contentsList.get((Integer) v.getTag());
 //
 //
 //
@@ -63,7 +63,7 @@ public class ContentsAdapter extends RecyclerView.Adapter<ContentsAdapter.Conten
 //                            .replace(R.id.fragment_container, fragment)
 //                            .commit();
 //                }
-//                else if (c.getTitle().contains("Create Content")) {
+//                else if (c.getTitle().contains("Create ContentCategory")) {
 //                    displayIntentOptions();
 //                }
 //            }

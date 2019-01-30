@@ -1,11 +1,11 @@
 package com.gaius.gaiusapp.classes;
 
-public class Content {
+public class ContentCategory {
     private int id;
     private String title;
     private int image;
 
-    public Content(int id, String title, int image) {
+    public ContentCategory(int id, String title, int image) {
         this.id = id;
         this.title = title;
         this.image = image;

@@ -302,6 +302,9 @@ public class ContentFragment extends Fragment implements View.OnClickListener {
             public void onClick(View v) {
                 Log.d("Yasir", "clicked on ad creation");
                 alertD.dismiss();
+
+                Intent i = new Intent(getContext(), AdCreationActivity.class);
+                getContext().startActivity(i);
             }
         });
     }

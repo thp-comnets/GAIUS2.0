@@ -90,6 +90,11 @@
             android:theme="@style/AppTheme">
         </activity>
 
+        <activity
+            android:name=".AdCreationActivity"
+            android:launchMode="singleTask"
+            android:theme="@style/AppTheme">
+        </activity>
 
     </application>
 </manifest>

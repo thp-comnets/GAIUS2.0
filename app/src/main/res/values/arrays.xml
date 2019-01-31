@@ -12,7 +12,7 @@
         <item>high</item>
     </string-array>
 
-    <string-array name="titles" >
+    <string-array name="tabTitles" >
         <item>Friends</item>
         <item>Search</item>
         <item>Requests</item>

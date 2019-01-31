@@ -43,7 +43,6 @@ dependencies {
     implementation 'com.nostra13.universalimageloader:universal-image-loader:1.9.5'
 
     implementation 'net.rimoto:intlphoneinput:1.0.1'
-    implementation 'com.github.devlight.navigationtabstrip:navigationtabstrip:1.0.4'
     implementation 'com.veinhorn.scrollgalleryview:library:1.2.1'
     implementation 'com.veinhorn.scrollgalleryview:picasso-loader:1.2.0'
 }

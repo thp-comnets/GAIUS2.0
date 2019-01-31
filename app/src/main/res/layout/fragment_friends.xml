@@ -6,24 +6,25 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context="com.gaius.gaiusapp.MainActivity">
 
-    <com.gigamole.navigationtabstrip.NavigationTabStrip
-        android:id="@+id/top_navigation_bar"
+    <android.support.design.widget.TabLayout
+        android:id="@+id/sliding_tabs"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
-        app:nts_color="#ffffff"
-        app:nts_size="15sp"
-        app:nts_weight="5dp"
-        app:nts_factor="1.0"
-        app:nts_titles="@array/titles"
-        app:nts_type="point"
-        app:nts_gravity="bottom"
-        app:nts_corners_radius="1.5dp"
-        app:nts_animation_duration="300"
-        app:nts_active_color="#ffffff"
-        app:nts_inactive_color="#a4a4a4"/>
+        android:layout_height="wrap_content"
+        android:background="#000000"
+        app:tabTextColor="#ffffff"
+        app:tabSelectedTextColor="#ffffff"
+        app:tabGravity="fill"
+        app:tabIndicatorColor="@color/accent_color"
+        app:tabMaxWidth="0dp"
+        app:tabMode="fixed" />
+
+    <android.support.v4.view.ViewPager
+        android:id="@+id/viewpager"
+        android:layout_below="@+id/sliding_tabs"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
 
     <FrameLayout
-        android:layout_below="@+id/top_navigation_bar"
         android:id="@+id/tab_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

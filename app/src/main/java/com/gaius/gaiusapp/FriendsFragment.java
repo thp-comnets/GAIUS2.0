@@ -1,70 +1,70 @@
 package com.gaius.gaiusapp;
 
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.gigamole.navigationtabstrip.NavigationTabStrip;
-
 public class FriendsFragment extends Fragment {
+    String[] tabArray;
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-
         return inflater.inflate(R.layout.fragment_friends, null);
     }
 
     @Override
     public void onViewCreated(final View view, @Nullable Bundle savedInstanceState) {
-        final NavigationTabStrip navigationTabStrip = (NavigationTabStrip) getActivity().findViewById(R.id.top_navigation_bar);
-        navigationTabStrip.setBackgroundColor(Color.BLACK);
+        super.onViewCreated(view, savedInstanceState);
 
-        navigationTabStrip.setOnTabStripSelectedIndexListener(new NavigationTabStrip.OnTabStripSelectedIndexListener() {
+        tabArray = getResources().getStringArray(R.array.tabTitles);
+
+        ViewPager viewPager = (ViewPager) view.findViewById(R.id.viewpager);
+        viewPager.setAdapter(new FragmentPagerAdapter(getChildFragmentManager()) {
             @Override
-            public void onStartTabSelected(String title, int index) {
-                Fragment fragment = null;
-
-                switch (index) {
+            public Fragment getItem(int position) {
+                switch (position) {
                     case 0:
-                        fragment = new MyFriendsFragment();
-                        loadFragment(fragment);
-                        break;
+                        return new MyFriendsFragment();
                     case 1:
-                        fragment = new MyFriendsSearchFragment();
-                        loadFragment(fragment);
-                        break;
+                        return new MyFriendsSearchFragment();
                     case 2:
-                        fragment = new MyFriendsRequestsFragment();
-                        loadFragment(fragment);
-                        break;
+                        return new MyFriendsRequestsFragment();
+                    default:
+                        return null;
                 }
             }
 
             @Override
-            public void onEndTabSelected(String title, int index) {
+            public int getCount() {
+                return 3;
+            }
 
+            @Nullable
+            @Override
+            public CharSequence getPageTitle(int position) {
+                switch (position) {
+                    case 0:
+                        return tabArray[0];
+                    case 1:
+                        return tabArray[1];
+                    case 2:
+                        return tabArray[2];
+                }
+                return null;
             }
         });
 
-        navigationTabStrip.setTabIndex(0, true);
-        loadFragment(new MyFriendsFragment());
+        TabLayout tabLayout = (TabLayout) view.findViewById(R.id.sliding_tabs);
+        tabLayout.setupWithViewPager(viewPager);
     }
 
-    private boolean loadFragment(Fragment fragment) {
-        //switching fragment
-        if (fragment != null) {
-            getActivity().getSupportFragmentManager()
-                    .beginTransaction()
-                    .replace(R.id.tab_container, fragment)
-                    .commit();
-
-            return true;
-        }
-        return false;
-    }
 }
 

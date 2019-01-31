@@ -86,6 +86,20 @@ public class NewsFeedFragment extends Fragment {
                             //converting the string to json array object
                             JSONArray array = new JSONArray(response);
 
+                            newsFeedList.add(new NewsFeed(
+                                    100,
+                                    "test",
+                                    "2seconds ago",
+                                    "None",
+                                    "None",
+                                    "title",
+                                    "description",
+                                    "url",
+                                    "image",
+                                    "false",
+                                    true
+                            ));
+
                             if (array.length() == 0 ) {
                                 noFriends.setVisibility(View.VISIBLE);
                             }

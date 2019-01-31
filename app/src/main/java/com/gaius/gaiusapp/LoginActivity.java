@@ -2,6 +2,7 @@ package com.gaius.gaiusapp;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -52,6 +53,13 @@ public class LoginActivity extends AppCompatActivity {
         String path = "android.resource://" + getPackageName() + "/" + R.raw.gaius_logo;
         view.setVideoURI(Uri.parse(path));
         view.start();
+        view.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+
+            @Override
+            public void onPrepared(MediaPlayer mp) {
+                mp.setVolume(0, 0);
+            }
+        });
 
         loginInputEmail = findViewById(R.id.email_edittext);
         loginInputPassword = findViewById(R.id.password_edittext);

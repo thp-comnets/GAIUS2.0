@@ -1,5 +1,7 @@
 package com.gaius.gaiusapp.classes;
 
+import java.util.ArrayList;
+
 public class NewsFeed {
     private int id;
     private String name;
@@ -11,12 +13,10 @@ public class NewsFeed {
     private String url;
     private String type;
     private Boolean showAvatar;
-
-
-
+    private ArrayList<String> imagesGallery;
     private String liked;
 
-    public NewsFeed (int id, String name, String updateTime, String avatar, String image, String title, String description, String url, String type, String liked, Boolean showAvatar) {
+    public NewsFeed (int id, String name, String updateTime, String avatar, String image, String title, String description, String url, String type, String liked, Boolean showAvatar, ArrayList<String> imagesGallery) {
         this.id = id;
         this.name = name;
         this.updateTime = updateTime;
@@ -28,6 +28,7 @@ public class NewsFeed {
         this.type = type;
         this.showAvatar = showAvatar;
         this.liked = liked;
+        this.imagesGallery = imagesGallery;
     }
 
 
@@ -69,5 +70,9 @@ public class NewsFeed {
 
     public String getLiked() {
         return liked;
+    }
+
+    public ArrayList<String> getImagesGallery() {
+        return imagesGallery;
     }
 }

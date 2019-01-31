@@ -144,7 +144,8 @@ public class userFragment extends Fragment {
                                         newsFeed.getString("url"),
                                         newsFeed.getString("type"),
                                         newsFeed.getString("liked"),
-                                        false
+                                        false,
+                                        new ArrayList<String>()
                                 ));
                             }
 

@@ -7,6 +7,8 @@ import android.support.v7.app.AppCompatActivity;
 import com.veinhorn.scrollgalleryview.ScrollGalleryView;
 import com.veinhorn.scrollgalleryview.builder.GallerySettings;
 
+import java.util.ArrayList;
+
 import static com.veinhorn.scrollgalleryview.loader.picasso.dsl.DSL.image;
 
 public class RenderPhotoActivity extends AppCompatActivity {
@@ -19,7 +21,7 @@ public class RenderPhotoActivity extends AppCompatActivity {
 
         Bundle bundle = getIntent().getExtras();
         //Extract each value from the bundle for usage
-        String imageURL = bundle.getString("imageURL");
+        ArrayList<String> imagesURLs = bundle.getStringArrayList("imagesURLs");
 
         ScrollGalleryView mScrollGalleryView = findViewById(R.id.popView);
         ScrollGalleryView
@@ -33,8 +35,8 @@ public class RenderPhotoActivity extends AppCompatActivity {
                 )
                 .build();
 
-        mScrollGalleryView.addMedia(image(imageURL));
-
-
+        for (int i=0; i < imagesURLs.size(); i++) {
+            mScrollGalleryView.addMedia(image(imagesURLs.get(i)));
+        }
     }
 }

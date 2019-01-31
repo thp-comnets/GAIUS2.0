@@ -3,8 +3,12 @@ package com.gaius.gaiusapp.adapters;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.preference.PreferenceManager;
+import android.provider.MediaStore;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
@@ -22,6 +26,8 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+import com.bumptech.glide.request.target.SimpleTarget;
+import com.bumptech.glide.request.transition.Transition;
 import com.bumptech.glide.signature.ObjectKey;
 import com.gaius.gaiusapp.RenderPhotoActivity;
 import com.gaius.gaiusapp.classes.NewsFeed;
@@ -30,6 +36,7 @@ import com.gaius.gaiusapp.RenderMAML;
 import com.veinhorn.scrollgalleryview.ScrollGalleryView;
 import com.veinhorn.scrollgalleryview.builder.GallerySettings;
 
+import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -118,11 +125,7 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.newsFe
             holder.videoView.setVisibility(View.GONE);
             holder.imageView.setVisibility(View.GONE);
             holder.scrollGalleryView.setVisibility(View.VISIBLE);
-
-            holder.multiImageViewBitmaps = new ArrayList<>();
-            holder.multiImageViewBitmaps.add("http://91.230.41.34:8080/test/content/680dd9321ef418b15f1aee30cc35b499/cropped7203186553735326789.jpg");
-            holder.multiImageViewBitmaps.add("http://91.230.41.34:8080/test/content/680dd9321ef418b15f1aee30cc35b499/cropped1202584801526790588.jpg");
-            holder.multiImageViewBitmaps.add("http://91.230.41.34:8080/test/content/680dd9321ef418b15f1aee30cc35b499/cropped2951741151875150408.jpg");
+            holder.setIsRecyclable(false);
 
             ScrollGalleryView
                     .from(holder.scrollGalleryView)
@@ -135,18 +138,19 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.newsFe
                     )
                     .build();
 
-            for (int i=0; i < holder.multiImageViewBitmaps.size(); i++) {
+            holder.multiImageViewBitmaps = newsfeed.getImagesGallery();
+            for (int i=0; i<holder.multiImageViewBitmaps.size(); i++) {
                 holder.scrollGalleryView.addMedia(image(holder.multiImageViewBitmaps.get(i)));
             }
-
 
             holder.scrollGalleryView.addOnImageClickListener(new ScrollGalleryView.OnImageClickListener() {
                 @Override
                 public void onClick() {
                     Bundle bundle = new Bundle();
-                    bundle.putString("imageURL", holder.multiImageViewBitmaps.get(holder.scrollGalleryView.getCurrentItem()));
+                    bundle.putStringArrayList("imagesURLs", holder.multiImageViewBitmaps);
                     Intent i = new Intent(mCtx, RenderPhotoActivity.class);
                     i.putExtras(bundle);
+
                     mCtx.startActivity(i);
                 }
             });

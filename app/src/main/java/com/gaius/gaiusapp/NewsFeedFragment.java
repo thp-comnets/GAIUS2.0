@@ -29,6 +29,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class NewsFeedFragment extends Fragment {
@@ -86,20 +87,6 @@ public class NewsFeedFragment extends Fragment {
                             //converting the string to json array object
                             JSONArray array = new JSONArray(response);
 
-                            newsFeedList.add(new NewsFeed(
-                                    100,
-                                    "test",
-                                    "2seconds ago",
-                                    "None",
-                                    "None",
-                                    "title",
-                                    "description",
-                                    "url",
-                                    "image",
-                                    "false",
-                                    true
-                            ));
-
                             if (array.length() == 0 ) {
                                 noFriends.setVisibility(View.VISIBLE);
                             }
@@ -109,6 +96,12 @@ public class NewsFeedFragment extends Fragment {
 
                                 //getting product object from json array
                                 JSONObject newsFeed = array.getJSONObject(i);
+
+                                ArrayList<String> imagesList = new ArrayList<String>();
+                                String [] tmp = newsFeed.getString("images").split(";");
+                                for (int j=0; j<tmp.length; j++) {
+                                    imagesList.add("http://91.230.41.34:8080/test/"+newsFeed.getString("url")+tmp[j]);
+                                }
 
                                 newsFeedList.add(new NewsFeed(
                                         newsFeed.getInt("id"),
@@ -121,7 +114,9 @@ public class NewsFeedFragment extends Fragment {
                                         newsFeed.getString("url"),
                                         newsFeed.getString("type"),
                                         newsFeed.getString("liked"),
-                                        true
+                                        true,
+                                        imagesList
+
                                 ));
                             }
 

@@ -37,8 +37,6 @@ import android.widget.Toast;
 
 import com.gaius.gaiusapp.adapters.ContentsCategoryAdapter;
 import com.gaius.gaiusapp.classes.ContentCategory;
-import com.veinhorn.scrollgalleryview.ScrollGalleryView;
-import com.veinhorn.scrollgalleryview.builder.GallerySettings;
 
 import net.gotev.uploadservice.MultipartUploadRequest;
 import net.gotev.uploadservice.ServerResponse;
@@ -55,7 +53,6 @@ import cn.jzvd.Jzvd;
 import cn.jzvd.JzvdStd;
 
 import static android.app.Activity.RESULT_OK;
-import static com.veinhorn.scrollgalleryview.loader.picasso.dsl.DSL.image;
 import static net.gotev.uploadservice.Placeholders.ELAPSED_TIME;
 import static net.gotev.uploadservice.Placeholders.PROGRESS;
 import static net.gotev.uploadservice.Placeholders.TOTAL_FILES;

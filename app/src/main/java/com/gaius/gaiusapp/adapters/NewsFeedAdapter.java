@@ -3,13 +3,9 @@ package com.gaius.gaiusapp.adapters;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.preference.PreferenceManager;
-import android.provider.MediaStore;
-import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -26,24 +22,20 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
-import com.bumptech.glide.request.target.SimpleTarget;
-import com.bumptech.glide.request.transition.Transition;
 import com.bumptech.glide.signature.ObjectKey;
-import com.gaius.gaiusapp.RenderPhotoActivity;
+import com.daimajia.slider.library.SliderLayout;
+import com.daimajia.slider.library.SliderTypes.BaseSliderView;
+import com.daimajia.slider.library.SliderTypes.TextSliderView;
 import com.gaius.gaiusapp.classes.NewsFeed;
 import com.gaius.gaiusapp.R;
 import com.gaius.gaiusapp.RenderMAML;
-import com.veinhorn.scrollgalleryview.ScrollGalleryView;
-import com.veinhorn.scrollgalleryview.builder.GallerySettings;
 
-import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import cn.jzvd.Jzvd;
 import cn.jzvd.JzvdStd;
-
-import static com.veinhorn.scrollgalleryview.loader.picasso.dsl.DSL.image;
 
 public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.newsFeedViewHolder> {
 
@@ -96,7 +88,7 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.newsFe
         if (newsfeed.getType().contains("page")) {
             holder.imageView.setVisibility(View.VISIBLE);
             holder.videoView.setVisibility(View.GONE);
-            holder.scrollGalleryView.setVisibility(View.GONE);
+            holder.mDemoSlider.setVisibility(View.GONE);
 
             requestOptions = new RequestOptions();
             //loading the image
@@ -111,7 +103,7 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.newsFe
         else if (newsfeed.getType().equals("video")) {
             holder.videoView.setVisibility(View.VISIBLE);
             holder.imageView.setVisibility(View.GONE);
-            holder.scrollGalleryView.setVisibility(View.GONE);
+            holder.mDemoSlider.setVisibility(View.GONE);
 
             Glide.with(mCtx)
                     .load(newsfeed.getImage())
@@ -124,36 +116,33 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.newsFe
         else if (newsfeed.getType().equals("image")) {
             holder.videoView.setVisibility(View.GONE);
             holder.imageView.setVisibility(View.GONE);
-            holder.scrollGalleryView.setVisibility(View.VISIBLE);
+            holder.mDemoSlider.setVisibility(View.VISIBLE);
             holder.setIsRecyclable(false);
 
-            ScrollGalleryView
-                    .from(holder.scrollGalleryView)
-                    .settings(
-                            GallerySettings
-                                    .from(((FragmentActivity)mCtx).getSupportFragmentManager())
-                                    .thumbnailSize(100)
-                                    .enableZoom(true)
-                                    .build()
-                    )
-                    .build();
-
+            HashMap<String,String> url_maps = new HashMap<String, String>();
             holder.multiImageViewBitmaps = newsfeed.getImagesGallery();
             for (int i=0; i<holder.multiImageViewBitmaps.size(); i++) {
-                holder.scrollGalleryView.addMedia(image(holder.multiImageViewBitmaps.get(i)));
+                url_maps.put(i+"", holder.multiImageViewBitmaps.get(i));
             }
 
-            holder.scrollGalleryView.addOnImageClickListener(new ScrollGalleryView.OnImageClickListener() {
-                @Override
-                public void onClick() {
-                    Bundle bundle = new Bundle();
-                    bundle.putStringArrayList("imagesURLs", holder.multiImageViewBitmaps);
-                    Intent i = new Intent(mCtx, RenderPhotoActivity.class);
-                    i.putExtras(bundle);
+            for(String name : url_maps.keySet()){
+                TextSliderView textSliderView = new TextSliderView(mCtx);
+                // initialize a SliderLayout
+                textSliderView
+//                        .description(name)
+                        .image(url_maps.get(name))
+                        .setScaleType(BaseSliderView.ScaleType.CenterCrop)
+                        .setOnSliderClickListener(new BaseSliderView.OnSliderClickListener() {
+                            @Override public void onSliderClick(BaseSliderView slider) {
+                                 Intent target = new Intent(Intent.ACTION_VIEW);
+                                 target.setDataAndType(Uri.parse(slider.getUrl()), "image/*");
+                                 target.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+                                 mCtx.startActivity(target);
+                            }
+                        });
 
-                    mCtx.startActivity(i);
-                }
-            });
+                holder.mDemoSlider.addSlider(textSliderView);
+            }
         }
 
 
@@ -261,13 +250,23 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.newsFe
         return newsFeedList.get(pos);
     }
 
+//    @Override
+//    public void onSliderClick(BaseSliderView slider) {
+//        Bundle bundle = new Bundle();
+////        bundle.putStringArrayList("imagesURLs", holder.multiImageViewBitmaps);
+//        Intent i = new Intent(mCtx, RenderPhotoActivity.class);
+//        i.putExtras(bundle);
+//
+//        mCtx.startActivity(i);
+//    }
+
     public class newsFeedViewHolder extends RecyclerView.ViewHolder {
 
         CardView newsFeedCard;
         TextView textViewName, textViewUpdateTime, textViewTitle, textViewDescription;
         ImageView avatarView, imageView, likeButton, shareButton;
         JzvdStd videoView;
-        ScrollGalleryView scrollGalleryView;
+        SliderLayout mDemoSlider;
         ArrayList<String> multiImageViewBitmaps;
 
 
@@ -279,7 +278,7 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.newsFe
             avatarView = itemView.findViewById(R.id.avatarView);
             imageView = itemView.findViewById(R.id.imageView);
             videoView = itemView.findViewById(R.id.videoView);
-            scrollGalleryView = itemView.findViewById(R.id.scroll_gallery_view);
+            mDemoSlider = itemView.findViewById(R.id.slider);
             textViewTitle = itemView.findViewById(R.id.textViewTitle);
             textViewDescription = itemView.findViewById(R.id.textViewDescription);
             newsFeedCard =  itemView.findViewById(R.id.imageViewCardView);

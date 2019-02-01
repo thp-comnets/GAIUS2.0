@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -32,9 +33,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class NewsFeedFragment extends Fragment {
+public class NewsFeedFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
     private static String URL_PRODUCTS = "";
     List<NewsFeed> newsFeedList;
+    SwipeRefreshLayout swipeLayout;
     RecyclerView recyclerView;
     SharedPreferences prefs;
     RelativeLayout noFriends;
@@ -42,8 +44,11 @@ public class NewsFeedFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_newsfeed, null);
+        swipeLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_container);
+        swipeLayout.setOnRefreshListener(this);
 
-        return inflater.inflate(R.layout.fragment_newsfeed, null);
+        return view;
     }
 
     @Override
@@ -59,6 +64,7 @@ public class NewsFeedFragment extends Fragment {
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
+
         newsFeedList = new ArrayList<>();
         loadPages();
     }
@@ -67,8 +73,9 @@ public class NewsFeedFragment extends Fragment {
     public void onResume() {
         super.onResume();
 
-        newsFeedList = new ArrayList<>();
-        loadPages();
+//        thp: disabled this to disable refreshing when activity brought to foreground
+//        newsFeedList = new ArrayList<>();
+//        loadPages();
     }
 
     private void loadPages() {
@@ -149,6 +156,13 @@ public class NewsFeedFragment extends Fragment {
 
         //adding our stringrequest to queue
         Volley.newRequestQueue(getContext()).add(stringRequest);
+    }
+
+    @Override
+    public void onRefresh() {
+        newsFeedList = new ArrayList<>();
+        loadPages();
+        swipeLayout.setRefreshing(false);
     }
 }
 

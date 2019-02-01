@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -32,18 +33,22 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MyFriendsRequestsFragment extends Fragment {
+public class MyFriendsRequestsFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
     private static String URL = "";
     List<Friend> friendList;
     SharedPreferences prefs;
     RelativeLayout noFriends;
     RecyclerView recyclerView;
+    SwipeRefreshLayout swipeLayout;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-
-        return inflater.inflate(R.layout.my_friends_fragment, null);
+        View view = inflater.inflate(R.layout.my_friends_fragment, null);
+        swipeLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_container);
+        swipeLayout.setOnRefreshListener(this);
+        swipeLayout.setEnabled(true);
+        return view;
     }
 
     @Override
@@ -129,5 +134,12 @@ public class MyFriendsRequestsFragment extends Fragment {
 
         //adding our stringrequest to queue
         Volley.newRequestQueue(getContext()).add(stringRequest);
+    }
+
+    @Override
+    public void onRefresh() {
+        friendList = new ArrayList<>();
+        loadFriends();
+        swipeLayout.setRefreshing(false);
     }
 }

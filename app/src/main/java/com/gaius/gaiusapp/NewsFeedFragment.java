@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
@@ -40,6 +41,7 @@ public class NewsFeedFragment extends Fragment implements SwipeRefreshLayout.OnR
     RecyclerView recyclerView;
     SharedPreferences prefs;
     RelativeLayout noFriends;
+    Button buttonReturnToTop;
 
     @Nullable
     @Override
@@ -63,7 +65,31 @@ public class NewsFeedFragment extends Fragment implements SwipeRefreshLayout.OnR
         recyclerView =  getView().findViewById(R.id.recylcerView);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+            }
 
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                if (((LinearLayoutManager) recyclerView.getLayoutManager()).findLastVisibleItemPosition() == 1) {
+                    buttonReturnToTop.setVisibility(View.GONE);
+                } else {
+                    buttonReturnToTop.setVisibility(View.VISIBLE);
+                }
+            }
+        });
+
+        buttonReturnToTop = (Button) view.findViewById(R.id.button_return_to_top);
+        buttonReturnToTop.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                recyclerView.smoothScrollToPosition(0);
+                buttonReturnToTop.setVisibility(View.GONE);
+            }
+        });
 
         newsFeedList = new ArrayList<>();
         loadPages();

@@ -24,6 +24,7 @@ import com.android.volley.toolbox.Volley;
 import com.gaius.gaiusapp.adapters.FriendsAdapter;
 import com.gaius.gaiusapp.classes.Friend;
 import com.gaius.gaiusapp.classes.NewsFeed;
+import com.gaius.gaiusapp.interfaces.FragmentVisibleInterface;
 import com.gaius.gaiusapp.utils.LogOut;
 
 import org.json.JSONArray;
@@ -33,7 +34,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MyFriendsRequestsFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
+public class MyFriendsRequestsFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener, FragmentVisibleInterface {
     private static String URL = "";
     List<Friend> friendList;
     SharedPreferences prefs;
@@ -62,9 +63,6 @@ public class MyFriendsRequestsFragment extends Fragment implements SwipeRefreshL
         recyclerView = getView().findViewById(R.id.recylcerView);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-
-        friendList = new ArrayList<>();
-        loadFriends();
     }
 
     private void loadFriends() {
@@ -141,5 +139,11 @@ public class MyFriendsRequestsFragment extends Fragment implements SwipeRefreshL
         friendList = new ArrayList<>();
         loadFriends();
         swipeLayout.setRefreshing(false);
+    }
+
+    @Override
+    public void fragmentBecameVisible() {
+        friendList = new ArrayList<>();
+        loadFriends();
     }
 }

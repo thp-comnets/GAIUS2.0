@@ -34,6 +34,7 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.gaius.gaiusapp.adapters.FriendsAdapter;
 import com.gaius.gaiusapp.classes.Friend;
+import com.gaius.gaiusapp.interfaces.FragmentVisibleInterface;
 import com.gaius.gaiusapp.utils.LogOut;
 
 import net.gotev.uploadservice.MultipartUploadRequest;
@@ -62,7 +63,7 @@ import static net.gotev.uploadservice.Placeholders.PROGRESS;
 import static net.gotev.uploadservice.Placeholders.TOTAL_FILES;
 import static net.gotev.uploadservice.Placeholders.UPLOADED_FILES;
 
-public class MyFriendsSearchFragment extends Fragment {
+public class MyFriendsSearchFragment extends Fragment implements FragmentVisibleInterface {
     SharedPreferences prefs;
     public static File path;
     private static ProgressDialog progressDialog;
@@ -388,5 +389,10 @@ public class MyFriendsSearchFragment extends Fragment {
 
         //adding our stringrequest to queue
         Volley.newRequestQueue(getContext()).add(stringRequest);
+    }
+
+    @Override
+    public void fragmentBecameVisible() {
+        //do nothing
     }
 }

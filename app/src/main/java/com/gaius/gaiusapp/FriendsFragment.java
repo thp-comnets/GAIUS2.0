@@ -11,6 +11,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.gaius.gaiusapp.interfaces.FragmentVisibleInterface;
+
 public class FriendsFragment extends Fragment {
     String[] tabArray;
 
@@ -26,8 +28,7 @@ public class FriendsFragment extends Fragment {
 
         tabArray = getResources().getStringArray(R.array.tabTitles);
 
-        ViewPager viewPager = (ViewPager) view.findViewById(R.id.viewpager);
-        viewPager.setAdapter(new FragmentPagerAdapter(getChildFragmentManager()) {
+        final FragmentPagerAdapter mFragmentPagerAdapter = new FragmentPagerAdapter(getChildFragmentManager()) {
             @Override
             public Fragment getItem(int position) {
                 switch (position) {
@@ -60,8 +61,29 @@ public class FriendsFragment extends Fragment {
                 }
                 return null;
             }
-        });
+        };
 
+        final ViewPager viewPager = (ViewPager) view.findViewById(R.id.viewpager);
+        viewPager.setAdapter(mFragmentPagerAdapter);
+        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                FragmentVisibleInterface fragment = (FragmentVisibleInterface) mFragmentPagerAdapter.instantiateItem(viewPager, position);
+                if (fragment != null) {
+                    fragment.fragmentBecameVisible();
+                }
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
         TabLayout tabLayout = (TabLayout) view.findViewById(R.id.sliding_tabs);
         tabLayout.setupWithViewPager(viewPager);
     }

@@ -26,6 +26,7 @@ import com.bumptech.glide.signature.ObjectKey;
 import com.daimajia.slider.library.SliderLayout;
 import com.daimajia.slider.library.SliderTypes.BaseSliderView;
 import com.daimajia.slider.library.SliderTypes.TextSliderView;
+import com.gaius.gaiusapp.AlbumViewActivity;
 import com.gaius.gaiusapp.classes.NewsFeed;
 import com.gaius.gaiusapp.R;
 import com.gaius.gaiusapp.RenderMAML;
@@ -126,7 +127,7 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.newsFe
             }
 
             for(String name : url_maps.keySet()){
-                TextSliderView textSliderView = new TextSliderView(mCtx);
+                final TextSliderView textSliderView = new TextSliderView(mCtx);
                 // initialize a SliderLayout
                 textSliderView
 //                        .description(name)
@@ -134,10 +135,17 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.newsFe
                         .setScaleType(BaseSliderView.ScaleType.CenterCrop)
                         .setOnSliderClickListener(new BaseSliderView.OnSliderClickListener() {
                             @Override public void onSliderClick(BaseSliderView slider) {
-                                 Intent target = new Intent(Intent.ACTION_VIEW);
-                                 target.setDataAndType(Uri.parse(slider.getUrl()), "image/*");
-                                 target.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
-                                 mCtx.startActivity(target);
+                                Bundle bundle = new Bundle();
+                                Intent i = new Intent(mCtx, AlbumViewActivity.class);
+                                bundle.putStringArrayList("imagesURLs", holder.multiImageViewBitmaps);
+                                i.putExtras(bundle);
+                                mCtx.startActivity(i);
+
+//                                 Intent target = new Intent(Intent.ACTION_VIEW);
+//                                 target.setDataAndType(Uri.parse(slider.getUrl()), "image/*");
+//                                 target.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+//                                 mCtx.startActivity(target);
+                                Log.d("Thomas", "hello hello");
                             }
                         });
 

@@ -9,6 +9,7 @@ import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.text.method.PasswordTransformationMethod;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -63,28 +64,24 @@ public class LoginActivity extends AppCompatActivity {
         });
 
         loginInputEmail = findViewById(R.id.email_edittext);
+
         loginInputPassword = findViewById(R.id.password_edittext);
         loginInputPassword.setTransformationMethod(new PasswordTransformationMethod());
+        loginInputPassword.setOnKeyListener(new View.OnKeyListener() {
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                if ((event.getAction() == KeyEvent.ACTION_DOWN) && (keyCode == KeyEvent.KEYCODE_ENTER)) {
+                    doLogin();
+                    return true;
+                }
+                return false;
+            }
+        });
 
         customSigninButton = (Button) findViewById(R.id.custom_signin_button);
         customSigninButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                boolean error = false;
-                if (loginInputEmail.getText().toString().matches("")) {
-                    loginInputEmail.setError("Email can't be empty");
-                    error = true;
-                }
-                if (loginInputPassword.getText().toString().matches("")) {
-                    loginInputPassword.setError("Password can't be empty");
-                    error = true;
-                }
-                if (!error) {
-                    loginUser(loginInputEmail.getText().toString(),
-                            loginInputPassword.getText().toString(),
-                            false);
-                }
+                doLogin();
             }
         });
 
@@ -120,6 +117,20 @@ public class LoginActivity extends AppCompatActivity {
 //        loginFromSaveData();
     }
 
+    private void doLogin () {
+        boolean error = false;
+        if (loginInputEmail.getText().toString().matches("")) {
+            loginInputEmail.setError("Email can't be empty", null);
+            error = true;
+        }
+        if (loginInputPassword.getText().toString().matches("")) {
+            loginInputPassword.setError("Password can't be empty", null);
+            error = true;
+        }
+        if (!error) {
+            loginUser(loginInputEmail.getText().toString(), loginInputPassword.getText().toString(), false);
+        }
+    }
 //    private void loginFromSaveData() {
 //        prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
 //

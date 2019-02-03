@@ -1,12 +1,10 @@
-package com.gaius.gaiusapp;
+package com.gaius.gaiusapp.adapters;
 
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.provider.MediaStore;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -24,14 +22,12 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
-import com.gaius.gaiusapp.utils.ResourceHelper;
+import com.gaius.gaiusapp.classes.Content;
+import com.gaius.gaiusapp.R;
 
-import java.io.IOException;
 import java.util.List;
 
-import static com.gaius.gaiusapp.utils.ResourceHelper.getResizedBitmap;
-
-class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.ContentlViewHolder> {
+public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.ContentlViewHolder> {
     private Context mCtx;
     private List<Content> contentsList;
 
@@ -72,7 +68,10 @@ class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.ContentlViewHol
             holder.typeView.setImageResource(R.drawable.ic_video_create);
         }
         else if (content.getType().equals("page")) {
-            holder.typeView.setImageResource(R.drawable.ic_web_animation);
+            holder.typeView.setImageResource(R.drawable.ic_simple_creation);
+        }
+        else if (content.getType().equals("image")) {
+            holder.typeView.setImageResource(R.drawable.images_app);
         }
 
         holder.textViewTitle.setText(content.getTitle());

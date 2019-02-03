@@ -1,4 +1,4 @@
-package com.gaius.gaiusapp;
+package com.gaius.gaiusapp.adapters;
 
 import android.content.Context;
 import android.widget.ImageView;

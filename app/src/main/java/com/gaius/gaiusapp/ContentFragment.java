@@ -285,6 +285,13 @@ public class ContentFragment extends Fragment implements View.OnClickListener {
                     .replace(R.id.fragment_container, fragment)
                     .commit();
         }
+        else if (c.getTitle().equals("Browse Photos")) {
+            Fragment fragment = new PhotosFragment();
+
+            getActivity().getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.fragment_container, fragment)
+                    .commit();
+        }
         else if (c.getTitle().equals("Create Content")) {
             displayIntentOptions();
         }
@@ -379,9 +386,9 @@ public class ContentFragment extends Fragment implements View.OnClickListener {
             public void onClick(View v) {
                 Log.d("Yasir", "clicked on ad creation");
                 alertD.dismiss();
-
-                Intent i = new Intent(getContext(), AdCreationActivity.class);
-                getContext().startActivity(i);
+// fixme: ad creation
+//                Intent i = new Intent(getContext(), AdCreationActivity.class);
+//                getContext().startActivity(i);
             }
         });
     }

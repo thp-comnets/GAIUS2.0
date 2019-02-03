@@ -1,6 +1,6 @@
-package com.gaius.gaiusapp;
+package com.gaius.gaiusapp.classes;
 
-class Content {
+public class Content {
     int id;
     String title, url, uploadTime, type, description, thumbnail;
 

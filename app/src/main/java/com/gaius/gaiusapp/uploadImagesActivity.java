@@ -25,6 +25,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.gaius.gaiusapp.adapters.UrlGalleryAdapter;
 import com.gaius.gaiusapp.utils.ResourceHelper;
 
 import net.gotev.uploadservice.MultipartUploadRequest;

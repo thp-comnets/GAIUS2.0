@@ -1,7 +1,6 @@
 package com.gaius.gaiusapp;
 
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AppCompatActivity;
 
 
@@ -12,7 +11,7 @@ public class RenderPhotoActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
-        setContentView(R.layout.view_images_popup);
+        setContentView(R.layout.activity_upload_album);
         super.onCreate(savedInstanceState);
 
         Bundle bundle = getIntent().getExtras();

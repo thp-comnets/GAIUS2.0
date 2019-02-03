@@ -19,7 +19,9 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -52,15 +54,35 @@ public class uploadImagesActivity extends AppCompatActivity {
     private final int PICK_IMAGE_MULTIPLE = 0;
     ArrayList<String> multiImageViewBitmaps;
     ArrayList<String> uploadImagesPath;
+    private int currentImagePos;
+    private UrlGalleryAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         UploadService.NAMESPACE = BuildConfig.APPLICATION_ID;
         UploadService.NAMESPACE = "com.gaius.contentupload";
 
-        setContentView(R.layout.view_images_popup);
+        setContentView(R.layout.activity_upload_album);
 
         super.onCreate(savedInstanceState);
+
+        ImageView deleteButton = findViewById(R.id.delete_button);
+        deleteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                multiImageViewBitmaps.remove(currentImagePos-1);
+                uploadImagesPath.remove(currentImagePos-1);
+
+                if (uploadImagesPath.size() == 0) {
+                    finish();
+                }
+
+                adapter = new UrlGalleryAdapter(getApplicationContext(),multiImageViewBitmaps);
+                galleryView.setAdapter(adapter);
+                label.setText((1)+"/"+galleryView.getAdapter().getCount());
+                currentImagePos = 1;
+            }
+        });
 
         galleryView = (GalleryView)findViewById(R.id.gallery);
         label = (TextView)findViewById(R.id.tvLabel);
@@ -69,6 +91,7 @@ public class uploadImagesActivity extends AppCompatActivity {
             @Override
             public void onScrollEnd(int index) {
                 label.setText((index+1)+"/"+galleryView.getAdapter().getCount());
+                currentImagePos = index+1;
             }
         });
 
@@ -95,34 +118,34 @@ public class uploadImagesActivity extends AppCompatActivity {
                 multiImageViewBitmaps = new ArrayList<>();
                 uploadImagesPath = new ArrayList<>();
 
-                if(resultCode == this.RESULT_OK) {
-                    if(data.getClipData() != null) {
-                        int count = data.getClipData().getItemCount(); //evaluate the count before the for loop --- otherwise, the count is evaluated every loop.
+                if(data.getClipData() != null) {
+                    int count = data.getClipData().getItemCount(); //evaluate the count before the for loop --- otherwise, the count is evaluated every loop.
 
-                        for(int i = 0; i < count; i++) {
-                            Uri imageUri = data.getClipData().getItemAt(i).getUri();
+                    for(int i = 0; i < count; i++) {
+                        Uri imageUri = data.getClipData().getItemAt(i).getUri();
 
-                            Bitmap bitmap = null;
-                            try {
-                                bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), imageUri);
-                                bitmap = getResizedBitmap(bitmap,800);
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-
-                            String imagePath = ResourceHelper.saveBitmapCompressed(getApplicationContext(), imageUri, bitmap);
-                            uploadImagesPath.add(imagePath);
-                            multiImageViewBitmaps.add(imageUri.toString());
+                        Bitmap bitmap = null;
+                        try {
+                            bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), imageUri);
+                            bitmap = getResizedBitmap(bitmap,800);
+                        } catch (IOException e) {
+                            e.printStackTrace();
                         }
-                    }
-                    else if(data.getData() != null) {
-                        Uri imageUri = data.getData();
-                        uploadImagesPath.add(imageUri.getPath());
+
+                        String imagePath = ResourceHelper.saveBitmapCompressed(getApplicationContext(), imageUri, bitmap);
+                        uploadImagesPath.add(imagePath);
                         multiImageViewBitmaps.add(imageUri.toString());
                     }
                 }
+                else if(data.getData() != null) {
+                    Uri imageUri = data.getData();
+                    uploadImagesPath.add(imageUri.getPath());
+                    multiImageViewBitmaps.add(imageUri.toString());
+                }
 
-                galleryView.setAdapter(new UrlGalleryAdapter(this,multiImageViewBitmaps));
+                adapter = new UrlGalleryAdapter(this,multiImageViewBitmaps);
+                galleryView.setAdapter(adapter);
+                label.setText((1)+"/"+galleryView.getAdapter().getCount());
             }
         }
     }

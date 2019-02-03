@@ -155,67 +155,67 @@ public class ContentFragment extends Fragment implements View.OnClickListener {
                 });
             }
 
-            if(requestCode == PICK_IMAGE_MULTIPLE) {
-                Log.d("yasir","PICK_IMAGE_MULTIPLE");
-
-                ArrayList<Uri> multiImageViewBitmaps;
-                multiImageViewBitmaps = new ArrayList<>();
-
-                if(resultCode == getActivity().RESULT_OK) {
-                    if(data.getClipData() != null) {
-                        int count = data.getClipData().getItemCount(); //evaluate the count before the for loop --- otherwise, the count is evaluated every loop.
-
-                        Log.d("yasir", "count: "+count);
-
-                        for(int i = 0; i < count; i++) {
-                            Uri imageUri = data.getClipData().getItemAt(i).getUri();
-                            multiImageViewBitmaps.add(imageUri);
-                            Log.d("yasir ", i+": "+imageUri+"");
-                            //do something with the image (save it to some directory or whatever you need to do with it here)
-                        }
-                    }
-                } else if(data.getData() != null) {
-                    String imagePath = data.getData().getPath();
-                    Log.d("yasir", imagePath+"");
-                    //do something with the image (save it to some directory or whatever you need to do with it here)
-                }
-
-                LayoutInflater layoutInflater = LayoutInflater.from(getContext());
-                final View promptView = layoutInflater.inflate(R.layout.upload_images_popup, null);
-                final AlertDialog alertD = new AlertDialog.Builder(getContext()).create();
-                alertD.setView(promptView);
-                alertD.show();
-
-                LinearLayout layout = (LinearLayout) promptView.findViewById(R.id.images_view);
-                for (int i=0; i<multiImageViewBitmaps.size(); i++) {
-                    ImageView image = new ImageView(promptView.getContext());
-                    image.setLayoutParams(new android.view.ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,500));
-                    image.setImageURI(multiImageViewBitmaps.get(i));
-                    layout.addView(image);
-                }
-
-                Button cancel_button = (Button) promptView.findViewById(R.id.cancel_button);
-                Button upload_button = (Button) promptView.findViewById(R.id.upload_button);
-
-                cancel_button.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        alertD.dismiss();
-                    }
-                });
-
-                upload_button.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        if (filledFields(promptView)) {
-                            EditText editTextPagename = promptView.findViewById(R.id.title_edittext);
-                            EditText editTextDescription = promptView.findViewById(R.id.description_edittext);
-                            alertD.dismiss();
-//                            uploadMultipart(getContext(), filePath, editTextPagename.getText().toString(), editTextDescription.getText().toString());
-                        }
-                    }
-                });
-            }
+//            if(requestCode == PICK_IMAGE_MULTIPLE) {
+//                Log.d("yasir","PICK_IMAGE_MULTIPLE");
+//
+//                ArrayList<Uri> multiImageViewBitmaps;
+//                multiImageViewBitmaps = new ArrayList<>();
+//
+//                if(resultCode == getActivity().RESULT_OK) {
+//                    if(data.getClipData() != null) {
+//                        int count = data.getClipData().getItemCount(); //evaluate the count before the for loop --- otherwise, the count is evaluated every loop.
+//
+//                        Log.d("yasir", "count: "+count);
+//
+//                        for(int i = 0; i < count; i++) {
+//                            Uri imageUri = data.getClipData().getItemAt(i).getUri();
+//                            multiImageViewBitmaps.add(imageUri);
+//                            Log.d("yasir ", i+": "+imageUri+"");
+//                            //do something with the image (save it to some directory or whatever you need to do with it here)
+//                        }
+//                    }
+//                } else if(data.getData() != null) {
+//                    String imagePath = data.getData().getPath();
+//                    Log.d("yasir", imagePath+"");
+//                    //do something with the image (save it to some directory or whatever you need to do with it here)
+//                }
+//
+//                LayoutInflater layoutInflater = LayoutInflater.from(getContext());
+//                final View promptView = layoutInflater.inflate(R.layout.upload_images_popup, null);
+//                final AlertDialog alertD = new AlertDialog.Builder(getContext()).create();
+//                alertD.setView(promptView);
+//                alertD.show();
+//
+//                LinearLayout layout = (LinearLayout) promptView.findViewById(R.id.images_view);
+//                for (int i=0; i<multiImageViewBitmaps.size(); i++) {
+//                    ImageView image = new ImageView(promptView.getContext());
+//                    image.setLayoutParams(new android.view.ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,500));
+//                    image.setImageURI(multiImageViewBitmaps.get(i));
+//                    layout.addView(image);
+//                }
+//
+//                Button cancel_button = (Button) promptView.findViewById(R.id.cancel_button);
+//                Button upload_button = (Button) promptView.findViewById(R.id.upload_button);
+//
+//                cancel_button.setOnClickListener(new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View view) {
+//                        alertD.dismiss();
+//                    }
+//                });
+//
+//                upload_button.setOnClickListener(new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View view) {
+//                        if (filledFields(promptView)) {
+//                            EditText editTextPagename = promptView.findViewById(R.id.title_edittext);
+//                            EditText editTextDescription = promptView.findViewById(R.id.description_edittext);
+//                            alertD.dismiss();
+////                            uploadMultipart(getContext(), filePath, editTextPagename.getText().toString(), editTextDescription.getText().toString());
+//                        }
+//                    }
+//                });
+//            }
         }
     }
 

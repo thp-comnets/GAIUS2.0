@@ -106,9 +106,6 @@ public class uploadImagesActivity extends AppCompatActivity {
     @SuppressLint("NewApi")
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        Intent intent;
-
-        Log.d("yasir","Upload video2 ");
 
         if (resultCode == RESULT_OK) {
 
@@ -147,6 +144,9 @@ public class uploadImagesActivity extends AppCompatActivity {
                 galleryView.setAdapter(adapter);
                 label.setText((1)+"/"+galleryView.getAdapter().getCount());
             }
+        } else {
+            //return to previous activity
+            finish();
         }
     }
 

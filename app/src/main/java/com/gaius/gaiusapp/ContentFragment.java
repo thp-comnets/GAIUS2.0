@@ -106,9 +106,6 @@ public class ContentFragment extends Fragment implements View.OnClickListener {
     @SuppressLint("NewApi")
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        Intent intent;
-
-        Log.d("yasir","Upload video2 ");
 
         if (resultCode == RESULT_OK) {
 
@@ -369,7 +366,7 @@ public class ContentFragment extends Fragment implements View.OnClickListener {
             @Override
             public void onClick(View v) {
                 Log.d("Yasir", "clicked on image creation");
-                alertD.dismiss();
+//                alertD.dismiss();
 
 //                Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
 //                intent.setType("image/*");

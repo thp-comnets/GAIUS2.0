@@ -76,7 +76,7 @@ public class NewsFeedFragment extends Fragment implements SwipeRefreshLayout.OnR
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
-                if (((LinearLayoutManager) recyclerView.getLayoutManager()).findLastVisibleItemPosition() == 1) {
+                if (((LinearLayoutManager) recyclerView.getLayoutManager()).findLastVisibleItemPosition() <= 1) {
                     buttonReturnToTop.setVisibility(View.GONE);
                 } else {
                     buttonReturnToTop.setVisibility(View.VISIBLE);

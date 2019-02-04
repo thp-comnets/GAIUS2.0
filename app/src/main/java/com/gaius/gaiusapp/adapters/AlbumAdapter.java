@@ -42,7 +42,7 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.albumViewHol
     @Override
     public void onBindViewHolder(@NonNull AlbumAdapter.albumViewHolder holder, int position) {
         String imageURI = imagesList.get(position);
-        holder.setIsRecyclable(false);
+//        holder.setIsRecyclable(false);
 
         holder.imageView.setImageResource(R.drawable.ic_avatar);
 

@@ -178,14 +178,7 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.newsFe
             holder.shareButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    NewsFeed n = newsFeedList.get((Integer) v.getTag());
-                    Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
-                    sharingIntent.setType("text/plain");
-                    String shareBody = "http://gaiusnetworks.com/page/"+n.getUrl().replace("./content/","");
-                    String shareSub = "Check this page on GAIUS";
-                    sharingIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, shareSub);
-                    sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, shareBody);
-                    mCtx.startActivity(Intent.createChooser(sharingIntent, "Share using"));
+                    shareItem(v, "Check this page on GAIUS");
                 }
             });
         }
@@ -196,14 +189,18 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.newsFe
             holder.shareButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    NewsFeed n = newsFeedList.get((Integer) v.getTag());
-                    Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
-                    sharingIntent.setType("text/plain");
-                    String shareBody = "http://gaiusnetworks.com/"+n.getUrl();
-                    String shareSub = "Check this video on GAIUS";
-                    sharingIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, shareSub);
-                    sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, shareBody);
-                    mCtx.startActivity(Intent.createChooser(sharingIntent, "Share using"));
+                    shareItem(v, "Check this video on GAIUS");
+                }
+            });
+        }
+        else if (newsfeed.getType().contains("image")) {
+            // video sharing
+
+            holder.shareButton.setTag(position);
+            holder.shareButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    shareItem(v, "Check this image album on GAIUS");
                 }
             });
         }
@@ -247,6 +244,16 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.newsFe
             }
         });
 
+    }
+
+    public void shareItem (View v, String shareSub) {
+        NewsFeed n = newsFeedList.get((Integer) v.getTag());
+        Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
+        sharingIntent.setType("text/plain");
+        String shareBody = "http://gaiusnetworks.com/"+n.getUrl().replace("./","");
+        sharingIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, shareSub);
+        sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, shareBody);
+        mCtx.startActivity(Intent.createChooser(sharingIntent, "Share using"));
     }
 
     @Override

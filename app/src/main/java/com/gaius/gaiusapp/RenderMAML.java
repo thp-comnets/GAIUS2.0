@@ -73,13 +73,13 @@ public class RenderMAML extends AppCompatActivity {
         final FrameLayout root = findViewById(R.id.root);
 
         Uri data = getIntent().getData();
-        if (data != null && data.toString().contains("http://gaiusnetworks.com/page/")) {
+        if (data != null && data.toString().contains("http://gaiusnetworks.com/content/")) {
             Intent intent = this.getIntent();
             Bundle bundle = intent.getExtras();
             mUrl =  "http://" + hostIP + ":" + hostPort + "/" + hostPath + "/";
             adUrl = mUrl;
 //            adUrl =  (String) bundle.getSerializable("BASEURL");
-            mPageUrl =  "./content/" + data.toString().replace("http://gaiusnetworks.com/page/","");
+            mPageUrl =  "./content/" + data.toString().replace("http://gaiusnetworks.com/content/","");
             mNoAds =  (String) bundle.getSerializable("LOCAL_CONTENT");
             campaign = (String) bundle.getSerializable("CAMPAIGN");
         }

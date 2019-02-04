@@ -89,7 +89,6 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.Contentl
                     bundle.putSerializable("EDIT_MODE", true);
                     bundle.putSerializable("PAGE_NAME", c.getTitle());
                     bundle.putSerializable("PAGE_DESCRIPTION", c.getDescription());
-//                bundle.putSerializable("PAGE_ICON", clickedChannel.getFaviconUrl());
                     intent.putExtras(bundle);
 
                     mCtx.startActivity(intent);

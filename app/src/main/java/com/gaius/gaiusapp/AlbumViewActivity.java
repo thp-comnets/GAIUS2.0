@@ -1,8 +1,10 @@
 package com.gaius.gaiusapp;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -21,6 +23,8 @@ import java.util.ArrayList;
 public class AlbumViewActivity extends AppCompatActivity {
     RecyclerView recyclerView;
     ArrayList<String> imagesURLs;
+    SharedPreferences prefs;
+    String fidelity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,6 +32,9 @@ public class AlbumViewActivity extends AppCompatActivity {
         setContentView(R.layout.album_view_activity);
 
         super.onCreate(savedInstanceState);
+
+        prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+        fidelity = prefs.getString("fidelity_level", "high");
 
         Uri data = getIntent().getData();
 
@@ -49,6 +56,16 @@ public class AlbumViewActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.images_recyclerview);
         recyclerView.setHasFixedSize(false);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        // managing fidelity for images requests
+        if (! fidelity.equals("high")) {
+            for (int i=0; i < imagesURLs.size(); i++) {
+
+                int index = imagesURLs.get(i).lastIndexOf(".");
+                String[] tmp =  {imagesURLs.get(i).substring(0, index), imagesURLs.get(i).substring(index)};
+                imagesURLs.set(i, tmp[0]+"_"+fidelity+tmp[1]);
+            }
+        }
 
         AlbumAdapter adapter = new AlbumAdapter(this, imagesURLs);
         recyclerView.setAdapter(adapter);

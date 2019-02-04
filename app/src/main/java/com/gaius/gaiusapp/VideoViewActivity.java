@@ -1,0 +1,60 @@
+package com.gaius.gaiusapp;
+
+import android.content.Intent;
+import android.net.Uri;
+import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
+import com.bumptech.glide.signature.ObjectKey;
+
+import cn.jzvd.Jzvd;
+import cn.jzvd.JzvdStd;
+
+import static com.gaius.gaiusapp.utils.ResourceHelper.convertImageURLBasedonFidelity;
+
+public class VideoViewActivity extends AppCompatActivity {
+    JzvdStd videoView;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+
+        setContentView(R.layout.video_view_activity);
+
+        super.onCreate(savedInstanceState);
+
+        Uri data = getIntent().getData();
+
+        if (data != null && data.toString().contains("http://gaiusnetworks.com/videos/")) {
+            Intent intent = this.getIntent();
+            Bundle bundle = intent.getExtras();
+            String videoURL =  "http://91.230.41.34:8080/test/" + data.toString().replace("http://gaiusnetworks.com","");
+
+            videoView = findViewById(R.id.videoView);
+
+            Glide.with(this)
+                    .load(convertImageURLBasedonFidelity(videoURL.replace(".mp4",".jpg"), this)) //fixme: if not .mp4
+                    .apply(new RequestOptions().signature(new ObjectKey(System.currentTimeMillis())))
+                    .into(videoView.thumbImageView);
+
+            videoView.setUp(videoURL, "", Jzvd.SCREEN_WINDOW_NORMAL);
+
+        }
+        else {
+            // fixme: no video
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        Jzvd.releaseAllVideos();
+        finish();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Jzvd.releaseAllVideos();
+    }
+}

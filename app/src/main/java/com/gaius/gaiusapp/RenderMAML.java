@@ -46,6 +46,7 @@ public class RenderMAML extends AppCompatActivity {
     String token;
     private RequestQueue mRequestQueue;
     private String response_var = "";
+    private boolean EDIT_MODE = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

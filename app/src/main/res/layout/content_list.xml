@@ -43,6 +43,7 @@
         <TextView
             android:id="@+id/textViewName"
             android:layout_marginTop="20dp"
+            android:layout_marginEnd="40dp"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_toEndOf="@id/cardview"
@@ -54,6 +55,7 @@
 
         <TextView
             android:id="@+id/textViewDescription"
+            android:layout_marginEnd="40dp"
             android:paddingTop="10dp"
             android:layout_below="@+id/textViewName"
             android:layout_width="fill_parent"
@@ -71,6 +73,15 @@
             android:layout_marginEnd="5dp"
             android:layout_alignParentEnd="true"
             android:src="@drawable/ic_bin"/>
+
+        <ImageView
+            android:layout_marginTop="50dp"
+            android:id="@+id/editButton"
+            android:layout_width="24sp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="5dp"
+            android:layout_alignParentEnd="true"
+            android:src="@android:drawable/ic_menu_edit"/>
 
     </RelativeLayout>
 

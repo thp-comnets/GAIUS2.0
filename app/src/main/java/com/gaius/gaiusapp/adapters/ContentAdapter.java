@@ -2,6 +2,7 @@ package com.gaius.gaiusapp.adapters;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -22,6 +23,8 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+import com.gaius.gaiusapp.CreativeWebCreation;
+import com.gaius.gaiusapp.RenderMAML;
 import com.gaius.gaiusapp.classes.Content;
 import com.gaius.gaiusapp.R;
 
@@ -68,12 +71,34 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.Contentl
 
         if (content.getType().equals("video")) {
             holder.typeView.setImageResource(R.drawable.ic_video_create);
+            holder.editButton.setVisibility(View.GONE);
         }
         else if (content.getType().equals("page")) {
+            holder.editButton.setVisibility(View.VISIBLE);
             holder.typeView.setImageResource(R.drawable.ic_simple_creation);
+
+            holder.editButton.setTag(position);
+            holder.editButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    final Content c = contentsList.get((Integer) v.getTag());
+
+                    Intent intent = new Intent(mCtx, CreativeWebCreation.class);
+                    Bundle bundle = new Bundle();
+                    bundle.putSerializable("PAGE_URL", c.getUrl());
+                    bundle.putSerializable("EDIT_MODE", true);
+                    bundle.putSerializable("PAGE_NAME", c.getTitle());
+                    bundle.putSerializable("PAGE_DESCRIPTION", c.getDescription());
+//                bundle.putSerializable("PAGE_ICON", clickedChannel.getFaviconUrl());
+                    intent.putExtras(bundle);
+
+                    mCtx.startActivity(intent);
+                }
+            });
         }
         else if (content.getType().equals("image")) {
             holder.typeView.setImageResource(R.drawable.images_app);
+            holder.editButton.setVisibility(View.GONE);
         }
 
         holder.textViewTitle.setText(content.getTitle());
@@ -105,6 +130,7 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.Contentl
 //                }
             }
         });
+
 
         holder.deleteButton.setTag(position);
         holder.deleteButton.setOnClickListener(new View.OnClickListener() {
@@ -175,7 +201,7 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.Contentl
     class ContentlViewHolder extends RecyclerView.ViewHolder {
 
         TextView textViewTitle, getTextViewDescription;
-        ImageView imageView, typeView, deleteButton;
+        ImageView imageView, typeView, deleteButton, editButton;
         LinearLayout channelItem;
 
         public ContentlViewHolder(View itemView) {
@@ -187,6 +213,7 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.Contentl
             typeView = itemView.findViewById(R.id.typeView);
             channelItem = itemView.findViewById(R.id.channelItem);
             deleteButton = itemView.findViewById(R.id.binButton);
+            editButton = itemView.findViewById(R.id.editButton);
         }
     }
 }

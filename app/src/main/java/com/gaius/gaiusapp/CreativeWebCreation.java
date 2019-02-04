@@ -411,31 +411,31 @@ public class CreativeWebCreation extends AppCompatActivity implements TextEditor
         EDIT_MODE = getIntent().getBooleanExtra("EDIT_MODE", false);
         if (EDIT_MODE) {
 
-            // requesting the page icon
-            if (! iconPath.equals("None")) {
-                final InputStreamVolleyRequest request = new InputStreamVolleyRequest(Request.Method.GET, iconPath,
-                        new Response.Listener<byte[]>() {
-                            @Override
-                            public void onResponse(final byte[] response) {
-
-                                try {
-                                    if (response != null) {
-                                        pageIcon = BitmapFactory.decodeByteArray(response, 0, response.length);
-                                        iconPath = null;
-                                    }
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                        }, new Response.ErrorListener() {
-
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        error.printStackTrace();
-                    }
-                }, null);
-                mRequestQueue.add(request);
-            }
+//            // requesting the page icon
+//            if (! iconPath.equals("None")) {
+//                final InputStreamVolleyRequest request = new InputStreamVolleyRequest(Request.Method.GET, iconPath,
+//                        new Response.Listener<byte[]>() {
+//                            @Override
+//                            public void onResponse(final byte[] response) {
+//
+//                                try {
+//                                    if (response != null) {
+//                                        pageIcon = BitmapFactory.decodeByteArray(response, 0, response.length);
+//                                        iconPath = null;
+//                                    }
+//                                } catch (Exception e) {
+//                                    e.printStackTrace();
+//                                }
+//                            }
+//                        }, new Response.ErrorListener() {
+//
+//                    @Override
+//                    public void onErrorResponse(VolleyError error) {
+//                        error.printStackTrace();
+//                    }
+//                }, null);
+//                mRequestQueue.add(request);
+//            }
 
             // request and parse the index.maml page
             try {
@@ -1350,6 +1350,14 @@ public class CreativeWebCreation extends AppCompatActivity implements TextEditor
     {
         LayoutInflater layoutInflater = LayoutInflater.from(this);
         final View promptView = layoutInflater.inflate(R.layout.submit_content_popup, null);
+
+        if (EDIT_MODE) {
+            EditText editTextPagename = promptView.findViewById(R.id.title_edittext);
+            EditText editTextDescription = promptView.findViewById(R.id.description_edittext);
+            editTextPagename.setText(pageName);
+            editTextDescription.setText(pageDescription);
+        }
+
         alertDSubmit = new AlertDialog.Builder(this).create();
         alertDSubmit.setView(promptView);
         alertDSubmit.show();

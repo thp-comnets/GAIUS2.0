@@ -38,6 +38,8 @@ import java.util.List;
 import cn.jzvd.Jzvd;
 import cn.jzvd.JzvdStd;
 
+import static com.gaius.gaiusapp.utils.ResourceHelper.convertImageURLBasedonFidelity;
+
 public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.newsFeedViewHolder> {
 
     private Context mCtx;
@@ -95,7 +97,7 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.newsFe
             //loading the image
             Glide.with(mCtx)
                     .setDefaultRequestOptions(requestOptions)
-                    .load(newsfeed.getImage())
+                    .load(convertImageURLBasedonFidelity(newsfeed.getImage(), mCtx))
 //                    .apply(new RequestOptions().signature(new ObjectKey("signature string")))
                     .apply(new RequestOptions().signature(new ObjectKey(System.currentTimeMillis())))
                     .into(holder.imageView);
@@ -107,7 +109,7 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.newsFe
             holder.mDemoSlider.setVisibility(View.GONE);
 
             Glide.with(mCtx)
-                    .load(newsfeed.getImage())
+                    .load(convertImageURLBasedonFidelity(newsfeed.getImage(),mCtx))
                     .apply(new RequestOptions().signature(new ObjectKey(System.currentTimeMillis())))
                     .into(holder.videoView.thumbImageView);
             holder.videoView.setUp("http://91.230.41.34:8080/test/"+newsfeed.getUrl(), "", Jzvd.SCREEN_WINDOW_NORMAL);

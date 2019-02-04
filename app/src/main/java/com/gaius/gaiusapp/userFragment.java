@@ -35,6 +35,8 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.gaius.gaiusapp.utils.ResourceHelper.convertImageURLBasedonFidelity;
+
 public class userFragment extends Fragment {
     private static String URL = "";
     List<NewsFeed> pagesList;
@@ -133,6 +135,15 @@ public class userFragment extends Fragment {
                                 //getting product object from json array
                                 JSONObject newsFeed = array.getJSONObject(i);
 
+                                ArrayList<String> imagesList = new ArrayList<String>();
+
+                                if (newsFeed.has("images")) {
+                                    String [] tmp = newsFeed.getString("images").split(";");
+                                    for (int j=0; j<tmp.length; j++) {
+                                        imagesList.add(convertImageURLBasedonFidelity("http://91.230.41.34:8080/test/"+newsFeed.getString("url")+tmp[j], getContext()));
+                                    }
+                                }
+
                                 pagesList.add(new NewsFeed(
                                         newsFeed.getInt("id"),
                                         newsFeed.getString("name"),
@@ -145,7 +156,7 @@ public class userFragment extends Fragment {
                                         newsFeed.getString("type"),
                                         newsFeed.getString("liked"),
                                         false,
-                                        new ArrayList<String>()
+                                        imagesList
                                 ));
                             }
 

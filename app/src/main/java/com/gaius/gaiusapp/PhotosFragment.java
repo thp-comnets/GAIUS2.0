@@ -26,6 +26,8 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.gaius.gaiusapp.utils.ResourceHelper.convertImageURLBasedonFidelity;
+
 public class PhotosFragment extends Fragment {
     private static String URL = "http://91.230.41.34:8080/test/listImages.py";
     List<Image> imageList;
@@ -75,7 +77,7 @@ public class PhotosFragment extends Fragment {
                                 ArrayList<String> imagesList = new ArrayList<String>();
                                 String [] tmp = image.getString("images").split(";");
                                 for (int j=0; j<tmp.length; j++) {
-                                    imagesList.add("http://91.230.41.34:8080/test/"+image.getString("url")+tmp[j]);
+                                    imagesList.add(convertImageURLBasedonFidelity("http://91.230.41.34:8080/test/"+image.getString("url")+tmp[j], getContext()));
                                 }
 
                                 //adding the product to product list

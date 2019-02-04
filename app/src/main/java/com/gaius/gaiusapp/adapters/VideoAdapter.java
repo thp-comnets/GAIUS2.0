@@ -20,6 +20,8 @@ import java.util.List;
 import cn.jzvd.Jzvd;
 import cn.jzvd.JzvdStd;
 
+import static com.gaius.gaiusapp.utils.ResourceHelper.convertImageURLBasedonFidelity;
+
 public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHolder> {
     private Context mCtx;
     private List<Video> videosList;
@@ -59,7 +61,7 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHol
         }
 
         Glide.with(mCtx)
-                .load(video.getThumbnail())
+                .load(convertImageURLBasedonFidelity(video.getThumbnail(), mCtx))
                 .apply(new RequestOptions().signature(new ObjectKey(System.currentTimeMillis())))
                 .into(holder.videoView.thumbImageView);
         holder.videoView.setUp("http://91.230.41.34:8080/test/"+video.getUrl(), "", Jzvd.SCREEN_WINDOW_NORMAL);

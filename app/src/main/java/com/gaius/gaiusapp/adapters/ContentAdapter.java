@@ -27,6 +27,8 @@ import com.gaius.gaiusapp.R;
 
 import java.util.List;
 
+import static com.gaius.gaiusapp.utils.ResourceHelper.convertImageURLBasedonFidelity;
+
 public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.ContentlViewHolder> {
     private Context mCtx;
     private List<Content> contentsList;
@@ -60,7 +62,7 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.Contentl
             //loading the image
             Glide.with(mCtx)
                     .setDefaultRequestOptions(requestOptions)
-                    .load(content.getThumbnail())
+                    .load(convertImageURLBasedonFidelity(content.getThumbnail(), mCtx))
                     .into(holder.imageView);
         }
 

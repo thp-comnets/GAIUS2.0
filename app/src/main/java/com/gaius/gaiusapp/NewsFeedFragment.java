@@ -34,6 +34,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static com.gaius.gaiusapp.utils.ResourceHelper.convertImageURLBasedonFidelity;
+
 public class NewsFeedFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
     private static String URL_PRODUCTS = "";
     List<NewsFeed> newsFeedList;
@@ -133,7 +135,7 @@ public class NewsFeedFragment extends Fragment implements SwipeRefreshLayout.OnR
                                 ArrayList<String> imagesList = new ArrayList<String>();
                                 String [] tmp = newsFeed.getString("images").split(";");
                                 for (int j=0; j<tmp.length; j++) {
-                                    imagesList.add("http://91.230.41.34:8080/test/"+newsFeed.getString("url")+tmp[j]);
+                                    imagesList.add(convertImageURLBasedonFidelity("http://91.230.41.34:8080/test/"+newsFeed.getString("url")+tmp[j], getContext()));
                                 }
 
                                 newsFeedList.add(new NewsFeed(

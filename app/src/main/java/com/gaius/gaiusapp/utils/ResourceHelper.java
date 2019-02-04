@@ -2,6 +2,7 @@ package com.gaius.gaiusapp.utils;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -12,6 +13,7 @@ import android.graphics.Point;
 import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Environment;
+import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.util.Log;
@@ -318,5 +320,21 @@ public class ResourceHelper {
         // if dot is in the first position,
         // we are dealing with a hidden file rather than an extension
         return (dotInd > 0) ? fileName.substring(0, dotInd) : fileName;
+    }
+
+    public static String convertImageURLBasedonFidelity(String url, Context mCtx) {
+        SharedPreferences prefs;
+        String fidelity;
+
+        prefs = PreferenceManager.getDefaultSharedPreferences(mCtx);
+        fidelity = prefs.getString("fidelity_level", "high");
+
+        // managing fidelity for images requests
+        if (! fidelity.equals("high")) {
+            int index = url.lastIndexOf(".");
+            String[] tmp =  {url.substring(0, index), url.substring(index)};
+            return tmp[0]+"_"+fidelity+tmp[1];
+        }
+        return url;
     }
 }

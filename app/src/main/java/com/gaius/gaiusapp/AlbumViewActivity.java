@@ -19,12 +19,12 @@ import com.gaius.gaiusapp.adapters.AlbumAdapter;
 
 import java.util.ArrayList;
 
+import static com.gaius.gaiusapp.utils.ResourceHelper.convertImageURLBasedonFidelity;
+
 
 public class AlbumViewActivity extends AppCompatActivity {
     RecyclerView recyclerView;
     ArrayList<String> imagesURLs;
-    SharedPreferences prefs;
-    String fidelity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,9 +32,6 @@ public class AlbumViewActivity extends AppCompatActivity {
         setContentView(R.layout.album_view_activity);
 
         super.onCreate(savedInstanceState);
-
-        prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
-        fidelity = prefs.getString("fidelity_level", "high");
 
         Uri data = getIntent().getData();
 
@@ -57,15 +54,14 @@ public class AlbumViewActivity extends AppCompatActivity {
         recyclerView.setHasFixedSize(false);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        // managing fidelity for images requests
-        if (! fidelity.equals("high")) {
-            for (int i=0; i < imagesURLs.size(); i++) {
-
-                int index = imagesURLs.get(i).lastIndexOf(".");
-                String[] tmp =  {imagesURLs.get(i).substring(0, index), imagesURLs.get(i).substring(index)};
-                imagesURLs.set(i, tmp[0]+"_"+fidelity+tmp[1]);
-            }
-        }
+//        // managing fidelity for images requests
+//        if (! fidelity.equals("high")) {
+//            for (int i=0; i < imagesURLs.size(); i++) {
+//                int index = imagesURLs.get(i).lastIndexOf(".");
+//                String[] tmp =  {imagesURLs.get(i).substring(0, index), imagesURLs.get(i).substring(index)};
+//                imagesURLs.set(i, tmp[0]+"_"+fidelity+tmp[1]);
+//            }
+//        }
 
         AlbumAdapter adapter = new AlbumAdapter(this, imagesURLs);
         recyclerView.setAdapter(adapter);
@@ -87,7 +83,7 @@ public class AlbumViewActivity extends AppCompatActivity {
                         String [] tmp = response.replace("\n", "").split(";");
 
                         for (int j=0; j<tmp.length; j++) {
-                            imagesURLs.add("http://91.230.41.34:8080/test/"+albumURL+tmp[j]);
+                            imagesURLs.add(convertImageURLBasedonFidelity("http://91.230.41.34:8080/test/"+albumURL+tmp[j], getBaseContext()));
                         }
                         renderAlbum();
                     }

@@ -395,7 +395,7 @@ public class ContentFragment extends Fragment implements View.OnClickListener {
         String uploadId = UUID.randomUUID().toString();
         try {
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
-            MultipartUploadRequest request = new MultipartUploadRequest(context, uploadId, "http://91.230.41.34:8080/test/uploadVideo.py")
+            MultipartUploadRequest request = new MultipartUploadRequest(context, uploadId, prefs.getString("base_url", null)+"uploadVideo.py")
                     .addParameter("token", prefs.getString("token", "null"))
                     .setUtf8Charset()
                     .setNotificationConfig(getNotificationConfig(uploadId, R.string.notification_title))

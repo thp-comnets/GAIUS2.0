@@ -37,7 +37,7 @@ import java.util.List;
 import static com.gaius.gaiusapp.utils.ResourceHelper.convertImageURLBasedonFidelity;
 
 public class NewsFeedFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
-    private static String URL_PRODUCTS = "";
+    private static String URL, base_URL;
     List<NewsFeed> newsFeedList;
     SwipeRefreshLayout swipeLayout;
     RecyclerView recyclerView;
@@ -62,7 +62,8 @@ public class NewsFeedFragment extends Fragment implements SwipeRefreshLayout.OnR
 
         prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
         token = prefs.getString("token", "null");
-        URL_PRODUCTS = "http://91.230.41.34:8080/test/listPages.py?token="+token;
+        base_URL = prefs.getString("base_url", null);
+        URL= base_URL + "listPages.py?token="+token;
 
         recyclerView =  getView().findViewById(R.id.recylcerView);
         recyclerView.setHasFixedSize(true);
@@ -114,7 +115,7 @@ public class NewsFeedFragment extends Fragment implements SwipeRefreshLayout.OnR
          * Then we have a Response Listener and a Error Listener
          * In response listener we will get the JSON response as a String
          * */
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, URL_PRODUCTS,
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, URL,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
@@ -135,7 +136,7 @@ public class NewsFeedFragment extends Fragment implements SwipeRefreshLayout.OnR
                                 ArrayList<String> imagesList = new ArrayList<String>();
                                 String [] tmp = newsFeed.getString("images").split(";");
                                 for (int j=0; j<tmp.length; j++) {
-                                    imagesList.add(convertImageURLBasedonFidelity("http://91.230.41.34:8080/test/"+newsFeed.getString("url")+tmp[j], getContext()));
+                                    imagesList.add(convertImageURLBasedonFidelity(base_URL+newsFeed.getString("url")+tmp[j], getContext()));
                                 }
 
                                 newsFeedList.add(new NewsFeed(

@@ -55,12 +55,12 @@ public class MyContentFragment extends Fragment {
                 DividerItemDecoration.VERTICAL));
 
         contentList = new ArrayList<>();
-        URL = "http://91.230.41.34:8080/test/listUserPages.py";
 
         prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
         String token = prefs.getString("token", "null");
         String userID = prefs.getString("userID", "null");
 
+        URL = prefs.getString("base_url", null) + "listUserPages.py";
         URL += "?userID="+userID+"&token="+token;
 
         loadChannels();

@@ -12,7 +12,7 @@ public class Web {
         this.title = title;
         this.url = url;
         this.userID = userID;
-        this.image = "http://91.230.41.34:8080/test/"+image;
+        this.image = image;
     }
 
     public int getId() {

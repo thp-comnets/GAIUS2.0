@@ -59,6 +59,7 @@ public class SignUp extends AppCompatActivity {
     private Uri avatarUri;
     private ImageView avatarImageView, loadingImageView;
     private EditText signupInputName, signupInputEmail, signupInputPassword, signupInputPassword2;
+    SharedPreferences prefs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,7 +69,8 @@ public class SignUp extends AppCompatActivity {
         UploadService.NAMESPACE = BuildConfig.APPLICATION_ID;
         UploadService.NAMESPACE = "com.gaius.contentupload";
 
-        URL_FOR_REGISTRATION = "http://91.230.41.34:8080/test/register.php";
+        prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+        URL_FOR_REGISTRATION = prefs.getString("base_url", null)+"register.php";
 
         signupInputName = findViewById(R.id.name_edittext);
         signupInputEmail = findViewById(R.id.email_edittext);
@@ -256,9 +258,7 @@ public class SignUp extends AppCompatActivity {
 
                                     Toast.makeText(getApplicationContext(), "Your account was successfully", Toast.LENGTH_SHORT).show();
 
-                                    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
                                     SharedPreferences.Editor editor = prefs.edit();
-
                                     editor.putString("name", jObj.getJSONObject("user").getString("name"));
                                     editor.putString("email", jObj.getJSONObject("user").getString("email"));
                                     editor.putString("password", password);
@@ -298,7 +298,6 @@ public class SignUp extends AppCompatActivity {
             if (filePath != null) {
 //                String iconPathNew = ResourceHelper.compressImage(getApplicationContext(), filePath, 80, 80);
                 request.addFileToUpload(filePath, "avatar");
-                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
                 SharedPreferences.Editor editor = prefs.edit();
                 editor.putString("account_avatar", filePath);
                 editor.commit();

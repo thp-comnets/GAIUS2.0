@@ -1,8 +1,10 @@
 package com.gaius.gaiusapp;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
@@ -29,7 +31,9 @@ public class VideoViewActivity extends AppCompatActivity {
         if (data != null && data.toString().contains("http://gaiusnetworks.com/videos/")) {
             Intent intent = this.getIntent();
             Bundle bundle = intent.getExtras();
-            String videoURL =  "http://91.230.41.34:8080/test/" + data.toString().replace("http://gaiusnetworks.com","");
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);;
+
+            String videoURL =  prefs.getString("base_url", null) + data.toString().replace("http://gaiusnetworks.com","");
 
             videoView = findViewById(R.id.videoView);
 

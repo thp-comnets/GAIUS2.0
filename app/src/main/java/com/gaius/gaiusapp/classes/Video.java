@@ -9,8 +9,8 @@ public class Video {
         this.title = title;
         this.description = description;
         this.url = url;
-        this.avatar = "http://91.230.41.34:8080/test/"+avatar;
-        this.thumbnail = "http://91.230.41.34:8080/test/"+thumbnail;
+        this.avatar = avatar;
+        this.thumbnail = thumbnail;
         this.userID = userID;
         this.uploadedSince = uploadedSince;
         this.views = views;

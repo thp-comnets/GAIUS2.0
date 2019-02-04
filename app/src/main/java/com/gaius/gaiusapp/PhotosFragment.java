@@ -1,6 +1,8 @@
 package com.gaius.gaiusapp;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -29,13 +31,17 @@ import java.util.List;
 import static com.gaius.gaiusapp.utils.ResourceHelper.convertImageURLBasedonFidelity;
 
 public class PhotosFragment extends Fragment {
-    private static String URL = "http://91.230.41.34:8080/test/listImages.py";
+    private static String URL;
     List<Image> imageList;
     RecyclerView recyclerView;
+    private SharedPreferences prefs;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+
+        prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+        URL = prefs.getString("base_url", null) + "listImages.py";
 
         return inflater.inflate(R.layout.fragment_images, null);
     }
@@ -77,7 +83,7 @@ public class PhotosFragment extends Fragment {
                                 ArrayList<String> imagesList = new ArrayList<String>();
                                 String [] tmp = image.getString("images").split(";");
                                 for (int j=0; j<tmp.length; j++) {
-                                    imagesList.add(convertImageURLBasedonFidelity("http://91.230.41.34:8080/test/"+image.getString("url")+tmp[j], getContext()));
+                                    imagesList.add(convertImageURLBasedonFidelity(prefs.getString("base_url", null) + image.getString("url")+tmp[j], getContext()));
                                 }
 
                                 //adding the product to product list

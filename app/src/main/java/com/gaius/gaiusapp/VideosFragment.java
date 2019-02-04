@@ -1,6 +1,8 @@
 package com.gaius.gaiusapp;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -26,13 +28,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class VideosFragment extends Fragment {
-    private static String URL = "http://91.230.41.34:8080/test/listVideos2.py";
+    private static String URL;
     List<Video> videoList;
     RecyclerView recyclerView;
+    SharedPreferences prefs;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+        URL = prefs.getString("base_url", null) + "listVideos2.py";
 
         return inflater.inflate(R.layout.fragment_videos, null);
     }

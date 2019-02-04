@@ -25,6 +25,7 @@ import static com.gaius.gaiusapp.utils.ResourceHelper.convertImageURLBasedonFide
 public class AlbumViewActivity extends AppCompatActivity {
     RecyclerView recyclerView;
     ArrayList<String> imagesURLs;
+    private SharedPreferences prefs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,10 +37,12 @@ public class AlbumViewActivity extends AppCompatActivity {
         Uri data = getIntent().getData();
 
         if (data != null && data.toString().contains("http://gaiusnetworks.com/images/")) {
+            prefs = PreferenceManager.getDefaultSharedPreferences(this);
+
             Intent intent = this.getIntent();
             Bundle bundle = intent.getExtras();
             String albumURL =  "." + data.toString().replace("http://gaiusnetworks.com","");
-            String mPageUrl = "http://91.230.41.34:8080/test/getAlbum.py?albumID="+albumURL;
+            String mPageUrl = prefs.getString("base_url", null) + "getAlbum.py?albumID="+albumURL;
             loadAlbum(mPageUrl, albumURL);
         }
         else {
@@ -83,7 +86,7 @@ public class AlbumViewActivity extends AppCompatActivity {
                         String [] tmp = response.replace("\n", "").split(";");
 
                         for (int j=0; j<tmp.length; j++) {
-                            imagesURLs.add(convertImageURLBasedonFidelity("http://91.230.41.34:8080/test/"+albumURL+tmp[j], getBaseContext()));
+                            imagesURLs.add(convertImageURLBasedonFidelity(prefs.getString("base_url", null) + albumURL+tmp[j], getBaseContext()));
                         }
                         renderAlbum();
                     }

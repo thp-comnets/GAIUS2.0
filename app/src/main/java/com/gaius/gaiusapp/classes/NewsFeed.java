@@ -20,8 +20,8 @@ public class NewsFeed {
         this.id = id;
         this.name = name;
         this.updateTime = updateTime;
-        this.avatar = "http://91.230.41.34:8080/test/"+avatar;
-        this.image = "http://91.230.41.34:8080/test/"+image;
+        this.avatar = avatar;
+        this.image = image;
         this.title = title;
         this.description = description;
         this.url = url;

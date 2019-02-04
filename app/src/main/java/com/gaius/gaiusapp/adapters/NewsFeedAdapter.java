@@ -41,9 +41,9 @@ import cn.jzvd.JzvdStd;
 import static com.gaius.gaiusapp.utils.ResourceHelper.convertImageURLBasedonFidelity;
 
 public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.newsFeedViewHolder> {
-
     private Context mCtx;
     private List<NewsFeed> newsFeedList;
+    private SharedPreferences prefs;
 
     public NewsFeedAdapter(Context mCtx, List<NewsFeed> newsFeedList) {
         this.mCtx = mCtx;
@@ -54,6 +54,9 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.newsFe
     public newsFeedViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(mCtx);
         View view = inflater.inflate(R.layout.newsfeed_list, null);
+
+        prefs = PreferenceManager.getDefaultSharedPreferences(mCtx);
+
         return new newsFeedViewHolder(view);
     }
 
@@ -75,7 +78,7 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.newsFe
                 //loading the image
                 Glide.with(mCtx)
                         .setDefaultRequestOptions(requestOptions)
-                        .load(newsfeed.getAvatar())
+                        .load(prefs.getString("base_url", null) + newsfeed.getAvatar())
 //                .apply(new RequestOptions().signature(new ObjectKey("signature string")))
                         .apply(new RequestOptions().signature(new ObjectKey(System.currentTimeMillis())))
                         .into(holder.avatarView);
@@ -97,11 +100,10 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.newsFe
             //loading the image
             Glide.with(mCtx)
                     .setDefaultRequestOptions(requestOptions)
-                    .load(convertImageURLBasedonFidelity(newsfeed.getImage(), mCtx))
+                    .load(convertImageURLBasedonFidelity(prefs.getString("base_url", null) + newsfeed.getImage(), mCtx))
 //                    .apply(new RequestOptions().signature(new ObjectKey("signature string")))
                     .apply(new RequestOptions().signature(new ObjectKey(System.currentTimeMillis())))
                     .into(holder.imageView);
-            Log.d("yasir", "image "+newsfeed.getImage());
         }
         else if (newsfeed.getType().equals("video")) {
             holder.videoView.setVisibility(View.VISIBLE);
@@ -109,12 +111,10 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.newsFe
             holder.mDemoSlider.setVisibility(View.GONE);
 
             Glide.with(mCtx)
-                    .load(convertImageURLBasedonFidelity(newsfeed.getImage(),mCtx))
+                    .load(convertImageURLBasedonFidelity(prefs.getString("base_url", null) + newsfeed.getImage(),mCtx))
                     .apply(new RequestOptions().signature(new ObjectKey(System.currentTimeMillis())))
                     .into(holder.videoView.thumbImageView);
-            holder.videoView.setUp("http://91.230.41.34:8080/test/"+newsfeed.getUrl(), "", Jzvd.SCREEN_WINDOW_NORMAL);
-            Log.d("yasir", "video http://91.230.41.34:8080/test/"+newsfeed.getUrl());
-//            drawVideo("http://91.230.41.34:8080/test/"+newsfeed.getUrl(),"http://91.230.41.34:8080/test/"+newsfeed.getImage(), holder.videoView);
+            holder.videoView.setUp(prefs.getString("base_url", null) + newsfeed.getUrl(), "", Jzvd.SCREEN_WINDOW_NORMAL);
         }
         else if (newsfeed.getType().equals("image")) {
             holder.videoView.setVisibility(View.GONE);
@@ -169,7 +169,7 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.newsFe
                     NewsFeed n = newsFeedList.get((Integer) v.getTag());
                     Bundle bundle = new Bundle();
                     Intent i = new Intent(mCtx, RenderMAML.class);
-                    bundle.putSerializable("BASEURL", "http://91.230.41.34:8080/test/");
+                    bundle.putSerializable("BASEURL", prefs.getString("base_url", null));
                     bundle.putSerializable("URL", n.getUrl());
                     i.putExtras(bundle);
                     mCtx.startActivity(i);
@@ -220,7 +220,7 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.newsFe
                 NewsFeed n = newsFeedList.get((Integer) v.getTag());
                 SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mCtx);
 
-                String url = " http://91.230.41.34:8080/test/like.py?url=" + n.getUrl() + "&token=" + prefs.getString("token", "null");
+                String url = prefs.getString("base_url", null) + "like.py?url=" + n.getUrl() + "&token=" + prefs.getString("token", "null");
                 StringRequest request = new StringRequest(Request.Method.GET, url,
                         new Response.Listener<String>() {
                             @Override

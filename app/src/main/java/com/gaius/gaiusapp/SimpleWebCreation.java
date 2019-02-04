@@ -95,12 +95,11 @@ public class SimpleWebCreation extends AppCompatActivity implements OnStartDragL
         super.onCreate(savedInstanceState);
         setContentView(R.layout.simple_content_creation);
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+
         UploadService.NAMESPACE = BuildConfig.APPLICATION_ID;
         UploadService.NAMESPACE = "com.gaius.contentupload";
-        String hostIP = prefs.getString("ip_edge", "91.230.41.34");
-        String hostPort = prefs.getString("port_edge", "8080");
-        String hostPath = prefs.getString("path_edge", "test");
-        BASE_URL = "http://" + hostIP + ":" + hostPort + "/" + hostPath + "/";
+
+        BASE_URL = prefs.getString("base_url", null);
 
         recyclerView = findViewById(R.id.simple_recylcerView);
         recyclerView.setHasFixedSize(false);

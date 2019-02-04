@@ -11,7 +11,7 @@ public class Content {
         this.uploadTime = uploadTime;
         this.type = type;
         this.description = description;
-        this.thumbnail = "http://91.230.41.34:8080/test/"+thumbnail;
+        this.thumbnail = thumbnail;
     }
 
     public int getId() {

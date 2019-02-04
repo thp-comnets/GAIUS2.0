@@ -174,7 +174,7 @@ public class MyFriendsSearchFragment extends Fragment implements FragmentVisible
 
         String uploadId = UUID.randomUUID().toString();
         try {
-            MultipartUploadRequest request = new MultipartUploadRequest(context, uploadId,  "http://91.230.41.34:8080/test/findFriends2.py")
+            MultipartUploadRequest request = new MultipartUploadRequest(context, uploadId,  prefs.getString("base_url", null) + "findFriends2.py")
                     .addParameter("token", prefs.getString("token", "null"))
                     .setUtf8Charset()
                     .setNotificationConfig(getNotificationConfig(uploadId, R.string.notification_title))
@@ -325,7 +325,7 @@ public class MyFriendsSearchFragment extends Fragment implements FragmentVisible
          * In response listener we will get the JSON response as a String
          */
         String token = prefs.getString("token", "null");
-        String URL = "http://91.230.41.34:8080/test/searchFriend.py?token=" + token + "&name="+name;
+        String URL = prefs.getString("base_url", null) + "searchFriend.py?token=" + token + "&name="+name;
 
         StringRequest stringRequest = new StringRequest(Request.Method.GET, URL,
                 new Response.Listener<String>() {

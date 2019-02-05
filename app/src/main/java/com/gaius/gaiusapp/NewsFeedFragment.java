@@ -42,8 +42,9 @@ public class NewsFeedFragment extends Fragment implements SwipeRefreshLayout.OnR
     SwipeRefreshLayout swipeLayout;
     RecyclerView recyclerView;
     SharedPreferences prefs;
-    RelativeLayout noFriends;
+    RelativeLayout noFriends, noInternet;
     Button buttonReturnToTop;
+    NewsFeedAdapter adapter;
 
     @Nullable
     @Override
@@ -51,7 +52,6 @@ public class NewsFeedFragment extends Fragment implements SwipeRefreshLayout.OnR
         View view = inflater.inflate(R.layout.fragment_newsfeed, null);
         swipeLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_container);
         swipeLayout.setOnRefreshListener(this);
-
         return view;
     }
 
@@ -65,9 +65,18 @@ public class NewsFeedFragment extends Fragment implements SwipeRefreshLayout.OnR
         base_URL = prefs.getString("base_url", null);
         URL= base_URL + "listPages.py?token="+token;
 
+        noInternet = view.findViewById(R.id.no_internet);
+        noInternet.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                loadPages();
+            }
+        });
+
         recyclerView =  getView().findViewById(R.id.recylcerView);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        recyclerView.setVisibility(View.GONE);
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
@@ -95,6 +104,8 @@ public class NewsFeedFragment extends Fragment implements SwipeRefreshLayout.OnR
         });
 
         newsFeedList = new ArrayList<>();
+        adapter = new NewsFeedAdapter(getContext(), newsFeedList);
+        recyclerView.setAdapter(adapter);
         loadPages();
     }
 
@@ -122,6 +133,8 @@ public class NewsFeedFragment extends Fragment implements SwipeRefreshLayout.OnR
                         try {
                             //converting the string to json array object
                             JSONArray array = new JSONArray(response);
+
+                            noFriends.setVisibility(View.GONE);
 
                             if (array.length() == 0 ) {
                                 noFriends.setVisibility(View.VISIBLE);
@@ -156,9 +169,10 @@ public class NewsFeedFragment extends Fragment implements SwipeRefreshLayout.OnR
                                 ));
                             }
 
-                            //creating adapter object and setting it to recyclerview
-                            NewsFeedAdapter adapter = new NewsFeedAdapter(getContext(), newsFeedList);
+                            adapter = new NewsFeedAdapter(getContext(), newsFeedList);
                             recyclerView.setAdapter(adapter);
+                            noInternet.setVisibility(View.GONE);
+                            recyclerView.setVisibility(View.VISIBLE);
                         } catch (JSONException e) {
                             e.printStackTrace();
                             Log.d("Yasir","Json error "+e);
@@ -177,6 +191,8 @@ public class NewsFeedFragment extends Fragment implements SwipeRefreshLayout.OnR
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
+                        noInternet.setVisibility(View.VISIBLE);
+                        recyclerView.setVisibility(View.GONE);
                         Log.d("Yasir","Error "+error);
                     }
                 });

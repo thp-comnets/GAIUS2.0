@@ -38,9 +38,10 @@ public class MyFriendsRequestsFragment extends Fragment implements SwipeRefreshL
     private static String URL = "";
     List<Friend> friendList;
     SharedPreferences prefs;
-    RelativeLayout noFriends;
+    RelativeLayout noFriends, noInternet;
     RecyclerView recyclerView;
     SwipeRefreshLayout swipeLayout;
+    FriendsAdapter adapter;
 
     @Nullable
     @Override
@@ -61,9 +62,20 @@ public class MyFriendsRequestsFragment extends Fragment implements SwipeRefreshL
         base_url = prefs.getString("base_url", null);
         URL = base_url+"listRequests.py?token=" + token;
 
+        noInternet = view.findViewById(R.id.no_internet);
+        noInternet.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                loadFriends();
+            }
+        });
+
         recyclerView = getView().findViewById(R.id.recylcerView);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        recyclerView.setVisibility(View.GONE);
+        adapter = new FriendsAdapter(getContext(), friendList);
+        recyclerView.setAdapter(adapter);
     }
 
     private void loadFriends() {
@@ -81,6 +93,8 @@ public class MyFriendsRequestsFragment extends Fragment implements SwipeRefreshL
                         try {
                             //converting the string to json array object
                             JSONArray array = new JSONArray(response);
+
+                            noFriends.setVisibility(View.GONE);
 
                             if (array.length() == 0 ) {
                                 noFriends.setVisibility(View.VISIBLE);
@@ -105,8 +119,10 @@ public class MyFriendsRequestsFragment extends Fragment implements SwipeRefreshL
                             }
 
                             //creating adapter object and setting it to recyclerview
-                            FriendsAdapter adapter = new FriendsAdapter(getContext(), friendList);
+                            adapter = new FriendsAdapter(getContext(), friendList);
                             recyclerView.setAdapter(adapter);
+                            noInternet.setVisibility(View.GONE);
+                            recyclerView.setVisibility(View.VISIBLE);
                         } catch (JSONException e) {
                             e.printStackTrace();
                             Log.d("Yasir","Json error "+e);
@@ -126,6 +142,8 @@ public class MyFriendsRequestsFragment extends Fragment implements SwipeRefreshL
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         Log.d("Yasir","Error "+error);
+                        noInternet.setVisibility(View.VISIBLE);
+                        recyclerView.setVisibility(View.GONE);
                     }
                 });
 

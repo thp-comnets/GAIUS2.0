@@ -9,6 +9,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <include layout="@layout/no_internet_layout"/>
+
         <RelativeLayout
             android:id="@+id/noFriends"
             android:layout_width="wrap_content"
@@ -28,6 +30,8 @@
                 android:layout_below="@+id/lonely_animation"
                 android:paddingStart="50dp"
                 android:paddingEnd="50dp"
+                android:layout_centerHorizontal="true"
+                android:gravity="center"
                 android:text="You don't have friends yet.\nPlease consider adding some."
                 android:textColor="#000000"
                 android:textStyle="bold" />

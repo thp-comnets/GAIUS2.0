@@ -244,10 +244,8 @@ public class CreativeWebCreation extends AppCompatActivity implements TextEditor
         UploadService.NAMESPACE = BuildConfig.APPLICATION_ID;
         UploadService.NAMESPACE = "com.gaius.contentupload";
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
-        String hostIP = prefs.getString("ip_edge", "91.230.41.34");
-        String hostPort = prefs.getString("port_edge", "8080");
-        String hostPath = prefs.getString("path_edge", "test");
-        BASE_URL = "http://" + hostIP + ":" + hostPort + "/" + hostPath + "/";
+
+        BASE_URL = prefs.getString("base_url", null);
 
         iconPath = getIntent().getStringExtra("PAGE_ICON");
         pageName = getIntent().getStringExtra("PAGE_NAME");
@@ -410,32 +408,32 @@ public class CreativeWebCreation extends AppCompatActivity implements TextEditor
 
         EDIT_MODE = getIntent().getBooleanExtra("EDIT_MODE", false);
         if (EDIT_MODE) {
+            // requesting the page icon
+            iconPath = BASE_URL + getIntent().getStringExtra("PAGE_URL")+"icon.png";
+            Log.d("yasir", "icon path "+iconPath);
 
-//            // requesting the page icon
-//            if (! iconPath.equals("None")) {
-//                final InputStreamVolleyRequest request = new InputStreamVolleyRequest(Request.Method.GET, iconPath,
-//                        new Response.Listener<byte[]>() {
-//                            @Override
-//                            public void onResponse(final byte[] response) {
-//
-//                                try {
-//                                    if (response != null) {
-//                                        pageIcon = BitmapFactory.decodeByteArray(response, 0, response.length);
-//                                        iconPath = null;
-//                                    }
-//                                } catch (Exception e) {
-//                                    e.printStackTrace();
-//                                }
-//                            }
-//                        }, new Response.ErrorListener() {
-//
-//                    @Override
-//                    public void onErrorResponse(VolleyError error) {
-//                        error.printStackTrace();
-//                    }
-//                }, null);
-//                mRequestQueue.add(request);
-//            }
+            final InputStreamVolleyRequest request = new InputStreamVolleyRequest(Request.Method.GET, iconPath,
+                    new Response.Listener<byte[]>() {
+                        @Override
+                        public void onResponse(final byte[] response) {
+
+                            try {
+                                if (response != null) {
+                                    pageIcon = BitmapFactory.decodeByteArray(response, 0, response.length);
+                                    iconPath = null;
+                                }
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }, new Response.ErrorListener() {
+
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    error.printStackTrace();
+                }
+            }, null);
+            mRequestQueue.add(request);
 
             // request and parse the index.maml page
             try {
@@ -1367,6 +1365,10 @@ public class CreativeWebCreation extends AppCompatActivity implements TextEditor
         Button publish_button = (Button) promptView.findViewById(R.id.publish_button);
         iconImageView = promptView.findViewById(R.id.logo);
 
+        if (pageIcon != null) {
+            iconImageView.setImageBitmap(pageIcon);
+        }
+
         iconImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -1472,7 +1474,7 @@ public class CreativeWebCreation extends AppCompatActivity implements TextEditor
                     request.addFileToUpload(videoPath, "videos");
                 }
             }
-            if (iconPath != null && !iconPath.equals("None")) { // && !EDIT_MODE) {
+            if (iconPath != null && !iconPath.equals("None") && !EDIT_MODE) {
                 String iconPathNew = ResourceHelper.compressImage(context, iconPath, 200, 200);
                 request.addFileToUpload(iconPathNew, "icon");
             }

@@ -1,6 +1,8 @@
 package com.gaius.gaiusapp;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.DividerItemDecoration;
@@ -30,6 +32,7 @@ public class WebFragment extends Fragment {
     private static String URL = "";
     List<Web> webList;
     RecyclerView recyclerView;
+    SharedPreferences prefs;
 
     @Nullable
     @Override
@@ -46,8 +49,10 @@ public class WebFragment extends Fragment {
         recyclerView.addItemDecoration(new DividerItemDecoration(getContext(),
                 DividerItemDecoration.VERTICAL));
 
+        prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+
         webList = new ArrayList<>();
-        URL = "http://91.230.41.34:8080/test/listChannels.py";
+        URL = prefs.getString("base_url", "null")+"listChannels.py";
 
         // reading if there is a bundle, used to request and display a channel sub-pages
         Bundle bundle = this.getArguments();

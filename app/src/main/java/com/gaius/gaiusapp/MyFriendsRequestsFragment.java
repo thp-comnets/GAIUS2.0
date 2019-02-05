@@ -54,11 +54,12 @@ public class MyFriendsRequestsFragment extends Fragment implements SwipeRefreshL
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        String token;
+        String token, base_url;
         noFriends = view.findViewById(R.id.noFriends);
         prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
         token = prefs.getString("token", "null");
-        URL = "http://91.230.41.34:8080/test/listRequests.py?token=" + token;
+        base_url = prefs.getString("base_url", null);
+        URL = base_url+"listRequests.py?token=" + token;
 
         recyclerView = getView().findViewById(R.id.recylcerView);
         recyclerView.setHasFixedSize(true);

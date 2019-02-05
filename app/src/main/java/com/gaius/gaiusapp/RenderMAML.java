@@ -65,9 +65,6 @@ public class RenderMAML extends AppCompatActivity {
         mRequestQueue = Volley.newRequestQueue(getApplicationContext());
 
         prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
-        hostIP = prefs.getString("ip_edge", "91.230.41.34");
-        hostPort = prefs.getString("port_edge", "8080");
-        hostPath = prefs.getString("path_edge", "test");
         fidelity = prefs.getString("fidelity_level", "high");
         token = prefs.getString("token", "null");
 
@@ -77,7 +74,7 @@ public class RenderMAML extends AppCompatActivity {
         if (data != null && data.toString().contains("http://gaiusnetworks.com/content/")) {
             Intent intent = this.getIntent();
             Bundle bundle = intent.getExtras();
-            mUrl =  "http://" + hostIP + ":" + hostPort + "/" + hostPath + "/";
+            mUrl =  prefs.getString("base_url", null);
             adUrl = mUrl;
 //            adUrl =  (String) bundle.getSerializable("BASEURL");
             mPageUrl =  "./content/" + data.toString().replace("http://gaiusnetworks.com/content/","");

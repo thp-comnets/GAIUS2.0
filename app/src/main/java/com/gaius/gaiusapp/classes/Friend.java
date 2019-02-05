@@ -13,7 +13,7 @@ public class Friend {
         this.id = id;
         this.name = name;
         this.phoneNumber = phoneNumber;
-        this.image = "http://91.230.41.34:8080/test/"+image;
+        this.image = image;
         this.userID = userID;
         this.buttonType = buttonType;
         this.clickable = clickable;

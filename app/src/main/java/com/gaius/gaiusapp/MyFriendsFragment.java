@@ -55,11 +55,12 @@ public class MyFriendsFragment extends Fragment implements SwipeRefreshLayout.On
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        String token;
+        String token, base_url;
         noFriends = view.findViewById(R.id.noFriends);
         prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
         token = prefs.getString("token", "null");
-        URL = "http://91.230.41.34:8080/test/listFriends2.py?token=" + token;
+        base_url = prefs.getString("base_url", null);
+        URL = base_url+"listFriends2.py?token=" + token;
 
         recyclerView = getView().findViewById(R.id.recylcerView);
         recyclerView.setHasFixedSize(true);

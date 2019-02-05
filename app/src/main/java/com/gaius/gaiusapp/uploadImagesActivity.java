@@ -211,7 +211,7 @@ public class uploadImagesActivity extends AppCompatActivity {
         String uploadId = UUID.randomUUID().toString();
         try {
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-            MultipartUploadRequest request = new MultipartUploadRequest(this, uploadId, "http://91.230.41.34:8080/test/uploadImages.py")
+            MultipartUploadRequest request = new MultipartUploadRequest(this, uploadId, prefs.getString("base_url", null) + "uploadImages.py")
                     .addParameter("token", prefs.getString("token", "null"))
                     .setUtf8Charset()
                     .setNotificationConfig(getNotificationConfig(uploadId, R.string.notification_title))

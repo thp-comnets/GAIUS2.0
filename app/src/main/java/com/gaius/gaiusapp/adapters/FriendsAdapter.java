@@ -40,6 +40,7 @@ public class FriendsAdapter extends RecyclerView.Adapter<FriendsAdapter.FriendVi
 
     private Context mCtx;
     private List<Friend> friendsList;
+    private SharedPreferences prefs;
 
     public FriendsAdapter(Context mCtx, List<Friend> friendsList) {
         this.mCtx = mCtx;
@@ -50,6 +51,9 @@ public class FriendsAdapter extends RecyclerView.Adapter<FriendsAdapter.FriendVi
     public FriendViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(mCtx);
         View view = inflater.inflate(R.layout.friend_list, null);
+
+        prefs = PreferenceManager.getDefaultSharedPreferences(mCtx);
+
         return new FriendViewHolder(view);
     }
 
@@ -70,7 +74,7 @@ public class FriendsAdapter extends RecyclerView.Adapter<FriendsAdapter.FriendVi
             //loading the image
             Glide.with(mCtx)
                     .setDefaultRequestOptions(requestOptions)
-                    .load(friend.getImage())
+                    .load(prefs.getString("base_url", null) + friend.getImage())
                     .into(holder.imageView);
         }
 
@@ -89,7 +93,7 @@ public class FriendsAdapter extends RecyclerView.Adapter<FriendsAdapter.FriendVi
                     Fragment fragment = new userFragment();
                     bundle.putString("userID", f.getUserID());
                     bundle.putString("name", f.getName());
-                    bundle.putString("avatar", f.getImage());
+                    bundle.putString("avatar", prefs.getString("base_url", null) + f.getImage());
                     fragment.setArguments(bundle);
 
                     ((AppCompatActivity) mCtx).getSupportFragmentManager().beginTransaction()
@@ -120,7 +124,7 @@ public class FriendsAdapter extends RecyclerView.Adapter<FriendsAdapter.FriendVi
             public void onClick(View v) {
                 SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mCtx);
                 String token = prefs.getString("token", "null");
-                String URL = "http://91.230.41.34:8080/test/modifyFriend.py?token=" + token + "&" + friend.getButtonType() + "=" + friend.getUserID();
+                String URL = prefs.getString("base_url", null) + "modifyFriend.py?token=" + token + "&" + friend.getButtonType() + "=" + friend.getUserID();
 
                 StringRequest stringRequest = new StringRequest(Request.Method.GET, URL,
                         new Response.Listener<String>() {

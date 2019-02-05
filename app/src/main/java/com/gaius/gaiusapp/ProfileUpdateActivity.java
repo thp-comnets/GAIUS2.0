@@ -72,6 +72,7 @@ public class ProfileUpdateActivity extends AppCompatActivity {
     private String filePath;
     private String myInternationalNumber=null;
     private IntlPhoneInput phoneInputView;
+    private String base_url;
 
 
     private static boolean isEmailValid(String email) {
@@ -267,12 +268,8 @@ public class ProfileUpdateActivity extends AppCompatActivity {
         UploadService.NAMESPACE = BuildConfig.APPLICATION_ID;
         UploadService.NAMESPACE = "com.gaius.contentupload";
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
-
-        String hostIP = prefs.getString("ip_edge", "91.230.41.34");
-        String hostPort = prefs.getString("port_edge", "8080");
-        String hostPath = prefs.getString("path_edge", "test");
-
-        URL_FOR_REGISTRATION = "http://" + hostIP + ":" + hostPort + "/" + hostPath + "/" + "register.php";
+        base_url = prefs.getString("base_url", null);
+        URL_FOR_REGISTRATION = base_url + "register.php";
 
         // Progress dialog
         progressDialog = new ProgressDialog(this);
@@ -315,7 +312,7 @@ public class ProfileUpdateActivity extends AppCompatActivity {
 
         Glide.with(getBaseContext())
                 .setDefaultRequestOptions(requestOptions)
-                .load("http://" + hostIP + ":" + hostPort + "/" + hostPath + "/content/usersIcons/"+prefs.getString("userID","None")+".png")
+                .load(base_url + "/content/usersIcons/"+prefs.getString("userID","None")+".png")
                 .apply(new RequestOptions().signature(new ObjectKey(System.currentTimeMillis())))
                 .into(avatarImageView);
 

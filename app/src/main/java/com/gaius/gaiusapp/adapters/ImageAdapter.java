@@ -2,7 +2,9 @@ package com.gaius.gaiusapp.adapters;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -33,6 +35,7 @@ import cn.jzvd.JzvdStd;
 public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHolder> {
     private Context mCtx;
     private List<Image> imagesList;
+    private SharedPreferences prefs;
 
     public ImageAdapter(Context mCtx, List<Image> imagesList) {
         this.mCtx = mCtx;
@@ -43,6 +46,9 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHol
     public ImageViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(mCtx);
         View view = inflater.inflate(R.layout.image_list, null);
+
+        prefs = PreferenceManager.getDefaultSharedPreferences(mCtx);
+
         return new ImageViewHolder(view);
     }
 
@@ -63,7 +69,7 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHol
             //loading the image
             Glide.with(mCtx)
                     .setDefaultRequestOptions(requestOptions)
-                    .load(image.getAvatar())
+                    .load(prefs.getString("base_url", null) + image.getAvatar())
                     .apply(new RequestOptions().signature(new ObjectKey(System.currentTimeMillis())))
                     .into(holder.avatarView);
         }

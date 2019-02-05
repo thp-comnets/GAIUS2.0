@@ -46,11 +46,7 @@ public class ForgotPassword extends AppCompatActivity {
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
 
-        String hostIP = prefs.getString("ip_edge", "91.230.41.34");
-        String hostPort = prefs.getString("port_edge", "8080");
-        String hostPath = prefs.getString("path_edge", "test");
-
-        URL_FOR_FORGOT_PASSWORD = "http://" + hostIP + ":" + hostPort + "/" + hostPath + "/" + "forgotPassword.py";
+        URL_FOR_FORGOT_PASSWORD = prefs.getString("base_url", null) + "forgotPassword.py";
 
         loginInputEmail = findViewById(R.id.login_input_email);
         loginInputNewPassword = findViewById(R.id.login_input_new_password);

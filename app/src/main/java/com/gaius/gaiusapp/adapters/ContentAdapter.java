@@ -35,6 +35,7 @@ import static com.gaius.gaiusapp.utils.ResourceHelper.convertImageURLBasedonFide
 public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.ContentlViewHolder> {
     private Context mCtx;
     private List<Content> contentsList;
+    private SharedPreferences prefs;
 
     public ContentAdapter(Context mCtx, List<Content> contentsList) {
         this.mCtx = mCtx;
@@ -45,6 +46,9 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.Contentl
     public ContentlViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(mCtx);
         View view = inflater.inflate(R.layout.content_list, null);
+
+        prefs = PreferenceManager.getDefaultSharedPreferences(mCtx);
+
         return new ContentAdapter.ContentlViewHolder(view);
     }
 
@@ -65,7 +69,7 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.Contentl
             //loading the image
             Glide.with(mCtx)
                     .setDefaultRequestOptions(requestOptions)
-                    .load(convertImageURLBasedonFidelity(content.getThumbnail(), mCtx))
+                    .load(convertImageURLBasedonFidelity(prefs.getString("base_url", null) + content.getThumbnail(), mCtx))
                     .into(holder.imageView);
         }
 
@@ -89,7 +93,6 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.Contentl
                     bundle.putSerializable("EDIT_MODE", true);
                     bundle.putSerializable("PAGE_NAME", c.getTitle());
                     bundle.putSerializable("PAGE_DESCRIPTION", c.getDescription());
-//                bundle.putSerializable("PAGE_ICON", clickedChannel.getFaviconUrl());
                     intent.putExtras(bundle);
 
                     mCtx.startActivity(intent);
@@ -103,33 +106,6 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.Contentl
 
         holder.textViewTitle.setText(content.getTitle());
         holder.getTextViewDescription.setText(content.getDescription());
-
-        holder.channelItem.setTag(position);
-        holder.channelItem.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Content c = contentsList.get((Integer) v.getTag());
-                Bundle bundle = new Bundle();
-
-//                if (!c.getUserID().contains("null")) {
-//                    Fragment fragment = new WebFragment();
-//                    bundle.putString("userID", c.getUserID());
-//                    fragment.setArguments(bundle);
-//
-//                    ((AppCompatActivity) mCtx).getSupportFragmentManager().beginTransaction()
-//                            .replace(R.id.fragment_container, fragment)
-//                            .commit();
-//                }
-//                else {
-//                    Intent i = new Intent(mCtx, RenderMAML.class);
-//
-//                    bundle.putSerializable("BASEURL", "http://91.230.41.34:8080/test/");
-//                    bundle.putSerializable("URL", c.getUrl());
-//                    i.putExtras(bundle);
-//                    mCtx.startActivity(i);
-//                }
-            }
-        });
 
 
         holder.deleteButton.setTag(position);
@@ -152,7 +128,7 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.Contentl
 
                         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mCtx);
                         String token = prefs.getString("token", "null");
-                        String URL = "http://91.230.41.34:8080/test/deleteContent.py?token=" + token + "&" + c.getType() + "=" + c.getUrl();
+                        String URL = prefs.getString("base_url", null) + "deleteContent.py?token=" + token + "&" + c.getType() + "=" + c.getUrl();
 
                         StringRequest stringRequest = new StringRequest(Request.Method.GET, URL,
                                 new Response.Listener<String>() {
@@ -202,7 +178,6 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.Contentl
 
         TextView textViewTitle, getTextViewDescription;
         ImageView imageView, typeView, deleteButton, editButton;
-        LinearLayout channelItem;
 
         public ContentlViewHolder(View itemView) {
             super(itemView);
@@ -211,7 +186,6 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.Contentl
             getTextViewDescription = itemView.findViewById(R.id.textViewDescription);
             imageView = itemView.findViewById(R.id.imageView);
             typeView = itemView.findViewById(R.id.typeView);
-            channelItem = itemView.findViewById(R.id.channelItem);
             deleteButton = itemView.findViewById(R.id.binButton);
             editButton = itemView.findViewById(R.id.editButton);
         }

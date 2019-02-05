@@ -43,6 +43,7 @@ public class userFragment extends Fragment {
     RecyclerView recyclerView;
     SharedPreferences prefs;
     RelativeLayout noPages;
+    String base_url;
 
     @Nullable
     @Override
@@ -55,7 +56,8 @@ public class userFragment extends Fragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         String userID, name="", avatar="None";
-        URL = "http://91.230.41.34:8080/test/listUserPages.py";
+        base_url = prefs.getString("base_url", null);
+        URL = base_url + "listUserPages.py";
         noPages = view.findViewById(R.id.noPages);
 
         recyclerView =  getView().findViewById(R.id.recylcerView);
@@ -140,7 +142,7 @@ public class userFragment extends Fragment {
                                 if (newsFeed.has("images")) {
                                     String [] tmp = newsFeed.getString("images").split(";");
                                     for (int j=0; j<tmp.length; j++) {
-                                        imagesList.add(convertImageURLBasedonFidelity("http://91.230.41.34:8080/test/"+newsFeed.getString("url")+tmp[j], getContext()));
+                                        imagesList.add(convertImageURLBasedonFidelity(base_url+newsFeed.getString("url")+tmp[j], getContext()));
                                     }
                                 }
 

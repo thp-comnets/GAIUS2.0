@@ -2,7 +2,9 @@ package com.gaius.gaiusapp.adapters;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
@@ -25,6 +27,7 @@ import java.util.List;
 public class WebAdapter extends RecyclerView.Adapter<WebAdapter.ChannelViewHolder> {
     private Context mCtx;
     private List<Web> channelsList;
+    private SharedPreferences prefs;
 
     public WebAdapter(Context mCtx, List<Web> channelsList) {
         this.mCtx = mCtx;
@@ -35,6 +38,9 @@ public class WebAdapter extends RecyclerView.Adapter<WebAdapter.ChannelViewHolde
     public ChannelViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(mCtx);
         View view = inflater.inflate(R.layout.web_list, null);
+
+        prefs = PreferenceManager.getDefaultSharedPreferences(mCtx);
+
         return new ChannelViewHolder(view);
     }
 
@@ -55,7 +61,7 @@ public class WebAdapter extends RecyclerView.Adapter<WebAdapter.ChannelViewHolde
             //loading the image
             Glide.with(mCtx)
                     .setDefaultRequestOptions(requestOptions)
-                    .load(web.getImage())
+                    .load(prefs.getString("base_url", null) + web.getImage())
                     .into(holder.imageView);
         }
 
@@ -81,7 +87,7 @@ public class WebAdapter extends RecyclerView.Adapter<WebAdapter.ChannelViewHolde
                 else {
                     Intent i = new Intent(mCtx, RenderMAML.class);
 
-                    bundle.putSerializable("BASEURL", "http://91.230.41.34:8080/test/");
+                    bundle.putSerializable("BASEURL", prefs.getString("base_url", null));
                     bundle.putSerializable("URL", c.getUrl());
                     i.putExtras(bundle);
                     mCtx.startActivity(i);

@@ -1,6 +1,8 @@
 package com.gaius.gaiusapp.adapters;
 
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -25,6 +27,7 @@ import static com.gaius.gaiusapp.utils.ResourceHelper.convertImageURLBasedonFide
 public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHolder> {
     private Context mCtx;
     private List<Video> videosList;
+    private SharedPreferences prefs;
 
     public VideoAdapter(Context mCtx, List<Video> videosList) {
         this.mCtx = mCtx;
@@ -35,6 +38,9 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHol
     public VideoViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(mCtx);
         View view = inflater.inflate(R.layout.video_list, null);
+
+        prefs = PreferenceManager.getDefaultSharedPreferences(mCtx);
+
         return new VideoViewHolder(view);
     }
 
@@ -55,16 +61,16 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHol
             //loading the image
             Glide.with(mCtx)
                     .setDefaultRequestOptions(requestOptions)
-                    .load(video.getAvatar())
+                    .load(prefs.getString("base_url", null) + video.getAvatar())
                     .apply(new RequestOptions().signature(new ObjectKey(System.currentTimeMillis())))
                     .into(holder.avatarView);
         }
 
         Glide.with(mCtx)
-                .load(convertImageURLBasedonFidelity(video.getThumbnail(), mCtx))
+                .load(convertImageURLBasedonFidelity(prefs.getString("base_url", null) + video.getThumbnail(), mCtx))
                 .apply(new RequestOptions().signature(new ObjectKey(System.currentTimeMillis())))
                 .into(holder.videoView.thumbImageView);
-        holder.videoView.setUp("http://91.230.41.34:8080/test/"+video.getUrl(), "", Jzvd.SCREEN_WINDOW_NORMAL);
+        holder.videoView.setUp(prefs.getString("base_url", null) + video.getUrl(), "", Jzvd.SCREEN_WINDOW_NORMAL);
 
         holder.textViewUpdateTime.setText(video.getUploadedSince());
         holder.textViewTitle.setText(video.getTitle());

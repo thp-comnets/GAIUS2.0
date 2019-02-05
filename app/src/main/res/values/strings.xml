@@ -11,7 +11,7 @@
     <string name="title_my_content">My Channels</string>
     <string name="title_create_ad">My Ads</string>
     <string name="title_notifications">Settings</string>
-    <string name="menu_publish">Next</string>
+    <string name="menu_publish">Publish</string>
     <string name="menu_delete">Delete</string>
     <string name="menu_search">Search</string>
     <string name="menu_clear_cache">Clearing cache</string>

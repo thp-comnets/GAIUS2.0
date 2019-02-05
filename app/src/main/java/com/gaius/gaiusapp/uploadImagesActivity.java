@@ -109,7 +109,6 @@ public class uploadImagesActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (resultCode == RESULT_OK) {
-
             if(requestCode == PICK_IMAGE_MULTIPLE) {
                 Log.d("yasir","PICK_IMAGE_MULTIPLE");
 
@@ -137,7 +136,17 @@ public class uploadImagesActivity extends AppCompatActivity {
                 }
                 else if(data.getData() != null) {
                     Uri imageUri = data.getData();
-                    uploadImagesPath.add(imageUri.getPath());
+                    Bitmap bitmap = null;
+                    try {
+                        bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), imageUri);
+                        bitmap = getResizedBitmap(bitmap,800);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
+                    String imagePath = ResourceHelper.saveBitmapCompressed(getApplicationContext(), imageUri, bitmap);
+
+                    uploadImagesPath.add(imagePath);
                     multiImageViewBitmaps.add(imageUri.toString());
                 }
 

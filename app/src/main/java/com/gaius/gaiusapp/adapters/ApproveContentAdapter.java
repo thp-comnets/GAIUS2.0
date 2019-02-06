@@ -23,8 +23,10 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+import com.gaius.gaiusapp.AlbumViewActivity;
 import com.gaius.gaiusapp.CreativeWebCreation;
 import com.gaius.gaiusapp.RenderMAML;
+import com.gaius.gaiusapp.VideoViewActivity;
 import com.gaius.gaiusapp.classes.Content;
 import com.gaius.gaiusapp.R;
 
@@ -32,29 +34,29 @@ import java.util.List;
 
 import static com.gaius.gaiusapp.utils.ResourceHelper.convertImageURLBasedonFidelity;
 
-public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.ContentlViewHolder> {
+public class ApproveContentAdapter extends RecyclerView.Adapter<ApproveContentAdapter.ApproveContentlViewHolder> {
     private Context mCtx;
     private List<Content> contentsList;
     private SharedPreferences prefs;
 
-    public ContentAdapter(Context mCtx, List<Content> contentsList) {
+    public ApproveContentAdapter(Context mCtx, List<Content> contentsList) {
         this.mCtx = mCtx;
         this.contentsList = contentsList;
     }
 
     @Override
-    public ContentlViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public ApproveContentlViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(mCtx);
         View view = inflater.inflate(R.layout.content_list, null);
 
         prefs = PreferenceManager.getDefaultSharedPreferences(mCtx);
 
-        return new ContentAdapter.ContentlViewHolder(view);
+        return new ApproveContentAdapter.ApproveContentlViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(ContentAdapter.ContentlViewHolder holder, int position) {
-        Content content = contentsList.get(position);
+    public void onBindViewHolder(ApproveContentAdapter.ApproveContentlViewHolder holder, int position) {
+        final Content content = contentsList.get(position);
 
         RequestOptions requestOptions = new RequestOptions();
         requestOptions.error(R.drawable.ic_avatar);
@@ -73,53 +75,45 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.Contentl
                     .into(holder.imageView);
         }
 
-        if (content.getType().equals("video")) {
-            holder.typeView.setImageResource(R.drawable.ic_video_create);
-            holder.editButton.setVisibility(View.GONE);
-        }
-        else if (content.getType().equals("page")) {
-            holder.editButton.setVisibility(View.VISIBLE);
-            holder.typeView.setImageResource(R.drawable.ic_simple_creation);
-
-            holder.editButton.setTag(position);
-            holder.editButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    final Content c = contentsList.get((Integer) v.getTag());
-
-                    Intent intent = new Intent(mCtx, CreativeWebCreation.class);
-                    Bundle bundle = new Bundle();
-                    bundle.putSerializable("PAGE_URL", c.getUrl());
-                    bundle.putSerializable("EDIT_MODE", true);
-                    bundle.putSerializable("PAGE_NAME", c.getTitle());
-                    bundle.putSerializable("PAGE_DESCRIPTION", c.getDescription());
-                    intent.putExtras(bundle);
-
-                    mCtx.startActivity(intent);
-                }
-            });
-        }
-        else if (content.getType().equals("image")) {
-            holder.typeView.setImageResource(R.drawable.images_app);
-            holder.editButton.setVisibility(View.GONE);
-        }
-
         holder.textViewTitle.setText(content.getTitle());
         holder.getTextViewDescription.setText(content.getDescription());
-        switch (content.getPublished()) {
-            case "0":
-                holder.status.setText("Saved");
-                holder.status.setTextColor(mCtx.getResources().getColor(R.color.blue_500));
-                break;
-            case "1":
-                holder.status.setText("Published");
-                holder.status.setTextColor(mCtx.getResources().getColor(R.color.green_500));
-                break;
-            case "-1":
-                holder.status.setText("Pending approval");
-                holder.status.setTextColor(mCtx.getResources().getColor(R.color.orange_500));
-                break;
+
+        holder.editButton.setImageResource(R.drawable.ic_approve);
+        holder.deleteButton.setImageResource(R.drawable.ic_reject);
+
+        if (content.getType().equals("video")) {
+            holder.typeView.setImageResource(R.drawable.ic_video_create);
         }
+        else if (content.getType().equals("page")) {
+            holder.typeView.setImageResource(R.drawable.ic_simple_creation);
+        } else if (content.getType().equals("image")) {
+            holder.typeView.setImageResource(R.drawable.images_app);
+        }
+
+        holder.linearLayout.setTag(position);
+        holder.linearLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final Content c = contentsList.get((Integer) v.getTag());
+                Bundle bundle = new Bundle();
+                Intent i=null;
+
+                if (content.getType().equals("page")) {
+                    i = new Intent(mCtx, RenderMAML.class);
+                    bundle.putSerializable("BASEURL", prefs.getString("base_url", null));
+                }
+                else if (content.getType().equals("image")) {
+                    i = new Intent(mCtx, AlbumViewActivity.class);
+                }
+                else if (content.getType().equals("video")) {
+                    i = new Intent(mCtx, VideoViewActivity.class);
+                }
+
+                bundle.putSerializable("URL", c.getUrl());
+                i.putExtras(bundle);
+                mCtx.startActivity(i);
+            }
+        });
 
 
         holder.deleteButton.setTag(position);
@@ -128,11 +122,10 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.Contentl
             public void onClick(View v) {
                 final Content c = contentsList.get((Integer) v.getTag());
 
-
                 AlertDialog.Builder builder = new AlertDialog.Builder(mCtx);
 
-                builder.setTitle("Delete Content");
-                builder.setMessage("Do you want to delete this "+c.getType()+"?");
+                builder.setTitle("Reject Content");
+                builder.setMessage("Do you want to reject this "+c.getType()+"?");
 
                 builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
 
@@ -181,6 +174,65 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.Contentl
                 alert.show();
             }
         });
+
+        holder.editButton.setTag(position);
+        holder.editButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final Content c = contentsList.get((Integer) v.getTag());
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(mCtx);
+
+                builder.setTitle("Approve Content");
+                builder.setMessage("Do you want to approve this "+c.getType()+"?");
+
+                builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+
+                    public void onClick(DialogInterface dialog, int which) {
+                        // Do nothing but close the dialog
+                        dialog.dismiss();
+
+                        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mCtx);
+                        String token = prefs.getString("token", "null");
+                        String URL = prefs.getString("base_url", null) + "approveContent.py?token=" + token + "&" + c.getType() + "=" + c.getUrl();
+
+                        StringRequest stringRequest = new StringRequest(Request.Method.GET, URL,
+                                new Response.Listener<String>() {
+                                    @Override
+                                    public void onResponse(String response) {
+                                        Log.d("yasir", response);
+
+                                        if (response.contains("Success")) {
+                                            contentsList.remove(c);
+                                            notifyDataSetChanged();
+                                        }
+                                    }
+                                },
+                                new Response.ErrorListener() {
+                                    @Override
+                                    public void onErrorResponse(VolleyError error) {
+                                        Log.d("Yasir","Error "+error);
+                                    }
+                                });
+                        Log.d("Yasir","added request "+stringRequest);
+
+                        Volley.newRequestQueue(mCtx).add(stringRequest);
+                    }
+                });
+
+                builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        // Do nothing
+                        dialog.dismiss();
+                    }
+                });
+
+                AlertDialog alert = builder.create();
+                alert.show();
+            }
+        });
     }
 
     @Override
@@ -188,21 +240,22 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.Contentl
         return contentsList.size();
     }
 
-    class ContentlViewHolder extends RecyclerView.ViewHolder {
+    class ApproveContentlViewHolder extends RecyclerView.ViewHolder {
 
-        TextView textViewTitle, getTextViewDescription, status;
+        TextView textViewTitle, getTextViewDescription;
         ImageView imageView, typeView, deleteButton, editButton;
+        LinearLayout linearLayout;
 
-        public ContentlViewHolder(View itemView) {
+        public ApproveContentlViewHolder(View itemView) {
             super(itemView);
 
             textViewTitle = itemView.findViewById(R.id.textViewName);
-            status = itemView.findViewById(R.id.status);
             getTextViewDescription = itemView.findViewById(R.id.textViewDescription);
             imageView = itemView.findViewById(R.id.imageView);
             typeView = itemView.findViewById(R.id.typeView);
             deleteButton = itemView.findViewById(R.id.binButton);
             editButton = itemView.findViewById(R.id.editButton);
+            linearLayout = itemView.findViewById(R.id.channelItem);
         }
     }
 }

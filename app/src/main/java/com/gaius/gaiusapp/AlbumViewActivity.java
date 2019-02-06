@@ -34,21 +34,26 @@ public class AlbumViewActivity extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
 
+        prefs = PreferenceManager.getDefaultSharedPreferences(this);
+
         Uri data = getIntent().getData();
 
         if (data != null && data.toString().contains("http://gaiusnetworks.com/images/")) {
-            prefs = PreferenceManager.getDefaultSharedPreferences(this);
-
-            Intent intent = this.getIntent();
-            Bundle bundle = intent.getExtras();
             String albumURL =  "." + data.toString().replace("http://gaiusnetworks.com","");
             String mPageUrl = prefs.getString("base_url", null) + "getAlbum.py?albumID="+albumURL;
             loadAlbum(mPageUrl, albumURL);
         }
         else {
             Bundle bundle = getIntent().getExtras();
-            imagesURLs = bundle.getStringArrayList("imagesURLs");
-            renderAlbum();
+            String url = bundle.getString("URL");
+            if (url != null) {
+                String mPageUrl = prefs.getString("base_url", null) + "getAlbum.py?albumID="+url;
+                loadAlbum(mPageUrl, url);
+            }
+            else {
+                imagesURLs = bundle.getStringArrayList("imagesURLs");
+                renderAlbum();
+            }
         }
     }
 

@@ -2,9 +2,15 @@ package com.gaius.gaiusapp.classes;
 
 public class Content {
     int id;
-    String title, url, uploadTime, type, description, thumbnail;
+    String title;
+    String url;
+    String uploadTime;
+    String type;
+    String description;
+    String thumbnail;
+    String published;
 
-    public Content(int id, String title, String url, String uploadTime, String type, String description, String thumbnail) {
+    public Content(int id, String title, String url, String uploadTime, String type, String description, String thumbnail, String published) {
         this.id = id;
         this.title = title;
         this.url = url;
@@ -12,6 +18,7 @@ public class Content {
         this.type = type;
         this.description = description;
         this.thumbnail = thumbnail;
+        this.published = published;
     }
 
     public int getId() {
@@ -68,5 +75,9 @@ public class Content {
 
     public void setThumbnail(String thumbnail) {
         this.thumbnail = thumbnail;
+    }
+
+    public String getPublished() {
+        return published;
     }
 }

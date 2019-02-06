@@ -26,13 +26,11 @@ public class VideoViewActivity extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
 
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);;
+
         Uri data = getIntent().getData();
 
         if (data != null && data.toString().contains("http://gaiusnetworks.com/videos/")) {
-            Intent intent = this.getIntent();
-            Bundle bundle = intent.getExtras();
-            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);;
-
             String videoURL =  prefs.getString("base_url", null) + data.toString().replace("http://gaiusnetworks.com","");
 
             videoView = findViewById(R.id.videoView);
@@ -46,7 +44,19 @@ public class VideoViewActivity extends AppCompatActivity {
 
         }
         else {
-            // fixme: no video
+            Intent intent = this.getIntent();
+            Bundle bundle = intent.getExtras();
+
+            String videoURL =  prefs.getString("base_url", null) + bundle.getString("URL");
+
+            videoView = findViewById(R.id.videoView);
+
+            Glide.with(this)
+                    .load(convertImageURLBasedonFidelity(videoURL.replace(".mp4",".jpg"), this)) //fixme: if not .mp4
+                    .apply(new RequestOptions().signature(new ObjectKey(System.currentTimeMillis())))
+                    .into(videoView.thumbImageView);
+
+            videoView.setUp(videoURL, "", Jzvd.SCREEN_WINDOW_NORMAL);
         }
     }
 

@@ -128,11 +128,11 @@ public class LoginActivity extends AppCompatActivity {
             error = true;
         }
         if (!error) {
-            loginUser(loginInputEmail.getText().toString(), loginInputPassword.getText().toString(), false);
+            loginUser(loginInputEmail.getText().toString(), loginInputPassword.getText().toString());
         }
     }
 
-    private void loginUser(final String email, final String password, final Boolean automaticLogin) {
+    private void loginUser(final String email, final String password) {
         // Tag used to cancel the request
         String cancel_req_tag = "login";
         StringRequest strReq = new StringRequest(Request.Method.POST,
@@ -155,18 +155,17 @@ public class LoginActivity extends AppCompatActivity {
                         editor.putString("age", jObj.getJSONObject("user").getString("age"));
                         editor.putString("userID", jObj.getJSONObject("user").getString("userID"));
                         editor.putString("number", jObj.getJSONObject("user").getString("phoneNumber"));
-                        editor.commit();
+                        editor.putString("admin", jObj.getJSONObject("user").getString("admin"));
+                        editor.apply();
 
                         Intent i = new Intent(getApplicationContext(), MainActivity.class);
                         startActivity(i);
                         finish();
 
                     } else {
-                        if (!automaticLogin) {
-                            String errorMsg = jObj.getString("error_msg");
-                            Toast.makeText(getApplicationContext(),
-                                    errorMsg, Toast.LENGTH_LONG).show();
-                        }
+                        String errorMsg = jObj.getString("error_msg");
+                        Toast.makeText(getApplicationContext(),
+                                errorMsg, Toast.LENGTH_LONG).show();
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -177,12 +176,10 @@ public class LoginActivity extends AppCompatActivity {
 
             @Override
             public void onErrorResponse(VolleyError error) {
-                if (!automaticLogin) {
-                    Log.d("User Login", "Login Error: " + error.getMessage());
-                    Log.d("User Login", "token "+prefs.getString("token", "XXXXX"));
-                    Toast.makeText(getApplicationContext(),
-                            error.getMessage(), Toast.LENGTH_LONG).show();
-                }
+                Log.d("User Login", "Login Error: " + error.getMessage());
+                Log.d("User Login", "token "+prefs.getString("token", "XXXXX"));
+                Toast.makeText(getApplicationContext(),
+                        error.getMessage(), Toast.LENGTH_LONG).show();
             }
         }) {
 

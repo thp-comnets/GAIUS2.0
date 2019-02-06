@@ -66,10 +66,13 @@ public class ContentFragment extends Fragment implements View.OnClickListener {
     private final int PICK_VIDEO_REQUEST = 1;
     private String imageEncoded;
     private List<String> imagesEncodedList;
+    SharedPreferences prefs;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+
+        prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
 
         return inflater.inflate(R.layout.fragment_content, null);
     }
@@ -96,6 +99,10 @@ public class ContentFragment extends Fragment implements View.OnClickListener {
         contentCategoryList.add(new ContentCategory(2, "Browse Photos", R.drawable.ic_photos_animation));
         contentCategoryList.add(new ContentCategory(3, "Create Content", R.drawable.ic_create));
         contentCategoryList.add(new ContentCategory(4, "My Content", R.drawable.ic_my_content));
+
+        if (prefs.getString("admin", "0").equals("1")) {
+            contentCategoryList.add(new ContentCategory(5, "Approve Content", R.drawable.ic_content_curation));
+        }
 
         //creating adapter object and setting it to recyclerview
         ContentsCategoryAdapter adapter = new ContentsCategoryAdapter(getContext(), contentCategoryList, this);
@@ -299,6 +306,13 @@ public class ContentFragment extends Fragment implements View.OnClickListener {
                     .replace(R.id.fragment_container, fragment)
                     .commit();
         }
+        else if (c.getTitle().equals("Approve Content")) {
+            Fragment fragment = new ApproveContentFragment();
+
+            getActivity().getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.fragment_container, fragment)
+                    .commit();
+        }
     }
 
     private void displayIntentOptions(){
@@ -394,7 +408,6 @@ public class ContentFragment extends Fragment implements View.OnClickListener {
 
         String uploadId = UUID.randomUUID().toString();
         try {
-            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
             MultipartUploadRequest request = new MultipartUploadRequest(context, uploadId, prefs.getString("base_url", null)+"uploadVideo.py")
                     .addParameter("token", prefs.getString("token", "null"))
                     .setUtf8Charset()

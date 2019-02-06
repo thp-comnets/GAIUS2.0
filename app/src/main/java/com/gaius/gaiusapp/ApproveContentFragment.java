@@ -1,19 +1,15 @@
 package com.gaius.gaiusapp;
 
-
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
-
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-
 import android.view.LayoutInflater;
-
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -22,7 +18,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.gaius.gaiusapp.adapters.ContentAdapter;
+import com.gaius.gaiusapp.adapters.ApproveContentAdapter;
 import com.gaius.gaiusapp.classes.Content;
 
 import org.json.JSONArray;
@@ -32,8 +28,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-
-public class MyContentFragment extends Fragment {
+public class ApproveContentFragment extends Fragment {
     private static String URL = "";
     List<Content> contentList;
     RecyclerView recyclerView;
@@ -58,10 +53,9 @@ public class MyContentFragment extends Fragment {
 
         prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
         String token = prefs.getString("token", "null");
-        String userID = prefs.getString("userID", "null");
 
-        URL = prefs.getString("base_url", null) + "listUserPages.py";
-        URL += "?userID="+userID+"&token="+token;
+        URL = prefs.getString("base_url", null) + "listSubmittedContent.py";
+        URL += "?token="+token;
 
         loadChannels();
     }
@@ -97,12 +91,12 @@ public class MyContentFragment extends Fragment {
                                         channel.getString("type"),
                                         channel.getString("description"),
                                         channel.getString("thumbnail"),
-                                        channel.getString("published")
+                                        "-100"
                                 ));
                             }
 
                             //creating adapter object and setting it to recyclerview
-                            ContentAdapter adapter = new ContentAdapter(getContext(), contentList);
+                            ApproveContentAdapter adapter = new ApproveContentAdapter(getContext(), contentList);
                             recyclerView.setAdapter(adapter);
                         } catch (JSONException e) {
                             e.printStackTrace();

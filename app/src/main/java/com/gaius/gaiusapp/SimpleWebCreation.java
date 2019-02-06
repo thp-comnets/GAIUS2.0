@@ -497,7 +497,7 @@ public class SimpleWebCreation extends AppCompatActivity implements OnStartDragL
             request.addParameter("category", "100");
 
             if (publish) {
-                request.addParameter("publish", "1");
+                request.addParameter("publish", "-1");
             } else {
                 request.addParameter("publish", "0");
             }

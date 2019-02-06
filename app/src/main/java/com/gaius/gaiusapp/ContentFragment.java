@@ -5,6 +5,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.ClipData;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -495,7 +496,17 @@ public class ContentFragment extends Fragment implements View.OnClickListener {
 
     private void uploadSuccessful() {
         Log.d("thp", "upload successful");
-        Toast.makeText(getContext(), "Your video has been uploaded successfully", Toast.LENGTH_LONG).show();
+
+        AlertDialog alertDialog = new AlertDialog.Builder(getActivity().getApplicationContext()).create();
+        alertDialog.setTitle("Upload successful");
+        alertDialog.setMessage("Your video has been successfully submitted. Someone from our team will approve it shortly.");
+        alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+        alertDialog.show();
     }
 }
 

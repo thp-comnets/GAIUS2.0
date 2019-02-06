@@ -1544,18 +1544,18 @@ public class CreativeWebCreation extends AppCompatActivity implements TextEditor
 
     private void uploadSuccessful() {
         Log.d("thp", "upload successful");
-        Intent previousIntent = new Intent();
-        setResult(100, previousIntent);
-        finish();
 
-//        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
-//        String channelName = prefs.getString("channel_name", "tmp");
-//        Intent intent = new Intent(getBaseContext(), DynamicChannelListViewActivity.class);
-////        intent.putExtra("CHANNEL_NAME", channelName);
-//        intent.putExtra("URL_POST_FIX", "?userid=" + channelName);
-//        intent.putExtra("ITEM_ID",  R.id.navigation_create_content+"");
-//        startActivity(intent);
-//        finish();
+        AlertDialog alertDialog = new AlertDialog.Builder(this).create();
+        alertDialog.setTitle("Upload successful");
+        alertDialog.setMessage("Your page has been successfully submitted. Someone from our team will approve it shortly.");
+        alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                        finish();
+                    }
+                });
+        alertDialog.show();
     }
 
     private boolean isReadStoragePermissionGranted() {

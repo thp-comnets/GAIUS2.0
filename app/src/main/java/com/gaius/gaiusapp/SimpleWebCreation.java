@@ -6,6 +6,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
@@ -108,19 +109,19 @@ public class SimpleWebCreation extends AppCompatActivity implements OnStartDragL
         itemList = new ArrayList<>();
 
         //adding the product to product list
-        itemList.add(new Item (itemsCnt,"text", "paragraph",null, null));
+        itemList.add(new Item(itemsCnt, "text", "paragraph", null, null));
         itemsCnt++;
 
         textHeaderButton = findViewById(R.id.text_header_card);
         textHeaderButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.d("yasir","adding text at "+itemList.size());
+                Log.d("yasir", "adding text at " + itemList.size());
 
-                itemList.add(itemList.size(), new Item (itemsCnt, "text","header",null, null));
+                itemList.add(itemList.size(), new Item(itemsCnt, "text", "header", null, null));
                 itemsCnt++;
-                adapter.notifyItemInserted(itemList.size()-1);
-                recyclerView.scrollToPosition(itemList.size()-1);
+                adapter.notifyItemInserted(itemList.size() - 1);
+                recyclerView.scrollToPosition(itemList.size() - 1);
             }
         });
 
@@ -128,12 +129,12 @@ public class SimpleWebCreation extends AppCompatActivity implements OnStartDragL
         textParagrahButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.d("yasir","adding text2 at "+itemList.size());
+                Log.d("yasir", "adding text2 at " + itemList.size());
 
-                itemList.add(itemList.size(), new Item (itemsCnt, "text","paragraph",null, null));
+                itemList.add(itemList.size(), new Item(itemsCnt, "text", "paragraph", null, null));
                 itemsCnt++;
-                adapter.notifyItemInserted(itemList.size()-1);
-                recyclerView.scrollToPosition(itemList.size()-1);
+                adapter.notifyItemInserted(itemList.size() - 1);
+                recyclerView.scrollToPosition(itemList.size() - 1);
             }
         });
 
@@ -152,7 +153,7 @@ public class SimpleWebCreation extends AppCompatActivity implements OnStartDragL
             public void onClick(View view) {
                 Intent galleryIntent = new Intent(Intent.ACTION_PICK, MediaStore.Video.Media.EXTERNAL_CONTENT_URI);
                 galleryIntent.setType("video/*");
-                galleryIntent.putExtra(Intent.EXTRA_MIME_TYPES, new String[] { "video/*"});
+                galleryIntent.putExtra(Intent.EXTRA_MIME_TYPES, new String[]{"video/*"});
                 startActivityForResult(galleryIntent, PICK_VIDEO_REQUEST);
             }
         });
@@ -184,41 +185,37 @@ public class SimpleWebCreation extends AppCompatActivity implements OnStartDragL
                 Bitmap bitmap = null;
                 try {
                     bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), imageUri);
-                    bitmap = getResizedBitmap(bitmap,800);
+                    bitmap = getResizedBitmap(bitmap, 800);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
 
                 String imagePath = ResourceHelper.saveBitmapCompressed(getApplicationContext(), imageUri, bitmap);
 
-                itemList.add(itemList.size(), new Item (itemsCnt, "image", null, imagePath, null));
+                itemList.add(itemList.size(), new Item(itemsCnt, "image", null, imagePath, null));
                 itemsCnt++;
                 adapter.notifyItemInserted(itemList.size() - 1);
                 recyclerView.scrollToPosition(itemList.size() - 1);
                 recyclerView.invalidate();
 
-            }
-
-            else if (requestCode == PICK_VIDEO_REQUEST) {
+            } else if (requestCode == PICK_VIDEO_REQUEST) {
                 Uri fileUri = data.getData();
                 String[] videoFile = getVideoPath(fileUri);
                 final String filePath = videoFile[0];
 
-                Log.d("yasir", "video: "+filePath);
+                Log.d("yasir", "video: " + filePath);
 
                 long fileSize = Long.parseLong(videoFile[1]) / 1024 / 1024;
                 if (fileSize > 5) {
                     Toast.makeText(this, "Video size is larger than " + fileSize + " MB. Consider uploading a smaller video!", Toast.LENGTH_SHORT).show();
                 }
 
-                itemList.add(itemList.size(), new Item (itemsCnt, "video", null, null, filePath));
+                itemList.add(itemList.size(), new Item(itemsCnt, "video", null, null, filePath));
                 itemsCnt++;
                 adapter.notifyItemInserted(itemList.size() - 1);
                 recyclerView.scrollToPosition(itemList.size() - 1);
                 recyclerView.invalidate();
-            }
-
-            else if (requestCode == PICK_ICON_REQUEST) {
+            } else if (requestCode == PICK_ICON_REQUEST) {
                 iconUri = data.getData();
 
                 Uri imageUri = CropImage.getPickImageResultUri(this, data);
@@ -234,13 +231,11 @@ public class SimpleWebCreation extends AppCompatActivity implements OnStartDragL
                     // no permissions required or already granted, can start crop image activity
                     startCropImageActivity(imageUri);
                 }
-            }
-
-            else if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
+            } else if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
 
                 CropImage.ActivityResult result = CropImage.getActivityResult(data);
                 Bitmap bitmap = BitmapFactory.decodeFile(result.getUri().getPath());
-                bitmap = getResizedBitmap(bitmap,200);
+                bitmap = getResizedBitmap(bitmap, 200);
 
                 iconPath = ResourceHelper.saveBitmapCompressed(getApplicationContext(), iconUri, bitmap);
                 iconImageView.setImageBitmap(bitmap);
@@ -271,7 +266,7 @@ public class SimpleWebCreation extends AppCompatActivity implements OnStartDragL
         cursor.moveToFirst();
 
         int sizeColInd = cursor.getColumnIndex(projSize[0]);
-        result[1] = ""+cursor.getLong(sizeColInd);
+        result[1] = "" + cursor.getLong(sizeColInd);
         cursor.close();
         return result;
     }
@@ -281,15 +276,13 @@ public class SimpleWebCreation extends AppCompatActivity implements OnStartDragL
         mItemTouchHelper.startDrag(viewHolder);
     }
 
-    public boolean onCreateOptionsMenu (Menu menu)
-    {
+    public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.content_creator, menu);
         return true;
     }
 
-    public boolean onOptionsItemSelected (MenuItem item)
-    {
+    public boolean onOptionsItemSelected(MenuItem item) {
         recyclerView.clearFocus(); //clear focus to make sure text is saved
         LayoutInflater layoutInflater = LayoutInflater.from(this);
         final View promptView = layoutInflater.inflate(R.layout.submit_content_popup, null);
@@ -344,7 +337,7 @@ public class SimpleWebCreation extends AppCompatActivity implements OnStartDragL
         boolean haveContent = true;
         EditText editTextPagename = view.findViewById(R.id.title_edittext);
         EditText editTextDescription = view.findViewById(R.id.description_edittext);
-        TextInputLayout editTextPagenameLayout = view.findViewById(R.id.title_edittext_layout) ;
+        TextInputLayout editTextPagenameLayout = view.findViewById(R.id.title_edittext_layout);
         TextInputLayout editTextDescriptionLayout = view.findViewById(R.id.description_edittext_layout);
 
         if (editTextDescription.getText().length() == 0) {
@@ -386,14 +379,14 @@ public class SimpleWebCreation extends AppCompatActivity implements OnStartDragL
         ArrayList<String> imagePaths = new ArrayList<String>();
         ArrayList<String> videoPaths = new ArrayList<String>();
 
-        builder.addBackground (String.format("#%06X", (0xFFFFFF & Color.WHITE)));
-        Log.d("save", adapter.getItemCount()+"");
+        builder.addBackground(String.format("#%06X", (0xFFFFFF & Color.WHITE)));
+        Log.d("save", adapter.getItemCount() + "");
         String[] filename;
         int yPos = convertToPixles(5);
 
         for (int i = 0; i < adapter.getItemCount(); i++) {
             Item item = adapter.getItem(i);
-            Log.d("save", i+ " "+ adapter.getItem(i).getType()+" "+adapter.getItem(i).getW()+ " "+adapter.getItem(i).getH());
+            Log.d("save", i + " " + adapter.getItem(i).getType() + " " + adapter.getItem(i).getW() + " " + adapter.getItem(i).getH());
             switch (item.getType()) {
                 case "text":
                     builder.addText(item.getText(), "Arial", (float) convertToPixles(item.getFontSize()), item.getX(), yPos, item.getW(), item.getH(), "#000000");
@@ -401,7 +394,7 @@ public class SimpleWebCreation extends AppCompatActivity implements OnStartDragL
                 case "image":
                     filename = new File("" + Uri.parse(item.getImagePath())).getName().split("/");
                     imagePaths.add(item.getImagePath());
-                    builder.addImage(filename[filename.length - 1], item.getX(),yPos, item.getW(), item.getH());
+                    builder.addImage(filename[filename.length - 1], item.getX(), yPos, item.getW(), item.getH());
 
                     break;
                 case "video":
@@ -417,7 +410,7 @@ public class SimpleWebCreation extends AppCompatActivity implements OnStartDragL
             Log.d("save", "ContentBuilderActivity " + builder.getPageAsString());
             uploadMultipart(getApplicationContext(), imagePaths, videoPaths, builder.makeFile(Constants.TEMPDIR), publish);
         } else {
-            Toast.makeText (getApplicationContext(), "No content added", Toast.LENGTH_SHORT).show ();
+            Toast.makeText(getApplicationContext(), "No content added", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -430,7 +423,7 @@ public class SimpleWebCreation extends AppCompatActivity implements OnStartDragL
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
             MultipartUploadRequest request = new MultipartUploadRequest(context, uploadId, BASE_URL + "upload.py")
                     .addParameter("token", prefs.getString("token", "null"))
-                    .addParameter("resolution", ""+ ResourceHelper.getScreenWidth(this))
+                    .addParameter("resolution", "" + ResourceHelper.getScreenWidth(this))
                     .setUtf8Charset()
                     .setNotificationConfig(getNotificationConfig(uploadId, R.string.notification_title))
                     .setMaxRetries(5)
@@ -444,8 +437,8 @@ public class SimpleWebCreation extends AppCompatActivity implements OnStartDragL
                         @Override
                         public void onError(Context context, UploadInfo uploadInfo, ServerResponse serverResponse, Exception exception) {
                             try {
-                                Log.d("GAIUS", "ContentBuilderActivity: onError"+serverResponse.getHeaders() + serverResponse.getBodyAsString() + serverResponse.getHttpCode());
-                                Toast.makeText(getApplicationContext(), "Something went wrong with the upload ("+ serverResponse.getHttpCode()+")", Toast.LENGTH_LONG).show();
+                                Log.d("GAIUS", "ContentBuilderActivity: onError" + serverResponse.getHeaders() + serverResponse.getBodyAsString() + serverResponse.getHttpCode());
+                                Toast.makeText(getApplicationContext(), "Something went wrong with the upload (" + serverResponse.getHttpCode() + ")", Toast.LENGTH_LONG).show();
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
@@ -458,9 +451,9 @@ public class SimpleWebCreation extends AppCompatActivity implements OnStartDragL
                                 NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
                                 notificationManager.cancel(uploadInfo.getNotificationID());
                             }
-                            Log.d("GAIUS", "ContentBuilderActivity: onCompleted response "+serverResponse.getBodyAsString());
-                            if (serverResponse.getBodyAsString().contains("@@ERROR##"))  {
-                                Toast.makeText(getApplicationContext(), serverResponse.getBodyAsString().replace("@@ERROR##","ERROR:").trim(), Toast.LENGTH_LONG).show();
+                            Log.d("GAIUS", "ContentBuilderActivity: onCompleted response " + serverResponse.getBodyAsString());
+                            if (serverResponse.getBodyAsString().contains("@@ERROR##")) {
+                                Toast.makeText(getApplicationContext(), serverResponse.getBodyAsString().replace("@@ERROR##", "ERROR:").trim(), Toast.LENGTH_LONG).show();
                             } else {
                                 uploadSuccessful();
                             }
@@ -473,7 +466,7 @@ public class SimpleWebCreation extends AppCompatActivity implements OnStartDragL
                         }
                     });
 
-            for (String imagePath: imagePaths) {
+            for (String imagePath : imagePaths) {
                 if (imagePath != null) {
 //                    Log.d("thp", "path to image " + imagePath);
                     String imagePathNew = ResourceHelper.compressImage(context, imagePath, 768, 1024);
@@ -481,7 +474,7 @@ public class SimpleWebCreation extends AppCompatActivity implements OnStartDragL
                 }
             }
 
-            for (String videoPath: videoPaths) {
+            for (String videoPath : videoPaths) {
                 if (videoPath != null) {
                     //TODO: add video compression
                     request.addFileToUpload(videoPath, "videos");
@@ -553,9 +546,18 @@ public class SimpleWebCreation extends AppCompatActivity implements OnStartDragL
 
     private void uploadSuccessful() {
         Log.d("thp", "upload successful");
-        Intent previousIntent = new Intent();
-        setResult(100, previousIntent);
-        finish();
+
+        AlertDialog alertDialog = new AlertDialog.Builder(this).create();
+        alertDialog.setTitle("Upload successful");
+        alertDialog.setMessage("Your page has been successfully submitted. Someone from our team will approve it shortly.");
+        alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                        finish();
+                    }
+                });
+        alertDialog.show();
     }
 }
 

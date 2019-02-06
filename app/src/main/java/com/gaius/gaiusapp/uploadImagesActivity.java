@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
@@ -14,12 +15,14 @@ import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.support.annotation.StringRes;
 import android.support.design.widget.TextInputLayout;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -57,6 +60,8 @@ public class uploadImagesActivity extends AppCompatActivity {
     ArrayList<String> uploadImagesPath;
     private int currentImagePos;
     private UrlGalleryAdapter adapter;
+    EditText editTextPagename, editTextDescription;
+    TextInputLayout editTextPagenameLayout, editTextDescriptionLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,6 +71,11 @@ public class uploadImagesActivity extends AppCompatActivity {
         setContentView(R.layout.activity_upload_album);
 
         super.onCreate(savedInstanceState);
+
+        editTextPagename = findViewById(R.id.images_album_title);
+        editTextDescription = findViewById(R.id.images_album_description);
+        editTextPagenameLayout = findViewById(R.id.images_album_title_layout) ;
+        editTextDescriptionLayout = findViewById(R.id.images_album_description_layout);
 
         ImageView deleteButton = findViewById(R.id.delete_button);
         deleteButton.setOnClickListener(new View.OnClickListener() {
@@ -170,8 +180,6 @@ public class uploadImagesActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected (MenuItem item)
     {
         if (filledFields()) {
-            EditText editTextPagename = findViewById(R.id.images_album_title);
-            EditText editTextDescription = findViewById(R.id.images_album_description);
             uploadMultipart(editTextPagename.getText().toString(), editTextDescription.getText().toString());
         }
 
@@ -180,11 +188,6 @@ public class uploadImagesActivity extends AppCompatActivity {
 
     public boolean filledFields() {
         boolean haveContent = true;
-        EditText editTextPagename = findViewById(R.id.images_album_title);
-        EditText editTextDescription = findViewById(R.id.images_album_description);
-
-        TextInputLayout editTextPagenameLayout = findViewById(R.id.images_album_title_layout) ;
-        TextInputLayout editTextDescriptionLayout = findViewById(R.id.images_album_description_layout);
 
         if (editTextDescription.getText().length() == 0) {
             editTextDescriptionLayout.setError(getString(R.string.error_description));
@@ -305,7 +308,26 @@ public class uploadImagesActivity extends AppCompatActivity {
 
     private void uploadSuccessful() {
         Log.d("thp", "upload successful");
-        Toast.makeText(this, "Your image album has been uploaded successfully", Toast.LENGTH_LONG).show();
-        finish();
+
+        AlertDialog alertDialog = new AlertDialog.Builder(this).create();
+        alertDialog.setTitle("Upload successful");
+        alertDialog.setMessage("Your image album has been successfully submitted. Someone from our team will approve it shortly.");
+        alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                        finish();
+                    }
+                });
+
+        alertDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+            @Override
+            public void onCancel(DialogInterface dialog) {
+                dialog.dismiss();
+                finish();
+            }
+        });
+
+        alertDialog.show();
     }
 }

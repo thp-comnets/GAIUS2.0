@@ -40,6 +40,7 @@ import android.widget.Toast;
 import com.gaius.gaiusapp.adapters.ContentsCategoryAdapter;
 import com.gaius.gaiusapp.adapters.UrlGalleryAdapter;
 import com.gaius.gaiusapp.classes.ContentCategory;
+import com.gaius.gaiusapp.utils.ResourceHelper;
 
 import net.gotev.uploadservice.MultipartUploadRequest;
 import net.gotev.uploadservice.ServerResponse;
@@ -48,6 +49,7 @@ import net.gotev.uploadservice.UploadNotificationConfig;
 import net.gotev.uploadservice.UploadService;
 import net.gotev.uploadservice.UploadStatusDelegate;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -57,6 +59,7 @@ import cn.jzvd.JzvdStd;
 import io.brotherjing.galleryview.GalleryView;
 
 import static android.app.Activity.RESULT_OK;
+import static com.gaius.gaiusapp.utils.ResourceHelper.getResizedBitmap;
 import static net.gotev.uploadservice.Placeholders.ELAPSED_TIME;
 import static net.gotev.uploadservice.Placeholders.PROGRESS;
 import static net.gotev.uploadservice.Placeholders.TOTAL_FILES;
@@ -64,13 +67,19 @@ import static net.gotev.uploadservice.Placeholders.UPLOADED_FILES;
 import static net.gotev.uploadservice.Placeholders.UPLOAD_RATE;
 
 public class ContentFragment extends Fragment implements View.OnClickListener {
+    int currentImagePos = 0;
     List<ContentCategory> contentCategoryList;
     RecyclerView recyclerView;
     private final int PICK_IMAGE_MULTIPLE = 0;
     private final int PICK_VIDEO_REQUEST = 1;
-    private String imageEncoded;
-    private List<String> imagesEncodedList;
+    ArrayList<String> multiImageViewBitmaps;
+    ArrayList<String> uploadImagesPath;
     SharedPreferences prefs;
+    UrlGalleryAdapter adapter;
+    GalleryView galleryView=null;
+    TextView label=null;
+    EditText editTextPagename, editTextDescription;
+    TextInputLayout editTextPagenameLayout, editTextDescriptionLayout;
 
     @Nullable
     @Override
@@ -137,6 +146,12 @@ public class ContentFragment extends Fragment implements View.OnClickListener {
                 alertD.setView(promptView);
                 alertD.show();
 
+                editTextPagename = promptView.findViewById(R.id.title_edittext);
+                editTextDescription = promptView.findViewById(R.id.description_edittext);
+                editTextPagenameLayout = promptView.findViewById(R.id.title_edittext_layout) ;
+                editTextDescriptionLayout = promptView.findViewById(R.id.description_edittext_layout);
+
+
                 JzvdStd jzVideoPlayerStandard  = (JzvdStd) promptView.findViewById(R.id.video_view);
                 jzVideoPlayerStandard.setUp(filePath, "", Jzvd.SCREEN_WINDOW_NORMAL);
                 jzVideoPlayerStandard.thumbImageView.setImageBitmap(selectedImage);
@@ -155,10 +170,8 @@ public class ContentFragment extends Fragment implements View.OnClickListener {
                     @Override
                     public void onClick(View view) {
                         if (filledFields(promptView)) {
-                            EditText editTextPagename = promptView.findViewById(R.id.title_edittext);
-                            EditText editTextDescription = promptView.findViewById(R.id.description_edittext);
                             alertD.dismiss();
-                            uploadMultipart(getContext(), filePath, editTextPagename.getText().toString(), editTextDescription.getText().toString());                        }
+                            uploadMultipartVideo(getContext(), filePath, editTextPagename.getText().toString(), editTextDescription.getText().toString());                        }
                     }
                 });
             }
@@ -166,29 +179,43 @@ public class ContentFragment extends Fragment implements View.OnClickListener {
             if(requestCode == PICK_IMAGE_MULTIPLE) {
                 Log.d("yasir","PICK_IMAGE_MULTIPLE");
 
-                ArrayList<String> multiImageViewBitmaps;
                 multiImageViewBitmaps = new ArrayList<>();
+                uploadImagesPath = new ArrayList<>();
 
-                if(resultCode == getActivity().RESULT_OK) {
-                    if (data.getClipData() != null) {
-                        int count = data.getClipData().getItemCount(); //evaluate the count before the for loop --- otherwise, the count is evaluated every loop.
+                if(data.getClipData() != null) {
+                    int count = data.getClipData().getItemCount(); //evaluate the count before the for loop --- otherwise, the count is evaluated every loop.
 
-                        Log.d("yasir", "count: " + count);
+                    for(int i = 0; i < count; i++) {
+                        Uri imageUri = data.getClipData().getItemAt(i).getUri();
 
-                        for (int i = 0; i < count; i++) {
-                            Uri imageUri = data.getClipData().getItemAt(i).getUri();
-                            multiImageViewBitmaps.add(imageUri.toString());
-                            Log.d("yasir ", i + ": " + imageUri + "");
-                            //do something with the image (save it to some directory or whatever you need to do with it here)
+                        Bitmap bitmap = null;
+                        try {
+                            bitmap = MediaStore.Images.Media.getBitmap(getContext().getContentResolver(), imageUri);
+                            bitmap = getResizedBitmap(bitmap,800);
+                        } catch (IOException e) {
+                            e.printStackTrace();
                         }
-                    } else if (data.getData() != null) {
-                        String imagePath = data.getData().toString();
-                        Log.d("yasir", imagePath + "");
-                        multiImageViewBitmaps.add(imagePath);
-                        //do something with the image (save it to some directory or whatever you need to do with it here)
+
+                        String imagePath = ResourceHelper.saveBitmapCompressed(getContext(), imageUri, bitmap);
+                        uploadImagesPath.add(imagePath);
+                        multiImageViewBitmaps.add(imageUri.toString());
                     }
                 }
+                else if(data.getData() != null) {
+                    Uri imageUri = data.getData();
+                    Bitmap bitmap = null;
+                    try {
+                        bitmap = MediaStore.Images.Media.getBitmap(getContext().getContentResolver(), imageUri);
+                        bitmap = getResizedBitmap(bitmap,800);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
 
+                    String imagePath = ResourceHelper.saveBitmapCompressed(getContext(), imageUri, bitmap);
+
+                    uploadImagesPath.add(imagePath);
+                    multiImageViewBitmaps.add(imageUri.toString());
+                }
 
                 LayoutInflater layoutInflater = LayoutInflater.from(getContext());
                 final View promptView = layoutInflater.inflate(R.layout.activity_upload_album, null);
@@ -196,19 +223,19 @@ public class ContentFragment extends Fragment implements View.OnClickListener {
                 alertD.setView(promptView);
                 alertD.show();
 
-                UrlGalleryAdapter adapter;
-                final GalleryView galleryView;
-                final TextView label;
-                final int currentImagePos;
+                editTextPagename = promptView.findViewById(R.id.images_album_title);
+                editTextDescription = promptView.findViewById(R.id.images_album_description);
+                editTextPagenameLayout = promptView.findViewById(R.id.images_album_title_layout) ;
+                editTextDescriptionLayout = promptView.findViewById(R.id.images_album_description_layout);
 
+                currentImagePos = 1;
                 galleryView = (GalleryView) promptView.findViewById(R.id.gallery);
                 label = (TextView) promptView.findViewById(R.id.tvLabel);
 
                 galleryView.setScrollEndListener(new GalleryView.OnScrollEndListener() {
                     @Override
                     public void onScrollEnd(int index) {
-                        label.setText((index+1)+"/"+galleryView.getAdapter().getCount());
-//                        currentImagePos = index+1;
+                        incrementCount(index);
                     }
                 });
 
@@ -216,45 +243,54 @@ public class ContentFragment extends Fragment implements View.OnClickListener {
                 galleryView.setAdapter(adapter);
                 label.setText((1)+"/"+galleryView.getAdapter().getCount());
 
-//                LinearLayout layout = (LinearLayout) promptView.findViewById(R.id.images_view);
-//                for (int i=0; i<multiImageViewBitmaps.size(); i++) {
-//                    ImageView image = new ImageView(promptView.getContext());
-//                    image.setLayoutParams(new android.view.ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,500));
-//                    image.setImageURI(multiImageViewBitmaps.get(i));
-//                    layout.addView(image);
-//                }
+                ImageView deleteButton = promptView.findViewById(R.id.delete_button);
+                deleteButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        multiImageViewBitmaps.remove(currentImagePos-1);
+                        uploadImagesPath.remove(currentImagePos-1);
 
-//                Button cancel_button = (Button) promptView.findViewById(R.id.cancel_button);
-//                Button upload_button = (Button) promptView.findViewById(R.id.upload_button);
-//
-//                cancel_button.setOnClickListener(new View.OnClickListener() {
-//                    @Override
-//                    public void onClick(View view) {
-//                        alertD.dismiss();
-//                    }
-//                });
-//
-//                upload_button.setOnClickListener(new View.OnClickListener() {
-//                    @Override
-//                    public void onClick(View view) {
-//                        if (filledFields(promptView)) {
-//                            EditText editTextPagename = promptView.findViewById(R.id.title_edittext);
-//                            EditText editTextDescription = promptView.findViewById(R.id.description_edittext);
-//                            alertD.dismiss();
-////                            uploadMultipart(getContext(), filePath, editTextPagename.getText().toString(), editTextDescription.getText().toString());
-//                        }
-//                    }
-//                });
+                        if (uploadImagesPath.size() == 0) {
+                            alertD.dismiss();
+                        }
+
+                        adapter = new UrlGalleryAdapter(getContext(),multiImageViewBitmaps);
+                        galleryView.setAdapter(adapter);
+                        label.setText((1)+"/"+galleryView.getAdapter().getCount());
+                        currentImagePos = 1;
+                    }
+                });
+
+                Button cancel_button = (Button) promptView.findViewById(R.id.cancel_button);
+                Button upload_button = (Button) promptView.findViewById(R.id.upload_button);
+
+                cancel_button.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        alertD.dismiss();
+                    }
+                });
+
+                upload_button.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        if (filledFields(promptView)) {
+                            alertD.dismiss();
+                            uploadMultipartImages(editTextPagename.getText().toString(), editTextDescription.getText().toString());
+                        }
+                    }
+                });
             }
         }
     }
 
+    public void incrementCount(int index) {
+        label.setText((index+1)+"/"+galleryView.getAdapter().getCount());
+        currentImagePos = index+1;
+    }
+
     public boolean filledFields(View view) {
         boolean haveContent = true;
-        EditText editTextPagename = view.findViewById(R.id.title_edittext);
-        EditText editTextDescription = view.findViewById(R.id.description_edittext);
-        TextInputLayout editTextPagenameLayout = view.findViewById(R.id.title_edittext_layout) ;
-        TextInputLayout editTextDescriptionLayout = view.findViewById(R.id.description_edittext_layout);
 
         if (editTextDescription.getText().length() == 0) {
             editTextDescriptionLayout.setError(getString(R.string.error_description));
@@ -406,16 +442,12 @@ public class ContentFragment extends Fragment implements View.OnClickListener {
             @Override
             public void onClick(View v) {
                 Log.d("Yasir", "clicked on image creation");
-//                alertD.dismiss();
+                alertD.dismiss();
 
                 Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
                 intent.setType("image/*");
                 intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
                 startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_MULTIPLE); //SELECT_PICTURES is simply a global int used to check the calling intent in onActivityResult
-
-//                Intent i = new Intent(getContext(), uploadImagesActivity.class);
-//                getContext().startActivity(i);
-
             }
         });
         ad_button.setOnClickListener(new View.OnClickListener() {
@@ -430,7 +462,73 @@ public class ContentFragment extends Fragment implements View.OnClickListener {
         });
     }
 
-    private void uploadMultipart(final Context context, final String videoPath, final String title, final String description) {
+    private void uploadMultipartImages(final String title, final String description) {
+
+        String uploadId = UUID.randomUUID().toString();
+        try {
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+            MultipartUploadRequest request = new MultipartUploadRequest(getContext(), uploadId, prefs.getString("base_url", null) + "uploadImages.py")
+                    .addParameter("token", prefs.getString("token", "null"))
+                    .setUtf8Charset()
+                    .setNotificationConfig(getNotificationConfig(uploadId, R.string.notification_title))
+                    .setMaxRetries(5)
+                    .setDelegate(new UploadStatusDelegate() {
+                        @Override
+                        public void onProgress(Context context, UploadInfo uploadInfo) {
+                            // your code here
+                        }
+
+                        @Override
+                        public void onError(Context context, UploadInfo uploadInfo, ServerResponse serverResponse, Exception exception) {
+                            try {
+                                Log.d("GAIUS", "ContentBuilderActivity: onError"+serverResponse.getHeaders() + serverResponse.getBodyAsString() + serverResponse.getHttpCode());
+                                Toast.makeText(getContext(), "Something went wrong with the upload ("+ serverResponse.getHttpCode()+")", Toast.LENGTH_LONG).show();
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
+
+                        @Override
+                        public void onCompleted(Context context, UploadInfo uploadInfo, ServerResponse serverResponse) {
+                            // remove the notification as it is no longer needed to keep the service alive
+                            if (uploadInfo.getNotificationID() != null) {
+                                NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+                                notificationManager.cancel(uploadInfo.getNotificationID());
+                            }
+                            Log.d("GAIUS", "ContentBuilderActivity: onCompleted response "+serverResponse.getBodyAsString());
+                            if (serverResponse.getBodyAsString().contains("@@ERROR##"))  {
+                                Toast.makeText(getContext(), serverResponse.getBodyAsString().replace("@@ERROR##","ERROR:").trim(), Toast.LENGTH_LONG).show();
+                            } else {
+                                uploadSuccessful("image album");
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(Context context, UploadInfo uploadInfo) {
+                        }
+                    });
+
+            request.addParameter("title", title);
+            request.addParameter("description", description);
+
+            for (String imagePath: uploadImagesPath) {
+                if (imagePath != null) {
+                    Log.d("thp", "path to image " + imagePath);
+
+                    String imagePathNew = ResourceHelper.compressImage(getContext(), imagePath, 768, 1024);
+                    request.addFileToUpload(imagePathNew, "images");
+                }
+            }
+
+            Log.d("Yasir","Starting the upload 5");
+
+            request.startUpload();
+        } catch (Exception exc) {
+            Log.d("yasir", exc.getMessage(), exc);
+        }
+    }
+
+    private void uploadMultipartVideo(final Context context, final String videoPath, final String title, final String description) {
 
         String uploadId = UUID.randomUUID().toString();
         try {
@@ -467,7 +565,7 @@ public class ContentFragment extends Fragment implements View.OnClickListener {
                             if (serverResponse.getBodyAsString().contains("@@ERROR##"))  {
                                 Toast.makeText(getContext(), serverResponse.getBodyAsString().replace("@@ERROR##","ERROR:").trim(), Toast.LENGTH_LONG).show();
                             } else {
-                                uploadSuccessful();
+                                uploadSuccessful("video");
                             }
                         }
 
@@ -519,12 +617,12 @@ public class ContentFragment extends Fragment implements View.OnClickListener {
         return config;
     }
 
-    private void uploadSuccessful() {
+    private void uploadSuccessful(String contentType) {
         Log.d("thp", "upload successful");
 
         AlertDialog alertDialog = new AlertDialog.Builder(getContext()).create();
         alertDialog.setTitle("Upload successful");
-        alertDialog.setMessage("Your video has been successfully submitted. Someone from our team will approve it shortly.");
+        alertDialog.setMessage("Your " + contentType + " has been successfully submitted. Someone from our team will approve it shortly.");
         alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {

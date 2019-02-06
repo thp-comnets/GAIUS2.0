@@ -34,9 +34,11 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.gaius.gaiusapp.adapters.ContentsCategoryAdapter;
+import com.gaius.gaiusapp.adapters.UrlGalleryAdapter;
 import com.gaius.gaiusapp.classes.ContentCategory;
 
 import net.gotev.uploadservice.MultipartUploadRequest;
@@ -52,6 +54,7 @@ import java.util.UUID;
 
 import cn.jzvd.Jzvd;
 import cn.jzvd.JzvdStd;
+import io.brotherjing.galleryview.GalleryView;
 
 import static android.app.Activity.RESULT_OK;
 import static net.gotev.uploadservice.Placeholders.ELAPSED_TIME;
@@ -160,37 +163,59 @@ public class ContentFragment extends Fragment implements View.OnClickListener {
                 });
             }
 
-//            if(requestCode == PICK_IMAGE_MULTIPLE) {
-//                Log.d("yasir","PICK_IMAGE_MULTIPLE");
-//
-//                ArrayList<Uri> multiImageViewBitmaps;
-//                multiImageViewBitmaps = new ArrayList<>();
-//
-//                if(resultCode == getActivity().RESULT_OK) {
-//                    if(data.getClipData() != null) {
-//                        int count = data.getClipData().getItemCount(); //evaluate the count before the for loop --- otherwise, the count is evaluated every loop.
-//
-//                        Log.d("yasir", "count: "+count);
-//
-//                        for(int i = 0; i < count; i++) {
-//                            Uri imageUri = data.getClipData().getItemAt(i).getUri();
-//                            multiImageViewBitmaps.add(imageUri);
-//                            Log.d("yasir ", i+": "+imageUri+"");
-//                            //do something with the image (save it to some directory or whatever you need to do with it here)
-//                        }
-//                    }
-//                } else if(data.getData() != null) {
-//                    String imagePath = data.getData().getPath();
-//                    Log.d("yasir", imagePath+"");
-//                    //do something with the image (save it to some directory or whatever you need to do with it here)
-//                }
-//
-//                LayoutInflater layoutInflater = LayoutInflater.from(getContext());
-//                final View promptView = layoutInflater.inflate(R.layout.upload_images_popup, null);
-//                final AlertDialog alertD = new AlertDialog.Builder(getContext()).create();
-//                alertD.setView(promptView);
-//                alertD.show();
-//
+            if(requestCode == PICK_IMAGE_MULTIPLE) {
+                Log.d("yasir","PICK_IMAGE_MULTIPLE");
+
+                ArrayList<String> multiImageViewBitmaps;
+                multiImageViewBitmaps = new ArrayList<>();
+
+                if(resultCode == getActivity().RESULT_OK) {
+                    if (data.getClipData() != null) {
+                        int count = data.getClipData().getItemCount(); //evaluate the count before the for loop --- otherwise, the count is evaluated every loop.
+
+                        Log.d("yasir", "count: " + count);
+
+                        for (int i = 0; i < count; i++) {
+                            Uri imageUri = data.getClipData().getItemAt(i).getUri();
+                            multiImageViewBitmaps.add(imageUri.toString());
+                            Log.d("yasir ", i + ": " + imageUri + "");
+                            //do something with the image (save it to some directory or whatever you need to do with it here)
+                        }
+                    } else if (data.getData() != null) {
+                        String imagePath = data.getData().toString();
+                        Log.d("yasir", imagePath + "");
+                        multiImageViewBitmaps.add(imagePath);
+                        //do something with the image (save it to some directory or whatever you need to do with it here)
+                    }
+                }
+
+
+                LayoutInflater layoutInflater = LayoutInflater.from(getContext());
+                final View promptView = layoutInflater.inflate(R.layout.activity_upload_album, null);
+                final AlertDialog alertD = new AlertDialog.Builder(getContext()).create();
+                alertD.setView(promptView);
+                alertD.show();
+
+                UrlGalleryAdapter adapter;
+                final GalleryView galleryView;
+                final TextView label;
+                final int currentImagePos;
+
+                galleryView = (GalleryView) promptView.findViewById(R.id.gallery);
+                label = (TextView) promptView.findViewById(R.id.tvLabel);
+
+                galleryView.setScrollEndListener(new GalleryView.OnScrollEndListener() {
+                    @Override
+                    public void onScrollEnd(int index) {
+                        label.setText((index+1)+"/"+galleryView.getAdapter().getCount());
+//                        currentImagePos = index+1;
+                    }
+                });
+
+                adapter = new UrlGalleryAdapter(getContext(), multiImageViewBitmaps);
+                galleryView.setAdapter(adapter);
+                label.setText((1)+"/"+galleryView.getAdapter().getCount());
+
 //                LinearLayout layout = (LinearLayout) promptView.findViewById(R.id.images_view);
 //                for (int i=0; i<multiImageViewBitmaps.size(); i++) {
 //                    ImageView image = new ImageView(promptView.getContext());
@@ -198,7 +223,7 @@ public class ContentFragment extends Fragment implements View.OnClickListener {
 //                    image.setImageURI(multiImageViewBitmaps.get(i));
 //                    layout.addView(image);
 //                }
-//
+
 //                Button cancel_button = (Button) promptView.findViewById(R.id.cancel_button);
 //                Button upload_button = (Button) promptView.findViewById(R.id.upload_button);
 //
@@ -220,7 +245,7 @@ public class ContentFragment extends Fragment implements View.OnClickListener {
 //                        }
 //                    }
 //                });
-//            }
+            }
         }
     }
 
@@ -383,13 +408,13 @@ public class ContentFragment extends Fragment implements View.OnClickListener {
                 Log.d("Yasir", "clicked on image creation");
 //                alertD.dismiss();
 
-//                Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-//                intent.setType("image/*");
-//                intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
-//                startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_MULTIPLE); //SELECT_PICTURES is simply a global int used to check the calling intent in onActivityResult
+                Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+                intent.setType("image/*");
+                intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+                startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_MULTIPLE); //SELECT_PICTURES is simply a global int used to check the calling intent in onActivityResult
 
-                Intent i = new Intent(getContext(), uploadImagesActivity.class);
-                getContext().startActivity(i);
+//                Intent i = new Intent(getContext(), uploadImagesActivity.class);
+//                getContext().startActivity(i);
 
             }
         });

@@ -5,6 +5,25 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.gaius.gaiusapp.MainActivity">
 
+    <pl.droidsonroids.gif.GifImageView
+        android:id="@+id/nothing_to_approve_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_nothing_to_approve"
+        android:layout_centerInParent="true"
+        android:visibility="gone"/>
+
+    <TextView
+        android:id="@+id/nothing_to_approve_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:text="Yay! Nothing to approve"
+        android:textColor="#000000"
+        android:textStyle="bold"
+        android:visibility="gone"
+        android:layout_below="@+id/nothing_to_approve_image"/>
+
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recylcerView"
         android:layout_width="match_parent"

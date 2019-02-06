@@ -9,6 +9,7 @@ public class Content {
     String description;
     String thumbnail;
     String published;
+    String name;
 
     public Content(int id, String title, String url, String uploadTime, String type, String description, String thumbnail, String published) {
         this.id = id;
@@ -79,5 +80,13 @@ public class Content {
 
     public String getPublished() {
         return published;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }

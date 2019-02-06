@@ -78,6 +78,10 @@ public class ApproveContentAdapter extends RecyclerView.Adapter<ApproveContentAd
         holder.textViewTitle.setText(content.getTitle());
         holder.getTextViewDescription.setText(content.getDescription());
 
+        holder.status.setText(content.getName() + " " + content.getUploadTime());
+        holder.status.setTextColor(mCtx.getResources().getColor(R.color.blue_500));
+
+
         holder.editButton.setImageResource(R.drawable.ic_approve);
         holder.deleteButton.setImageResource(R.drawable.ic_reject);
 
@@ -242,7 +246,7 @@ public class ApproveContentAdapter extends RecyclerView.Adapter<ApproveContentAd
 
     class ApproveContentlViewHolder extends RecyclerView.ViewHolder {
 
-        TextView textViewTitle, getTextViewDescription;
+        TextView textViewTitle, getTextViewDescription, status;
         ImageView imageView, typeView, deleteButton, editButton;
         LinearLayout linearLayout;
 
@@ -250,6 +254,7 @@ public class ApproveContentAdapter extends RecyclerView.Adapter<ApproveContentAd
             super(itemView);
 
             textViewTitle = itemView.findViewById(R.id.textViewName);
+            status = itemView.findViewById(R.id.status);
             getTextViewDescription = itemView.findViewById(R.id.textViewDescription);
             imageView = itemView.findViewById(R.id.imageView);
             typeView = itemView.findViewById(R.id.typeView);

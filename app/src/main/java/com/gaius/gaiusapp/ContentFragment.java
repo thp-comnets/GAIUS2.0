@@ -497,7 +497,7 @@ public class ContentFragment extends Fragment implements View.OnClickListener {
     private void uploadSuccessful() {
         Log.d("thp", "upload successful");
 
-        AlertDialog alertDialog = new AlertDialog.Builder(getActivity().getApplicationContext()).create();
+        AlertDialog alertDialog = new AlertDialog.Builder(getContext()).create();
         alertDialog.setTitle("Upload successful");
         alertDialog.setMessage("Your video has been successfully submitted. Someone from our team will approve it shortly.");
         alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",

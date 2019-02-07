@@ -215,7 +215,8 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                     loadFragment(new WebFragment());
                     break;
                 }
-                else if ((recycler.getTag()+"").contains("MainWeb") || (recycler.getTag()+"").contains("MainVideo")) {
+                else if ((recycler.getTag()+"").contains("MainWeb") || (recycler.getTag()+"").contains("MainVideo")
+                        || (recycler.getTag()+"").contains("MyContent") || (recycler.getTag()+"").contains("ContentApproval")) {
                     navigation.setSelectedItemId(R.id.navigation_content);
                     break;
                 }

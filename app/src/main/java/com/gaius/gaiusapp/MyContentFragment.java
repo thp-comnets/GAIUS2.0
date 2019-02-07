@@ -1,6 +1,7 @@
 package com.gaius.gaiusapp;
 
 
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -16,6 +17,8 @@ import android.view.LayoutInflater;
 
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CompoundButton;
+import android.widget.Switch;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
@@ -35,9 +38,14 @@ import java.util.List;
 
 public class MyContentFragment extends Fragment {
     private static String URL = "";
-    List<Content> contentList;
+    List<Content> myContentList;
+    List<Content> managedContentList;
+
     RecyclerView recyclerView;
     SharedPreferences prefs;
+    String userName;
+    String admin;
+    Switch toggleContent;
 
     @Nullable
     @Override
@@ -56,9 +64,32 @@ public class MyContentFragment extends Fragment {
 
         recyclerView.setTag("MyContent");
 
-        contentList = new ArrayList<>();
+        myContentList = new ArrayList<>();
+        managedContentList = new ArrayList<>();
 
         prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+        userName = prefs.getString("name",null);
+        admin = prefs.getString("admin","0");
+
+        if (admin.equals("1")) {
+            toggleContent = getView().findViewById(R.id.switchButton);
+            toggleContent.setVisibility(View.VISIBLE);
+
+            toggleContent.setChecked(true);
+            toggleContent.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton compoundButton, boolean bChecked) {
+                    if (bChecked) {
+                        ContentAdapter adapter = new ContentAdapter(getContext(), myContentList);
+                        recyclerView.setAdapter(adapter);
+                    } else {
+                        ContentAdapter adapter = new ContentAdapter(getContext(), managedContentList);
+                        recyclerView.setAdapter(adapter);
+                    }
+                }
+            });
+        }
+
         String token = prefs.getString("token", "null");
         String userID = prefs.getString("userID", "null");
 
@@ -90,8 +121,7 @@ public class MyContentFragment extends Fragment {
                                 //getting product object from json array
                                 JSONObject channel = array.getJSONObject(i);
 
-                                //adding the product to product list
-                                contentList.add(new Content(
+                                Content c = new Content(
                                         channel.getInt("id"),
                                         channel.getString("title"),
                                         channel.getString("url"),
@@ -100,11 +130,23 @@ public class MyContentFragment extends Fragment {
                                         channel.getString("description"),
                                         channel.getString("thumbnail"),
                                         channel.getString("published")
-                                ));
+                                );
+
+                                if (admin.equals("1")) {
+                                    managedContentList.add(c);
+
+                                    if (userName.equals(channel.getString("name"))) {
+                                        myContentList.add(c);
+                                    }
+                                }
+                                else {
+                                    //adding the product to product list
+                                    myContentList.add(c);
+                                }
                             }
 
                             //creating adapter object and setting it to recyclerview
-                            ContentAdapter adapter = new ContentAdapter(getContext(), contentList);
+                            ContentAdapter adapter = new ContentAdapter(getContext(), myContentList);
                             recyclerView.setAdapter(adapter);
                         } catch (JSONException e) {
                             e.printStackTrace();

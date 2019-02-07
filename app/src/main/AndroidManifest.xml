@@ -91,12 +91,6 @@
         </activity>
 
         <activity
-            android:name=".uploadImagesActivity"
-            android:launchMode="singleTask"
-            android:theme="@style/AppTheme">
-        </activity>
-
-        <activity
             android:name=".AdCreationActivity"
             android:launchMode="singleTask"
             android:theme="@style/AppTheme">

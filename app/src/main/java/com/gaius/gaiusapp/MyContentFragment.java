@@ -54,6 +54,8 @@ public class MyContentFragment extends Fragment {
         recyclerView.addItemDecoration(new DividerItemDecoration(getContext(),
                 DividerItemDecoration.VERTICAL));
 
+        recyclerView.setTag("MyContent");
+
         contentList = new ArrayList<>();
 
         prefs = PreferenceManager.getDefaultSharedPreferences(getContext());

@@ -52,6 +52,8 @@ public class ApproveContentFragment extends Fragment {
         recyclerView.addItemDecoration(new DividerItemDecoration(getContext(),
                 DividerItemDecoration.VERTICAL));
 
+        recyclerView.setTag("ContentApproval");
+
         contentList = new ArrayList<>();
 
         prefs = PreferenceManager.getDefaultSharedPreferences(getContext());

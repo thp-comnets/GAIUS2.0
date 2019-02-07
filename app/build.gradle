@@ -49,4 +49,7 @@ dependencies {
     implementation 'com.daimajia.slider:library:1.1.5@aar'
 
     implementation 'com.github.BrotherJing:android-gallery-view:v1.0.0'
+
+    implementation 'com.amitshekhar.android:android-networking:1.0.2'
+
 }

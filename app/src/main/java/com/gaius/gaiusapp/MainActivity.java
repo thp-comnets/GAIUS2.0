@@ -19,6 +19,7 @@ import android.view.MenuItem;
 import android.view.View;
 
 
+import com.androidnetworking.AndroidNetworking;
 import com.gaius.gaiusapp.utils.LogOut;
 
 import java.util.ArrayList;
@@ -44,7 +45,8 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        AndroidNetworking.initialize(getApplicationContext());
+        AndroidNetworking.enableLogging();
         // creating the BASE_URL of the GAIUS edge
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         SharedPreferences.Editor editor = prefs.edit();

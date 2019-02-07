@@ -3,6 +3,7 @@ package com.gaius.gaiusapp;
 import android.annotation.SuppressLint;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.app.ProgressDialog;
 import android.content.ClipData;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -11,6 +12,7 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.media.ThumbnailUtils;
 import android.net.Uri;
 import android.os.Bundle;
@@ -37,26 +39,27 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.androidnetworking.AndroidNetworking;
+import com.androidnetworking.common.ANRequest;
+import com.androidnetworking.common.ANResponse;
+import com.androidnetworking.error.ANError;
+import com.androidnetworking.interfaces.AnalyticsListener;
+import com.androidnetworking.interfaces.OkHttpResponseListener;
+import com.androidnetworking.interfaces.UploadProgressListener;
 import com.gaius.gaiusapp.adapters.ContentsCategoryAdapter;
 import com.gaius.gaiusapp.adapters.UrlGalleryAdapter;
 import com.gaius.gaiusapp.classes.ContentCategory;
 import com.gaius.gaiusapp.utils.ResourceHelper;
 
-import net.gotev.uploadservice.MultipartUploadRequest;
-import net.gotev.uploadservice.ServerResponse;
-import net.gotev.uploadservice.UploadInfo;
-import net.gotev.uploadservice.UploadNotificationConfig;
-import net.gotev.uploadservice.UploadService;
-import net.gotev.uploadservice.UploadStatusDelegate;
-
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 import cn.jzvd.Jzvd;
 import cn.jzvd.JzvdStd;
 import io.brotherjing.galleryview.GalleryView;
+import okhttp3.Response;
 
 import static android.app.Activity.RESULT_OK;
 import static com.gaius.gaiusapp.utils.ResourceHelper.getResizedBitmap;
@@ -74,12 +77,15 @@ public class ContentFragment extends Fragment implements View.OnClickListener {
     private final int PICK_VIDEO_REQUEST = 1;
     ArrayList<String> multiImageViewBitmaps;
     ArrayList<String> uploadImagesPath;
+    String uploadVideoPath;
     SharedPreferences prefs;
     UrlGalleryAdapter adapter;
     GalleryView galleryView=null;
     TextView label=null;
     EditText editTextPagename, editTextDescription;
     TextInputLayout editTextPagenameLayout, editTextDescriptionLayout;
+    private ProgressDialog progress;
+
 
     @Nullable
     @Override
@@ -92,8 +98,8 @@ public class ContentFragment extends Fragment implements View.OnClickListener {
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        UploadService.NAMESPACE = BuildConfig.APPLICATION_ID;
-        UploadService.NAMESPACE = "com.gaius.contentupload";
+//        UploadService.NAMESPACE = BuildConfig.APPLICATION_ID;
+//        UploadService.NAMESPACE = "com.gaius.contentupload";
 
         recyclerView = getView().findViewById(R.id.recylcerView);
         recyclerView.setHasFixedSize(true);
@@ -132,13 +138,13 @@ public class ContentFragment extends Fragment implements View.OnClickListener {
             if (requestCode == PICK_VIDEO_REQUEST) {
                 Uri fileUri = data.getData();
                 String[] videoFile = getVideoPath(fileUri);
-                final String filePath = videoFile[0];
+                uploadVideoPath = videoFile[0];
                 Bitmap selectedImage = ThumbnailUtils.createVideoThumbnail(videoFile[0], MediaStore.Images.Thumbnails.MINI_KIND);
                 long fileSize = Long.parseLong(videoFile[1]) / 1024 / 1024;
                 if (fileSize > 5) {
                     Toast.makeText(getContext(), "Video size is larger than " + fileSize + " MB. Consider uploading a smaller video!", Toast.LENGTH_SHORT).show();
                 }
-                Log.d("yasir","Upload video " + filePath + " " + selectedImage);
+                Log.d("yasir","Upload video " + uploadVideoPath + " " + selectedImage);
 
                 LayoutInflater layoutInflater = LayoutInflater.from(getContext());
                 final View promptView = layoutInflater.inflate(R.layout.upload_video_popup, null);
@@ -153,7 +159,7 @@ public class ContentFragment extends Fragment implements View.OnClickListener {
 
 
                 JzvdStd jzVideoPlayerStandard  = (JzvdStd) promptView.findViewById(R.id.video_view);
-                jzVideoPlayerStandard.setUp(filePath, "", Jzvd.SCREEN_WINDOW_NORMAL);
+                jzVideoPlayerStandard.setUp(uploadVideoPath, "", Jzvd.SCREEN_WINDOW_NORMAL);
                 jzVideoPlayerStandard.thumbImageView.setImageBitmap(selectedImage);
 
                 Button cancel_button = (Button) promptView.findViewById(R.id.cancel_button);
@@ -171,7 +177,9 @@ public class ContentFragment extends Fragment implements View.OnClickListener {
                     public void onClick(View view) {
                         if (filledFields(promptView)) {
                             alertD.dismiss();
-                            uploadMultipartVideo(getContext(), filePath, editTextPagename.getText().toString(), editTextDescription.getText().toString());                        }
+//                            uploadMultipartVideo(getContext(), filePath, editTextPagename.getText().toString(), editTextDescription.getText().toString());
+                            uploadMultipart(editTextPagename.getText().toString(), editTextDescription.getText().toString(), true);
+                        }
                     }
                 });
             }
@@ -276,7 +284,7 @@ public class ContentFragment extends Fragment implements View.OnClickListener {
                     public void onClick(View view) {
                         if (filledFields(promptView)) {
                             alertD.dismiss();
-                            uploadMultipartImages(editTextPagename.getText().toString(), editTextDescription.getText().toString());
+                            uploadMultipart(editTextPagename.getText().toString(), editTextDescription.getText().toString(), false);
                         }
                     }
                 });
@@ -462,165 +470,251 @@ public class ContentFragment extends Fragment implements View.OnClickListener {
         });
     }
 
-    private void uploadMultipartImages(final String title, final String description) {
 
-        String uploadId = UUID.randomUUID().toString();
-        try {
-            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
-            MultipartUploadRequest request = new MultipartUploadRequest(getContext(), uploadId, prefs.getString("base_url", null) + "uploadImages.py")
-                    .addParameter("token", prefs.getString("token", "null"))
-                    .setUtf8Charset()
-                    .setNotificationConfig(getNotificationConfig(uploadId, R.string.notification_title))
-                    .setMaxRetries(5)
-                    .setDelegate(new UploadStatusDelegate() {
-                        @Override
-                        public void onProgress(Context context, UploadInfo uploadInfo) {
-                            // your code here
-                        }
+    private void uploadMultipart(final String title, final String description, final boolean isVideo) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity().getApplicationContext());
 
-                        @Override
-                        public void onError(Context context, UploadInfo uploadInfo, ServerResponse serverResponse, Exception exception) {
-                            try {
-                                Log.d("GAIUS", "ContentBuilderActivity: onError"+serverResponse.getHeaders() + serverResponse.getBodyAsString() + serverResponse.getHttpCode());
-                                Toast.makeText(getContext(), "Something went wrong with the upload ("+ serverResponse.getHttpCode()+")", Toast.LENGTH_LONG).show();
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-                        }
+        progress = new ProgressDialog(getActivity());
+        progress.setMessage("Uploading...");
+        progress.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+        progress.setCancelable(false);
+        progress.setProgress(0);
+        progress.setButton(ProgressDialog.BUTTON_NEUTRAL, "Cancel upload",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        AndroidNetworking.cancelAll();
+                    }
+                });
+        progress.show();
 
-                        @Override
-                        public void onCompleted(Context context, UploadInfo uploadInfo, ServerResponse serverResponse) {
-                            // remove the notification as it is no longer needed to keep the service alive
-                            if (uploadInfo.getNotificationID() != null) {
-                                NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-                                notificationManager.cancel(uploadInfo.getNotificationID());
-                            }
-                            Log.d("GAIUS", "ContentBuilderActivity: onCompleted response "+serverResponse.getBodyAsString());
-                            if (serverResponse.getBodyAsString().contains("@@ERROR##"))  {
-                                Toast.makeText(getContext(), serverResponse.getBodyAsString().replace("@@ERROR##","ERROR:").trim(), Toast.LENGTH_LONG).show();
-                            } else {
-                                uploadSuccessful("image album");
-                            }
-                        }
+        String url = "";
+        if (isVideo) {
+            url = prefs.getString("base_url", null) + "uploadVideo.py";
+        } else {
+            url = prefs.getString("base_url", null) + "uploadImages.py";
+        }
 
-                        @Override
-                        public void onCancelled(Context context, UploadInfo uploadInfo) {
-                        }
-                    });
+        ANRequest.MultiPartBuilder multiPartBuilder = new ANRequest.MultiPartBuilder(url);
 
-            request.addParameter("title", title);
-            request.addParameter("description", description);
-
+        if (isVideo) {
+            multiPartBuilder.addMultipartFile("video", new File(uploadVideoPath));
+            multiPartBuilder.addMultipartParameter("category", "100");
+        } else {
             for (String imagePath: uploadImagesPath) {
                 if (imagePath != null) {
                     Log.d("thp", "path to image " + imagePath);
 
-                    String imagePathNew = ResourceHelper.compressImage(getContext(), imagePath, 768, 1024);
-                    request.addFileToUpload(imagePathNew, "images");
+                    String imagePathNew = ResourceHelper.compressImage(getActivity().getApplicationContext(), imagePath, 768, 1024);
+                    multiPartBuilder.addMultipartFile("images", new File(imagePathNew));
+
                 }
             }
-
-            Log.d("Yasir","Starting the upload 5");
-
-            request.startUpload();
-        } catch (Exception exc) {
-            Log.d("yasir", exc.getMessage(), exc);
         }
-    }
 
-    private void uploadMultipartVideo(final Context context, final String videoPath, final String title, final String description) {
-
-        String uploadId = UUID.randomUUID().toString();
-        try {
-            MultipartUploadRequest request = new MultipartUploadRequest(context, uploadId, prefs.getString("base_url", null)+"uploadVideo.py")
-                    .addParameter("token", prefs.getString("token", "null"))
-                    .setUtf8Charset()
-                    .setNotificationConfig(getNotificationConfig(uploadId, R.string.notification_title))
-                    .setMaxRetries(5)
-                    .addFileToUpload(videoPath, "video")
-                    .setDelegate(new UploadStatusDelegate() {
-                        @Override
-                        public void onProgress(Context context, UploadInfo uploadInfo) {
-                            // your code here
-                        }
-
-                        @Override
-                        public void onError(Context context, UploadInfo uploadInfo, ServerResponse serverResponse, Exception exception) {
-                            try {
-                                Log.d("GAIUS", "ContentBuilderActivity: onError"+serverResponse.getHeaders() + serverResponse.getBodyAsString() + serverResponse.getHttpCode());
-                                Toast.makeText(getContext(), "Something went wrong with the upload ("+ serverResponse.getHttpCode()+")", Toast.LENGTH_LONG).show();
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-                        }
-
-                        @Override
-                        public void onCompleted(Context context, UploadInfo uploadInfo, ServerResponse serverResponse) {
-                            // remove the notification as it is no longer needed to keep the service alive
-                            if (uploadInfo.getNotificationID() != null) {
-                                NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-                                notificationManager.cancel(uploadInfo.getNotificationID());
-                            }
-                            Log.d("GAIUS", "ContentBuilderActivity: onCompleted response "+serverResponse.getBodyAsString());
-                            if (serverResponse.getBodyAsString().contains("@@ERROR##"))  {
-                                Toast.makeText(getContext(), serverResponse.getBodyAsString().replace("@@ERROR##","ERROR:").trim(), Toast.LENGTH_LONG).show();
-                            } else {
+        multiPartBuilder.addMultipartParameter("token", prefs.getString("token", "null"));
+        multiPartBuilder.addMultipartParameter("title", title);
+        multiPartBuilder.addMultipartParameter("description", description);
+        multiPartBuilder.build()
+                .setUploadProgressListener(new UploadProgressListener() {
+                    @Override
+                    public void onProgress(long bytesUploaded, long totalBytes) {
+                        progress.setProgress((int)((float)bytesUploaded/totalBytes * 100.0));
+                    }
+                })
+                .setAnalyticsListener(new AnalyticsListener() {
+                    @Override
+                    public void onReceived(long timeTakenInMillis, long bytesSent,
+                                           long bytesReceived, boolean isFromCache) {
+                        Log.d("thp", " timeTakenInMillis : " + timeTakenInMillis);
+                        Log.d("thp", " bytesSent : " + bytesSent);
+                        Log.d("thp", " bytesReceived : " + bytesReceived);
+                        Log.d("thp", " isFromCache : " + isFromCache);
+                    }
+                })
+                .getAsOkHttpResponse(new OkHttpResponseListener() {
+                    @Override
+                    public void onResponse(Response response) {
+                        Log.d("thp", "OnResponse " + response.code());
+                        if (response.code() == 200) {
+                            progress.dismiss();
+                            if (isVideo) {
                                 uploadSuccessful("video");
+                            } else {
+                                uploadSuccessful("image album");
                             }
+
+                        } else {
+                            Toast.makeText(getContext(), "Something went wrong with the upload ("+ response.code()+")", Toast.LENGTH_LONG).show();
                         }
+                    }
 
-                        @Override
-                        public void onCancelled(Context context, UploadInfo uploadInfo) {
-                        }
-                    });
+                    @Override
+                    public void onError(ANError anError) {
+                        Toast.makeText(getContext(), "Something went wrong with the upload ("+ anError.getErrorDetail()+")", Toast.LENGTH_LONG).show();
+                        AndroidNetworking.cancelAll();
+                    }
+                });
 
-            request.addParameter("title", title);
-            request.addParameter("description", description);
-            request.addParameter("category", "100");
-
-            Log.d("Yasir","Starting the upload 5");
-
-            request.startUpload();
-        } catch (Exception exc) {
-            Log.d("yasir", exc.getMessage(), exc);
-        }
     }
+//    private void uploadMultipartImagesOld(final String title, final String description) {
+//
+//        String uploadId = UUID.randomUUID().toString();
+//        try {
+//            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+//            MultipartUploadRequest request = new MultipartUploadRequest(getContext(), uploadId, prefs.getString("base_url", null) + "uploadImages.py")
+//                    .addParameter("token", prefs.getString("token", "null"))
+//                    .setUtf8Charset()
+//                    .setNotificationConfig(getNotificationConfig(uploadId, R.string.notification_title))
+//                    .setMaxRetries(5)
+//                    .setDelegate(new UploadStatusDelegate() {
+//                        @Override
+//                        public void onProgress(Context context, UploadInfo uploadInfo) {
+//                            // your code here
+//                        }
+//
+//                        @Override
+//                        public void onError(Context context, UploadInfo uploadInfo, ServerResponse serverResponse, Exception exception) {
+//                            try {
+//                                Log.d("GAIUS", "ContentBuilderActivity: onError"+serverResponse.getHeaders() + serverResponse.getBodyAsString() + serverResponse.getHttpCode());
+//                                Toast.makeText(getContext(), "Something went wrong with the upload ("+ serverResponse.getHttpCode()+")", Toast.LENGTH_LONG).show();
+//                            } catch (Exception e) {
+//                                e.printStackTrace();
+//                            }
+//                        }
+//
+//                        @Override
+//                        public void onCompleted(Context context, UploadInfo uploadInfo, ServerResponse serverResponse) {
+//                            // remove the notification as it is no longer needed to keep the service alive
+//                            if (uploadInfo.getNotificationID() != null) {
+//                                NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+//                                notificationManager.cancel(uploadInfo.getNotificationID());
+//                            }
+//                            Log.d("GAIUS", "ContentBuilderActivity: onCompleted response "+serverResponse.getBodyAsString());
+//                            if (serverResponse.getBodyAsString().contains("@@ERROR##"))  {
+//                                Toast.makeText(getContext(), serverResponse.getBodyAsString().replace("@@ERROR##","ERROR:").trim(), Toast.LENGTH_LONG).show();
+//                            } else {
+//                                uploadSuccessful("image album");
+//                            }
+//                        }
+//
+//                        @Override
+//                        public void onCancelled(Context context, UploadInfo uploadInfo) {
+//                        }
+//                    });
+//
+//            request.addParameter("title", title);
+//            request.addParameter("description", description);
+//
+//            for (String imagePath: uploadImagesPath) {
+//                if (imagePath != null) {
+//                    Log.d("thp", "path to image " + imagePath);
+//
+//                    String imagePathNew = ResourceHelper.compressImage(getContext(), imagePath, 768, 1024);
+//                    request.addFileToUpload(imagePathNew, "images");
+//                }
+//            }
+//
+//            Log.d("Yasir","Starting the upload 5");
+//
+//            request.startUpload();
+//        } catch (Exception exc) {
+//            Log.d("yasir", exc.getMessage(), exc);
+//        }
+//    }
 
-    private UploadNotificationConfig getNotificationConfig(final String uploadId, @StringRes int title) {
-        UploadNotificationConfig config = new UploadNotificationConfig();
+//    private void uploadMultipartVideo(final Context context, final String videoPath, final String title, final String description) {
+//
+//        String uploadId = UUID.randomUUID().toString();
+//        try {
+//            MultipartUploadRequest request = new MultipartUploadRequest(context, uploadId, prefs.getString("base_url", null)+"uploadVideo.py")
+//                    .addParameter("token", prefs.getString("token", "null"))
+//                    .setUtf8Charset()
+//                    .setNotificationConfig(getNotificationConfig(uploadId, R.string.notification_title))
+//                    .setMaxRetries(5)
+//                    .addFileToUpload(videoPath, "video")
+//                    .setDelegate(new UploadStatusDelegate() {
+//                        @Override
+//                        public void onProgress(Context context, UploadInfo uploadInfo) {
+//                            // your code here
+//                        }
+//
+//                        @Override
+//                        public void onError(Context context, UploadInfo uploadInfo, ServerResponse serverResponse, Exception exception) {
+//                            try {
+//                                Log.d("GAIUS", "ContentBuilderActivity: onError"+serverResponse.getHeaders() + serverResponse.getBodyAsString() + serverResponse.getHttpCode());
+//                                Toast.makeText(getContext(), "Something went wrong with the upload ("+ serverResponse.getHttpCode()+")", Toast.LENGTH_LONG).show();
+//                            } catch (Exception e) {
+//                                e.printStackTrace();
+//                            }
+//                        }
+//
+//                        @Override
+//                        public void onCompleted(Context context, UploadInfo uploadInfo, ServerResponse serverResponse) {
+//                            // remove the notification as it is no longer needed to keep the service alive
+//                            if (uploadInfo.getNotificationID() != null) {
+//                                NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+//                                notificationManager.cancel(uploadInfo.getNotificationID());
+//                            }
+//                            Log.d("GAIUS", "ContentBuilderActivity: onCompleted response "+serverResponse.getBodyAsString());
+//                            if (serverResponse.getBodyAsString().contains("@@ERROR##"))  {
+//                                Toast.makeText(getContext(), serverResponse.getBodyAsString().replace("@@ERROR##","ERROR:").trim(), Toast.LENGTH_LONG).show();
+//                            } else {
+//                                uploadSuccessful("video");
+//                            }
+//                        }
+//
+//                        @Override
+//                        public void onCancelled(Context context, UploadInfo uploadInfo) {
+//                        }
+//                    });
+//
+//            request.addParameter("title", title);
+//            request.addParameter("description", description);
+//            request.addParameter("category", "100");
+//
+//            Log.d("Yasir","Starting the upload 5");
+//
+//            request.startUpload();
+//        } catch (Exception exc) {
+//            Log.d("yasir", exc.getMessage(), exc);
+//        }
+//    }
 
-        PendingIntent clickIntent = PendingIntent.getActivity(
-                getContext(), 1, new Intent(getContext(), ContentFragment.class), PendingIntent.FLAG_UPDATE_CURRENT);
-
-        config.setTitleForAllStatuses(getString(title))
-                .setRingToneEnabled(false)
-                .setClickIntentForAllStatuses(clickIntent)
-                .setClearOnActionForAllStatuses(true);
-
-        config.getProgress().message = "Uploaded " + UPLOADED_FILES + " of " + TOTAL_FILES
-                + " at " + UPLOAD_RATE + " - " + PROGRESS;
-        config.getProgress().iconResourceID = R.drawable.ic_upload;
-        config.getProgress().iconColorResourceID = Color.BLUE;
-
-        config.getCompleted().message = "Upload completed successfully in " + ELAPSED_TIME;
-        config.getCompleted().iconResourceID = R.drawable.ic_upload_success;
-        config.getCompleted().iconColorResourceID = Color.GREEN;
-
-        config.getError().message = "Error while uploading";
-        config.getError().iconResourceID = R.drawable.ic_upload_error;
-        config.getError().iconColorResourceID = Color.RED;
-
-        config.getCancelled().message = "Upload has been cancelled";
-        config.getCancelled().iconResourceID = R.drawable.ic_cancelled;
-        config.getCancelled().iconColorResourceID = Color.YELLOW;
-
-        return config;
-    }
+//    private UploadNotificationConfig getNotificationConfig(final String uploadId, @StringRes int title) {
+//        UploadNotificationConfig config = new UploadNotificationConfig();
+//
+//        PendingIntent clickIntent = PendingIntent.getActivity(
+//                getContext(), 1, new Intent(getContext(), ContentFragment.class), PendingIntent.FLAG_UPDATE_CURRENT);
+//
+//        config.setTitleForAllStatuses(getString(title))
+//                .setRingToneEnabled(false)
+//                .setClickIntentForAllStatuses(clickIntent)
+//                .setClearOnActionForAllStatuses(true);
+//
+//        config.getProgress().message = "Uploaded " + UPLOADED_FILES + " of " + TOTAL_FILES
+//                + " at " + UPLOAD_RATE + " - " + PROGRESS;
+//        config.getProgress().iconResourceID = R.drawable.ic_upload;
+//        config.getProgress().iconColorResourceID = Color.BLUE;
+//
+//        config.getCompleted().message = "Upload completed successfully in " + ELAPSED_TIME;
+//        config.getCompleted().iconResourceID = R.drawable.ic_upload_success;
+//        config.getCompleted().iconColorResourceID = Color.GREEN;
+//
+//        config.getError().message = "Error while uploading";
+//        config.getError().iconResourceID = R.drawable.ic_upload_error;
+//        config.getError().iconColorResourceID = Color.RED;
+//
+//        config.getCancelled().message = "Upload has been cancelled";
+//        config.getCancelled().iconResourceID = R.drawable.ic_cancelled;
+//        config.getCancelled().iconColorResourceID = Color.YELLOW;
+//
+//        return config;
+//    }
 
     private void uploadSuccessful(String contentType) {
         Log.d("thp", "upload successful");
 
-        AlertDialog alertDialog = new AlertDialog.Builder(getContext()).create();
+        AlertDialog alertDialog = new AlertDialog.Builder(getActivity()).create();
         alertDialog.setTitle("Upload successful");
         alertDialog.setMessage("Your " + contentType + " has been successfully submitted. Someone from our team will approve it shortly.");
         alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",

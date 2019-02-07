@@ -61,6 +61,12 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.HurlStack;
 import com.android.volley.toolbox.Volley;
+import com.androidnetworking.AndroidNetworking;
+import com.androidnetworking.common.ANRequest;
+import com.androidnetworking.error.ANError;
+import com.androidnetworking.interfaces.AnalyticsListener;
+import com.androidnetworking.interfaces.OkHttpResponseListener;
+import com.androidnetworking.interfaces.UploadProgressListener;
 import com.flask.colorpicker.ColorPickerView;
 import com.flask.colorpicker.builder.ColorPickerClickListener;
 import com.flask.colorpicker.builder.ColorPickerDialogBuilder;
@@ -129,10 +135,16 @@ public class CreativeWebCreation extends AppCompatActivity implements TextEditor
     public int tmpW = 0;
     public int tmpH = 0;
 
+    ArrayList<String> imagePaths, videoPaths;
+    String mamlFilePath;
+
     protected MotionView motionView;
     protected View textEntityEditPanel;
     protected View rectEntityEditPanel;
     private CustomScrollView customScrollView;
+    private ProgressDialog progress;
+
+
     private final MotionView.MotionViewCallback motionViewCallback = new MotionView.MotionViewCallback() {
         @Override
         public void onEntitySelected(@Nullable MotionEntity entity) {
@@ -241,8 +253,8 @@ public class CreativeWebCreation extends AppCompatActivity implements TextEditor
         initRectEntitiesListeners();
 
 
-        UploadService.NAMESPACE = BuildConfig.APPLICATION_ID;
-        UploadService.NAMESPACE = "com.gaius.contentupload";
+//        UploadService.NAMESPACE = BuildConfig.APPLICATION_ID;
+//        UploadService.NAMESPACE = "com.gaius.contentupload";
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
 
         BASE_URL = prefs.getString("base_url", null);
@@ -1258,8 +1270,8 @@ public class CreativeWebCreation extends AppCompatActivity implements TextEditor
 
         MamlPageBuilder builder = new MamlPageBuilder();
 
-        ArrayList<String> imagePaths = new ArrayList<String>();
-        ArrayList<String> videoPaths = new ArrayList<String>();
+        imagePaths = new ArrayList<String>();
+        videoPaths = new ArrayList<String>();
 
         int color = Color.WHITE;
         Drawable background = motionView.getBackground();
@@ -1309,7 +1321,8 @@ public class CreativeWebCreation extends AppCompatActivity implements TextEditor
 
         if (builder.getObjectCount() > 0) {
             Log.d("GAIUS", "ContentBuilderActivity " + builder.getPageAsString());
-            uploadMultipart(getApplicationContext(), imagePaths, videoPaths, builder.makeFile(Constants.TEMPDIR), publish);
+            mamlFilePath = builder.makeFile(Constants.TEMPDIR);
+            uploadMultipart(publish);
         } else {
             Toast.makeText (getApplicationContext(), "No content added", Toast.LENGTH_SHORT).show ();
         }
@@ -1407,140 +1420,231 @@ public class CreativeWebCreation extends AppCompatActivity implements TextEditor
         return false;
     }
 
-    private void uploadMultipart(final Context context, final ArrayList<String> imagePaths, final ArrayList<String> videoPaths, final String mamlFilePath, boolean publish) {
+    private void uploadMultipart(boolean publish) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
 
-        progressDialog.setMessage(getString(R.string.dialog_processing));
-        showDialog();
+        progress = new ProgressDialog(this);
+        progress.setMessage("Uploading...");
+        progress.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+        progress.setCancelable(false);
+        progress.setProgress(0);
+        progress.setButton(ProgressDialog.BUTTON_NEUTRAL, "Cancel upload",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        AndroidNetworking.cancelAll();
+                    }
+                });
+        progress.show();
 
-        String uploadId = UUID.randomUUID().toString();
-        try {
-            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
-            MultipartUploadRequest request = new MultipartUploadRequest(context, uploadId, BASE_URL + "upload.py")
-                    .addParameter("token", prefs.getString("token", "null"))
-                    .addParameter("resolution", ""+ ResourceHelper.getScreenWidth(this))
-                    .setUtf8Charset()
-                    .setNotificationConfig(getNotificationConfig(uploadId, R.string.notification_title))
-                    .setMaxRetries(5)
-                    .addFileToUpload(mamlFilePath, "maml")
-                    .setDelegate(new UploadStatusDelegate() {
-                        @Override
-                        public void onProgress(Context context, UploadInfo uploadInfo) {
-                            // your code here
-                        }
+        ANRequest.MultiPartBuilder multiPartBuilder = new ANRequest.MultiPartBuilder(prefs.getString("base_url", null) + "upload.py");
 
-                        @Override
-                        public void onError(Context context, UploadInfo uploadInfo, ServerResponse serverResponse, Exception exception) {
-                            try {
-                                Log.d("GAIUS", "ContentBuilderActivity: onError"+serverResponse.getHeaders() + serverResponse.getBodyAsString() + serverResponse.getHttpCode());
-                                Toast.makeText(getApplicationContext(), "Something went wrong with the upload ("+ serverResponse.getHttpCode()+")", Toast.LENGTH_LONG).show();
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-                        }
+        multiPartBuilder.addMultipartParameter("token", prefs.getString("token", "null"));
+        multiPartBuilder.addMultipartParameter("title", pageName);
+        multiPartBuilder.addMultipartParameter("description", pageDescription);
+        multiPartBuilder.addMultipartParameter("resolution", "" + ResourceHelper.getScreenWidth(this));
+        multiPartBuilder.addMultipartParameter("category", "100");
+        multiPartBuilder.addMultipartFile("maml", new File(mamlFilePath));
 
-                        @Override
-                        public void onCompleted(Context context, UploadInfo uploadInfo, ServerResponse serverResponse) {
-                            // remove the notification as it is no longer needed to keep the service alive
-                            if (uploadInfo.getNotificationID() != null) {
-                                NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-                                notificationManager.cancel(uploadInfo.getNotificationID());
-                            }
-                            Log.d("GAIUS", "ContentBuilderActivity: onCompleted response "+serverResponse.getBodyAsString());
-                            if (serverResponse.getBodyAsString().contains("@@ERROR##"))  {
-                                Toast.makeText(getApplicationContext(), serverResponse.getBodyAsString().replace("@@ERROR##","ERROR:").trim(), Toast.LENGTH_LONG).show();
-                            } else {
-                                uploadSuccessful();
-                            }
-                            hideDialog();
-                        }
-
-                        @Override
-                        public void onCancelled(Context context, UploadInfo uploadInfo) {
-                            hideDialog();
-                        }
-                    });
-
-            for (String imagePath: imagePaths) {
-                if (imagePath != null) {
-//                    Log.d("thp", "path to image " + imagePath);
-                    String imagePathNew = ResourceHelper.compressImage(context, imagePath, 768, 1024);
-                    request.addFileToUpload(imagePathNew, "images");
-                }
+        for (String imagePath : imagePaths) {
+            if (imagePath != null) {
+                String imagePathNew = ResourceHelper.compressImage(this, imagePath, 768, 1024);
+                multiPartBuilder.addMultipartFile("images", new File(imagePathNew));
             }
-
-            for (String videoPath: videoPaths) {
-                if (videoPath != null) {
-                    //TODO: add video compression
-                    request.addFileToUpload(videoPath, "videos");
-                }
-            }
-            if (iconPath != null && !iconPath.equals("None") && !EDIT_MODE) {
-                String iconPathNew = ResourceHelper.compressImage(context, iconPath, 200, 200);
-                request.addFileToUpload(iconPathNew, "icon");
-            }
-
-            if (EDIT_MODE) {
-                request.addParameter("path", currentPageUrl);
-            }
-
-            request.addParameter("title", pageName);
-            request.addParameter("description", pageDescription);
-            request.addParameter("category", "100");
-
-            if (publish) {
-                request.addParameter("publish", "-1");
-            } else {
-                request.addParameter("publish", "0");
-            }
-
-            request.startUpload();
-
-            Log.d("GAIUS", " ContentBuilderActivity request " + uploadId + " " + pageName);
-        } catch (Exception exc) {
-            Log.d("GAIUS", exc.getMessage(), exc);
         }
+
+        for (String videoPath : videoPaths) {
+            if (videoPath != null) {
+                //TODO: add video compression
+                multiPartBuilder.addMultipartFile("videos", new File(videoPath));
+            }
+        }
+        if (iconPath != null && !iconPath.equals("None")  && !EDIT_MODE) {
+            String iconPathNew = ResourceHelper.compressImage(this, iconPath, 200, 200);
+            multiPartBuilder.addMultipartFile("icon", new File(iconPathNew));
+        }
+
+        if (EDIT_MODE) {
+            multiPartBuilder.addMultipartParameter("path", currentPageUrl);
+        }
+
+        if (publish) {
+            multiPartBuilder.addMultipartParameter("publish", "-1");
+        } else {
+            multiPartBuilder.addMultipartParameter("publish", "0");
+        }
+
+        multiPartBuilder.build()
+                .setUploadProgressListener(new UploadProgressListener() {
+                    @Override
+                    public void onProgress(long bytesUploaded, long totalBytes) {
+                        progress.setProgress((int)((float)bytesUploaded/totalBytes * 100.0));
+                    }
+                })
+                .setAnalyticsListener(new AnalyticsListener() {
+                    @Override
+                    public void onReceived(long timeTakenInMillis, long bytesSent,
+                                           long bytesReceived, boolean isFromCache) {
+                        Log.d("thp", " timeTakenInMillis : " + timeTakenInMillis);
+                        Log.d("thp", " bytesSent : " + bytesSent);
+                        Log.d("thp", " bytesReceived : " + bytesReceived);
+                        Log.d("thp", " isFromCache : " + isFromCache);
+                    }
+                })
+                .getAsOkHttpResponse(new OkHttpResponseListener() {
+                    @Override
+                    public void onResponse(okhttp3.Response response) {
+                        Log.d("thp", "OnResponse " + response.code() + " " + response.toString());
+                        if (response.code() == 200) {
+                            progress.dismiss();
+                            uploadSuccessful();
+                        } else {
+                            Toast.makeText(getApplicationContext(), "Something went wrong with the upload ("+ response.code()+")", Toast.LENGTH_LONG).show();
+                        }
+                    }
+
+                    @Override
+                    public void onError(ANError anError) {
+                        Toast.makeText(getApplicationContext(), "Something went wrong with the upload ("+ anError.getErrorDetail()+")", Toast.LENGTH_LONG).show();
+                        AndroidNetworking.cancelAll();
+                    }
+                });
+
     }
 
-    private void showDialog() {
-        if (!progressDialog.isShowing())
-            progressDialog.show();
-    }
+//    private void uploadMultipart(final Context context, final ArrayList<String> imagePaths, final ArrayList<String> videoPaths, final String mamlFilePath, boolean publish) {
+//
+//        progressDialog.setMessage(getString(R.string.dialog_processing));
+//        showDialog();
+//
+//        String uploadId = UUID.randomUUID().toString();
+//        try {
+//            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+//            MultipartUploadRequest request = new MultipartUploadRequest(context, uploadId, BASE_URL + "upload.py")
+//                    .addParameter("token", prefs.getString("token", "null"))
+//                    .addParameter("resolution", ""+ ResourceHelper.getScreenWidth(this))
+//                    .setUtf8Charset()
+//                    .setNotificationConfig(getNotificationConfig(uploadId, R.string.notification_title))
+//                    .setMaxRetries(5)
+//                    .addFileToUpload(mamlFilePath, "maml")
+//                    .setDelegate(new UploadStatusDelegate() {
+//                        @Override
+//                        public void onProgress(Context context, UploadInfo uploadInfo) {
+//                            // your code here
+//                        }
+//
+//                        @Override
+//                        public void onError(Context context, UploadInfo uploadInfo, ServerResponse serverResponse, Exception exception) {
+//                            try {
+//                                Log.d("GAIUS", "ContentBuilderActivity: onError"+serverResponse.getHeaders() + serverResponse.getBodyAsString() + serverResponse.getHttpCode());
+//                                Toast.makeText(getApplicationContext(), "Something went wrong with the upload ("+ serverResponse.getHttpCode()+")", Toast.LENGTH_LONG).show();
+//                            } catch (Exception e) {
+//                                e.printStackTrace();
+//                            }
+//                        }
+//
+//                        @Override
+//                        public void onCompleted(Context context, UploadInfo uploadInfo, ServerResponse serverResponse) {
+//                            // remove the notification as it is no longer needed to keep the service alive
+//                            if (uploadInfo.getNotificationID() != null) {
+//                                NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+//                                notificationManager.cancel(uploadInfo.getNotificationID());
+//                            }
+//                            Log.d("GAIUS", "ContentBuilderActivity: onCompleted response "+serverResponse.getBodyAsString());
+//                            if (serverResponse.getBodyAsString().contains("@@ERROR##"))  {
+//                                Toast.makeText(getApplicationContext(), serverResponse.getBodyAsString().replace("@@ERROR##","ERROR:").trim(), Toast.LENGTH_LONG).show();
+//                            } else {
+//                                uploadSuccessful();
+//                            }
+//                            hideDialog();
+//                        }
+//
+//                        @Override
+//                        public void onCancelled(Context context, UploadInfo uploadInfo) {
+//                            hideDialog();
+//                        }
+//                    });
+//
+//            for (String imagePath: imagePaths) {
+//                if (imagePath != null) {
+////                    Log.d("thp", "path to image " + imagePath);
+//                    String imagePathNew = ResourceHelper.compressImage(context, imagePath, 768, 1024);
+//                    request.addFileToUpload(imagePathNew, "images");
+//                }
+//            }
+//
+//            for (String videoPath: videoPaths) {
+//                if (videoPath != null) {
+//                    //TODO: add video compression
+//                    request.addFileToUpload(videoPath, "videos");
+//                }
+//            }
+//            if (iconPath != null && !iconPath.equals("None") && !EDIT_MODE) {
+//                String iconPathNew = ResourceHelper.compressImage(context, iconPath, 200, 200);
+//                request.addFileToUpload(iconPathNew, "icon");
+//            }
+//
+//            if (EDIT_MODE) {
+//                request.addParameter("path", currentPageUrl);
+//            }
+//
+//            request.addParameter("title", pageName);
+//            request.addParameter("description", pageDescription);
+//            request.addParameter("category", "100");
+//
+//            if (publish) {
+//                request.addParameter("publish", "-1");
+//            } else {
+//                request.addParameter("publish", "0");
+//            }
+//
+//            request.startUpload();
+//
+//            Log.d("GAIUS", " ContentBuilderActivity request " + uploadId + " " + pageName);
+//        } catch (Exception exc) {
+//            Log.d("GAIUS", exc.getMessage(), exc);
+//        }
+//    }
 
-    private void hideDialog() {
-        if (progressDialog.isShowing())
-            progressDialog.dismiss();
-    }
+//    private void showDialog() {
+//        if (!progressDialog.isShowing())
+//            progressDialog.show();
+//    }
+//
+//    private void hideDialog() {
+//        if (progressDialog.isShowing())
+//            progressDialog.dismiss();
+//    }
 
-    private UploadNotificationConfig getNotificationConfig(final String uploadId, @StringRes int title) {
-        UploadNotificationConfig config = new UploadNotificationConfig();
-
-        PendingIntent clickIntent = PendingIntent.getActivity(
-                this, 1, new Intent(this, MainActivity.class), PendingIntent.FLAG_UPDATE_CURRENT); //fixme
-
-        config.setTitleForAllStatuses(getString(title))
-                .setRingToneEnabled(false)
-                .setClickIntentForAllStatuses(clickIntent)
-                .setClearOnActionForAllStatuses(true);
-
-        config.getProgress().message = "Uploaded " + UPLOADED_FILES + " of " + TOTAL_FILES
-                + " at " + UPLOAD_RATE + " - " + PROGRESS;
-        config.getProgress().iconResourceID = R.drawable.ic_upload;
-        config.getProgress().iconColorResourceID = Color.BLUE;
-
-        config.getCompleted().message = "Upload completed successfully in " + ELAPSED_TIME;
-        config.getCompleted().iconResourceID = R.drawable.ic_upload_success;
-        config.getCompleted().iconColorResourceID = Color.GREEN;
-
-        config.getError().message = "Error while uploading";
-        config.getError().iconResourceID = R.drawable.ic_upload_error;
-        config.getError().iconColorResourceID = Color.RED;
-
-        config.getCancelled().message = "Upload has been cancelled";
-        config.getCancelled().iconResourceID = R.drawable.ic_cancelled;
-        config.getCancelled().iconColorResourceID = Color.YELLOW;
-
-        return config;
-    }
+//    private UploadNotificationConfig getNotificationConfig(final String uploadId, @StringRes int title) {
+//        UploadNotificationConfig config = new UploadNotificationConfig();
+//
+//        PendingIntent clickIntent = PendingIntent.getActivity(
+//                this, 1, new Intent(this, MainActivity.class), PendingIntent.FLAG_UPDATE_CURRENT); //fixme
+//
+//        config.setTitleForAllStatuses(getString(title))
+//                .setRingToneEnabled(false)
+//                .setClickIntentForAllStatuses(clickIntent)
+//                .setClearOnActionForAllStatuses(true);
+//
+//        config.getProgress().message = "Uploaded " + UPLOADED_FILES + " of " + TOTAL_FILES
+//                + " at " + UPLOAD_RATE + " - " + PROGRESS;
+//        config.getProgress().iconResourceID = R.drawable.ic_upload;
+//        config.getProgress().iconColorResourceID = Color.BLUE;
+//
+//        config.getCompleted().message = "Upload completed successfully in " + ELAPSED_TIME;
+//        config.getCompleted().iconResourceID = R.drawable.ic_upload_success;
+//        config.getCompleted().iconColorResourceID = Color.GREEN;
+//
+//        config.getError().message = "Error while uploading";
+//        config.getError().iconResourceID = R.drawable.ic_upload_error;
+//        config.getError().iconColorResourceID = Color.RED;
+//
+//        config.getCancelled().message = "Upload has been cancelled";
+//        config.getCancelled().iconResourceID = R.drawable.ic_cancelled;
+//        config.getCancelled().iconColorResourceID = Color.YELLOW;
+//
+//        return config;
+//    }
 
     private void uploadSuccessful() {
         Log.d("thp", "upload successful");

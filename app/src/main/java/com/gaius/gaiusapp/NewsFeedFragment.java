@@ -149,7 +149,7 @@ public class NewsFeedFragment extends Fragment implements SwipeRefreshLayout.OnR
                                 ArrayList<String> imagesList = new ArrayList<String>();
                                 String [] tmp = newsFeed.getString("images").split(";");
                                 for (int j=0; j<tmp.length; j++) {
-                                    imagesList.add(convertImageURLBasedonFidelity(base_URL+newsFeed.getString("url")+tmp[j], getContext()));
+                                    imagesList.add(convertImageURLBasedonFidelity(base_URL+newsFeed.getString("url")+tmp[j], getActivity().getApplicationContext()));
                                 }
 
                                 newsFeedList.add(new NewsFeed(

@@ -69,6 +69,7 @@ public class ContentFragment extends Fragment implements View.OnClickListener {
     TextView label=null;
     EditText editTextPagename, editTextDescription;
     TextInputLayout editTextPagenameLayout, editTextDescriptionLayout;
+    AlertDialog alertD;
     private ProgressDialog progress;
 
 
@@ -133,7 +134,7 @@ public class ContentFragment extends Fragment implements View.OnClickListener {
 
                 LayoutInflater layoutInflater = LayoutInflater.from(getContext());
                 final View promptView = layoutInflater.inflate(R.layout.upload_video_popup, null);
-                final AlertDialog alertD = new AlertDialog.Builder(getContext()).create();
+                alertD = new AlertDialog.Builder(getContext()).create();
                 alertD.setView(promptView);
                 alertD.show();
 
@@ -161,7 +162,7 @@ public class ContentFragment extends Fragment implements View.OnClickListener {
                     @Override
                     public void onClick(View view) {
                         if (filledFields(promptView)) {
-                            alertD.dismiss();
+                            alertD.hide();
 //                            uploadMultipartVideo(getContext(), filePath, editTextPagename.getText().toString(), editTextDescription.getText().toString());
                             uploadMultipart(editTextPagename.getText().toString(), editTextDescription.getText().toString(), true);
                         }
@@ -212,7 +213,7 @@ public class ContentFragment extends Fragment implements View.OnClickListener {
 
                 LayoutInflater layoutInflater = LayoutInflater.from(getContext());
                 final View promptView = layoutInflater.inflate(R.layout.activity_upload_album, null);
-                final AlertDialog alertD = new AlertDialog.Builder(getContext()).create();
+                alertD = new AlertDialog.Builder(getContext()).create();
                 alertD.setView(promptView);
                 alertD.show();
 
@@ -268,7 +269,7 @@ public class ContentFragment extends Fragment implements View.OnClickListener {
                     @Override
                     public void onClick(View view) {
                         if (filledFields(promptView)) {
-                            alertD.dismiss();
+                            alertD.hide();
                             uploadMultipart(editTextPagename.getText().toString(), editTextDescription.getText().toString(), false);
                         }
                     }
@@ -522,6 +523,7 @@ public class ContentFragment extends Fragment implements View.OnClickListener {
                         Log.d("thp", "OnResponse " + response.code());
                         if (response.code() == 200) {
                             progress.dismiss();
+                            alertD.dismiss();
                             if (isVideo) {
                                 uploadSuccessful("video");
                             } else {
@@ -536,7 +538,8 @@ public class ContentFragment extends Fragment implements View.OnClickListener {
                     @Override
                     public void onError(ANError anError) {
                         Toast.makeText(getContext(), "Something went wrong with the upload ("+ anError.getErrorDetail()+")", Toast.LENGTH_LONG).show();
-                        AndroidNetworking.cancelAll();
+                        progress.dismiss();
+                        alertD.show();
                     }
                 });
 

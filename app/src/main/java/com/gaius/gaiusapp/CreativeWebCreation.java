@@ -1401,7 +1401,7 @@ public class CreativeWebCreation extends AppCompatActivity implements TextEditor
             @Override
             public void onClick(View view) {
                 if (filledFields(promptView)) {
-                    alertDSubmit.dismiss();
+                    alertDSubmit.hide();
                     submitPage(false);
                 }
             }
@@ -1411,7 +1411,7 @@ public class CreativeWebCreation extends AppCompatActivity implements TextEditor
             @Override
             public void onClick(View view) {
                 if (filledFields(promptView)) {
-                    alertDSubmit.dismiss();
+                    alertDSubmit.hide();
                     submitPage(true);
                 }
             }
@@ -1496,6 +1496,7 @@ public class CreativeWebCreation extends AppCompatActivity implements TextEditor
                         Log.d("thp", "OnResponse " + response.code() + " " + response.toString());
                         if (response.code() == 200) {
                             progress.dismiss();
+                            alertDSubmit.dismiss();
                             uploadSuccessful();
                         } else {
                             Toast.makeText(getApplicationContext(), "Something went wrong with the upload ("+ response.code()+")", Toast.LENGTH_LONG).show();
@@ -1505,7 +1506,8 @@ public class CreativeWebCreation extends AppCompatActivity implements TextEditor
                     @Override
                     public void onError(ANError anError) {
                         Toast.makeText(getApplicationContext(), "Something went wrong with the upload ("+ anError.getErrorDetail()+")", Toast.LENGTH_LONG).show();
-                        AndroidNetworking.cancelAll();
+                        progress.dismiss();
+                        alertDSubmit.show();
                     }
                 });
 

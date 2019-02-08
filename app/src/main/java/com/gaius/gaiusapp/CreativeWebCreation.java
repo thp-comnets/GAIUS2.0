@@ -1662,6 +1662,7 @@ public class CreativeWebCreation extends AppCompatActivity implements TextEditor
                     }
                 });
         alertDialog.show();
+        ResourceHelper.cleanupFiles();
     }
 
     private boolean isReadStoragePermissionGranted() {

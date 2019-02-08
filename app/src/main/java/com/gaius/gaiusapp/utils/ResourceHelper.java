@@ -332,4 +332,16 @@ public class ResourceHelper {
         }
         return url;
     }
+
+    public static void cleanupFiles() {
+        File dir = new File(Environment.getExternalStorageDirectory().getPath(), Constants.TEMPDIR);
+        if (dir.isDirectory())
+        {
+            String[] children = dir.list();
+            for (int i = 0; i < children.length; i++)
+            {
+                new File(dir, children[i]).delete();
+            }
+        }
+    }
 }

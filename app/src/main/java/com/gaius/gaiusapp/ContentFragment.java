@@ -712,6 +712,7 @@ public class ContentFragment extends Fragment implements View.OnClickListener {
                     }
                 });
         alertDialog.show();
+        ResourceHelper.cleanupFiles();
     }
 }
 

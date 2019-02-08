@@ -635,6 +635,7 @@ public class SimpleWebCreation extends AppCompatActivity implements OnStartDragL
                     }
                 });
         alertDialog.show();
+        ResourceHelper.cleanupFiles();
     }
 }
 

@@ -18,7 +18,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
-
 import com.androidnetworking.AndroidNetworking;
 import com.gaius.gaiusapp.utils.LogOut;
 
@@ -150,7 +149,6 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                     // Show permissionsDenied
 //                    updateViews();
                 }
-                return;
             }
         }
     }

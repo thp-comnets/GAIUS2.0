@@ -8,14 +8,7 @@ import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.text.InputFilter;
-import android.util.Log;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.widget.Toast;
-
-import com.gaius.gaiusapp.utils.Constants;
-import com.nostra13.universalimageloader.core.ImageLoader;
 
 public class PreferencesActivity extends AppCompatActivity {
     @Override

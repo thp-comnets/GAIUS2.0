@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,14 +22,10 @@ import com.daimajia.slider.library.SliderTypes.TextSliderView;
 import com.gaius.gaiusapp.AlbumViewActivity;
 import com.gaius.gaiusapp.R;
 import com.gaius.gaiusapp.classes.Image;
-import com.gaius.gaiusapp.classes.Video;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-
-import cn.jzvd.Jzvd;
-import cn.jzvd.JzvdStd;
 
 public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHolder> {
     private Context mCtx;

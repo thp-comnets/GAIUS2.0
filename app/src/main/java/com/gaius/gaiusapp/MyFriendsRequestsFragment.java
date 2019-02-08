@@ -23,7 +23,6 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.gaius.gaiusapp.adapters.FriendsAdapter;
 import com.gaius.gaiusapp.classes.Friend;
-import com.gaius.gaiusapp.classes.NewsFeed;
 import com.gaius.gaiusapp.interfaces.FragmentVisibleInterface;
 import com.gaius.gaiusapp.utils.LogOut;
 

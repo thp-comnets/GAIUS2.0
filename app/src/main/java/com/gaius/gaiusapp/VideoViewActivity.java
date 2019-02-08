@@ -26,7 +26,7 @@ public class VideoViewActivity extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
 
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);;
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
 
         Uri data = getIntent().getData();
 

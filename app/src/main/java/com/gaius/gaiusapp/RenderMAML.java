@@ -551,7 +551,7 @@ public class RenderMAML extends AppCompatActivity {
             txt.setTextSize(TypedValue.COMPLEX_UNIT_PX, font);
 
             try {
-                FontProvider fontProvider = new FontProvider(getResources());;
+                FontProvider fontProvider = new FontProvider(getResources());
                 txt.setTypeface(fontProvider.getTypeface(fontType));
             } catch (Exception e) {
                 e.printStackTrace();

@@ -18,7 +18,6 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.gaius.gaiusapp.adapters.ImageAdapter;
-import com.gaius.gaiusapp.adapters.VideoAdapter;
 import com.gaius.gaiusapp.classes.Image;
 
 import org.json.JSONArray;

@@ -1,19 +1,14 @@
 package com.gaius.gaiusapp;
 
 import android.Manifest;
-import android.animation.Animator;
 import android.annotation.SuppressLint;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.app.ProgressDialog;
-import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
-import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -32,8 +27,6 @@ import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.annotation.StringRes;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.CursorLoader;
@@ -51,7 +44,6 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -70,7 +62,6 @@ import com.androidnetworking.interfaces.UploadProgressListener;
 import com.flask.colorpicker.ColorPickerView;
 import com.flask.colorpicker.builder.ColorPickerClickListener;
 import com.flask.colorpicker.builder.ColorPickerDialogBuilder;
-
 import com.gaius.gaiusapp.adapters.FontsAdapter;
 import com.gaius.gaiusapp.utils.Constants;
 import com.gaius.gaiusapp.utils.CustomScrollView;
@@ -86,16 +77,8 @@ import com.gaius.gaiusapp.widget.entity.ImageEntity;
 import com.gaius.gaiusapp.widget.entity.MotionEntity;
 import com.gaius.gaiusapp.widget.entity.RectEntity;
 import com.gaius.gaiusapp.widget.entity.TextEntity;
-import com.nostra13.universalimageloader.core.ImageLoader;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
-
-import net.gotev.uploadservice.MultipartUploadRequest;
-import net.gotev.uploadservice.ServerResponse;
-import net.gotev.uploadservice.UploadInfo;
-import net.gotev.uploadservice.UploadNotificationConfig;
-import net.gotev.uploadservice.UploadService;
-import net.gotev.uploadservice.UploadStatusDelegate;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -106,17 +89,11 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.UUID;
 
 import ly.kite.instagramphotopicker.InstagramPhoto;
 import ly.kite.instagramphotopicker.InstagramPhotoPicker;
 
 import static com.gaius.gaiusapp.utils.ResourceHelper.getResizedBitmap;
-import static net.gotev.uploadservice.Placeholders.ELAPSED_TIME;
-import static net.gotev.uploadservice.Placeholders.PROGRESS;
-import static net.gotev.uploadservice.Placeholders.TOTAL_FILES;
-import static net.gotev.uploadservice.Placeholders.UPLOADED_FILES;
-import static net.gotev.uploadservice.Placeholders.UPLOAD_RATE;
 
 
 public class CreativeWebCreation extends AppCompatActivity implements TextEditorDialogFragment.OnTextLayerCallback {
@@ -1305,7 +1282,7 @@ public class CreativeWebCreation extends AppCompatActivity implements TextEditor
                         builder.addVideo(filename[filename.length - 1], (int)coord.x, (int)coord.y, (int) (coord2.x - coord.x), (int) (coord2.y - coord.y));
                     }
                 } else {
-                    if (mE.getLayer().getPath() != "") {
+                    if (!mE.getLayer().getPath().equals("")) {
                         if (!mE.getLayer().isNewContent()) {
                             builder.addImage(mE.getLayer().getPath(), (int) coord.x, (int) coord.y, (int) (coord2.x - coord.x), (int) (coord2.y - coord.y));
                         } else {

@@ -1,6 +1,5 @@
 package com.gaius.gaiusapp;
 
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;

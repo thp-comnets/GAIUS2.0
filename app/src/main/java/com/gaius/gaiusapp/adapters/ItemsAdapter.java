@@ -2,14 +2,10 @@ package com.gaius.gaiusapp.adapters;
 
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,11 +13,6 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
-import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
 import com.gaius.gaiusapp.classes.Item;
 import com.gaius.gaiusapp.R;
 import com.gaius.gaiusapp.helper.ItemTouchHelperAdapter;
@@ -38,12 +29,10 @@ public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ItemViewHold
 
     private Context mCtx;
     private List<Item> contentsList;
-    private View.OnClickListener mOnClickListener;
 
     public ItemsAdapter(Context mCtx, List<Item> contentsList) {
         this.mCtx = mCtx;
         this.contentsList = contentsList;
-        this.mOnClickListener = mOnClickListener;
     }
 
     @Override
@@ -70,7 +59,7 @@ public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ItemViewHold
                 holder.editText.addOnLayoutChangeListener(this);
                 holder.editText.setTag(item.getId());
 
-                FontProvider fontProvider = new FontProvider(mCtx.getResources());;
+                FontProvider fontProvider = new FontProvider(mCtx.getResources());
                 holder.editText.setTypeface(fontProvider.getTypeface("Arial"));
 
                 if (item.getTextType().contains("header")) {

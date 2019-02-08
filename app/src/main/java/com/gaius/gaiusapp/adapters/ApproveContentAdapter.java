@@ -61,6 +61,8 @@ public class ApproveContentAdapter extends RecyclerView.Adapter<ApproveContentAd
         RequestOptions requestOptions = new RequestOptions();
         requestOptions.error(R.drawable.ic_avatar);
 
+        String fidelity = prefs.getString("fidelity_level", "high");
+
         if (content.getThumbnail().contains("None")) {
             //loading the image
             Glide.with(mCtx)
@@ -71,7 +73,7 @@ public class ApproveContentAdapter extends RecyclerView.Adapter<ApproveContentAd
             //loading the image
             Glide.with(mCtx)
                     .setDefaultRequestOptions(requestOptions)
-                    .load(convertImageURLBasedonFidelity(prefs.getString("base_url", null) + content.getThumbnail(), mCtx))
+                    .load(convertImageURLBasedonFidelity(prefs.getString("base_url", null) + content.getThumbnail(), fidelity))
                     .into(holder.imageView);
         }
 

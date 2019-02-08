@@ -197,7 +197,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
         switch (navigation.getSelectedItemId()) {
             case R.id.navigation_home:
-                moveTaskToBack(true);
+                moveTaskToBack(false);
                 break;
 
             case R.id.navigation_friends:

@@ -131,6 +131,8 @@ public class userFragment extends Fragment {
                                 noPages.setVisibility(View.VISIBLE);
                             }
 
+                            String fidelity = prefs.getString("fidelity_level", "high");
+
                             //traversing through all the object
                             for (int i = 0; i < array.length(); i++) {
 
@@ -142,7 +144,7 @@ public class userFragment extends Fragment {
                                 if (newsFeed.has("images")) {
                                     String [] tmp = newsFeed.getString("images").split(";");
                                     for (int j=0; j<tmp.length; j++) {
-                                        imagesList.add(convertImageURLBasedonFidelity(base_url+newsFeed.getString("url")+tmp[j], getContext()));
+                                        imagesList.add(convertImageURLBasedonFidelity(base_url+newsFeed.getString("url")+tmp[j], fidelity));
                                     }
                                 }
 

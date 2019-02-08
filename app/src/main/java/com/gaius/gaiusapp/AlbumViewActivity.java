@@ -90,8 +90,10 @@ public class AlbumViewActivity extends AppCompatActivity {
                         imagesURLs = new ArrayList<String>();
                         String [] tmp = response.replace("\n", "").split(";");
 
+                        String fidelity = prefs.getString("fidelity_level", "high");
+
                         for (int j=0; j<tmp.length; j++) {
-                            imagesURLs.add(convertImageURLBasedonFidelity(prefs.getString("base_url", null) + albumURL+tmp[j], getBaseContext()));
+                            imagesURLs.add(convertImageURLBasedonFidelity(prefs.getString("base_url", null) + albumURL+tmp[j], fidelity));
                         }
                         renderAlbum();
                     }

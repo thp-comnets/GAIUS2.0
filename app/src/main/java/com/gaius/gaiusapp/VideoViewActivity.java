@@ -36,7 +36,7 @@ public class VideoViewActivity extends AppCompatActivity {
             videoView = findViewById(R.id.videoView);
 
             Glide.with(this)
-                    .load(convertImageURLBasedonFidelity(videoURL.replace(".mp4",".jpg"), this)) //fixme: if not .mp4
+                    .load(convertImageURLBasedonFidelity(videoURL.replace(".mp4",".jpg"), prefs.getString("fidelity_level", "high"))) //fixme: if not .mp4
                     .apply(new RequestOptions().signature(new ObjectKey(System.currentTimeMillis())))
                     .into(videoView.thumbImageView);
 
@@ -52,7 +52,7 @@ public class VideoViewActivity extends AppCompatActivity {
             videoView = findViewById(R.id.videoView);
 
             Glide.with(this)
-                    .load(convertImageURLBasedonFidelity(videoURL.replace(".mp4",".jpg"), this)) //fixme: if not .mp4
+                    .load(convertImageURLBasedonFidelity(videoURL.replace(".mp4",".jpg"), prefs.getString("fidelity_level", "high"))) //fixme: if not .mp4
                     .apply(new RequestOptions().signature(new ObjectKey(System.currentTimeMillis())))
                     .into(videoView.thumbImageView);
 

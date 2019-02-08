@@ -66,8 +66,10 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHol
                     .into(holder.avatarView);
         }
 
+        String fidelity = prefs.getString("fidelity_level", "high");
+
         Glide.with(mCtx)
-                .load(convertImageURLBasedonFidelity(prefs.getString("base_url", null) + video.getThumbnail(), mCtx))
+                .load(convertImageURLBasedonFidelity(prefs.getString("base_url", null) + video.getThumbnail(), fidelity))
                 .apply(new RequestOptions().signature(new ObjectKey(System.currentTimeMillis())))
                 .into(holder.videoView.thumbImageView);
         holder.videoView.setUp(prefs.getString("base_url", null) + video.getUrl(), "", Jzvd.SCREEN_WINDOW_NORMAL);

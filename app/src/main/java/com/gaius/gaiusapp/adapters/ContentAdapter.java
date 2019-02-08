@@ -59,6 +59,8 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.Contentl
         RequestOptions requestOptions = new RequestOptions();
         requestOptions.error(R.drawable.ic_avatar);
 
+        String fidelity = prefs.getString("fidelity_level", "high");
+
         if (content.getThumbnail().contains("None")) {
             //loading the image
             Glide.with(mCtx)
@@ -69,7 +71,7 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.Contentl
             //loading the image
             Glide.with(mCtx)
                     .setDefaultRequestOptions(requestOptions)
-                    .load(convertImageURLBasedonFidelity(prefs.getString("base_url", null) + content.getThumbnail(), mCtx))
+                    .load(convertImageURLBasedonFidelity(prefs.getString("base_url", null) + content.getThumbnail(), fidelity))
                     .into(holder.imageView);
         }
 

@@ -322,12 +322,7 @@ public class ResourceHelper {
         return (dotInd > 0) ? fileName.substring(0, dotInd) : fileName;
     }
 
-    public static String convertImageURLBasedonFidelity(String url, Context mCtx) {
-        SharedPreferences prefs;
-        String fidelity;
-
-        prefs = PreferenceManager.getDefaultSharedPreferences(mCtx);
-        fidelity = prefs.getString("fidelity_level", "high");
+    public static String convertImageURLBasedonFidelity(String url, String fidelity) {
 
         // managing fidelity for images requests
         if (! fidelity.equals("high")) {

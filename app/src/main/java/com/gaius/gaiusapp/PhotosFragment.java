@@ -57,6 +57,7 @@ public class PhotosFragment extends Fragment {
 
         loadImages();
     }
+
     private void loadImages() {
         /*
          * Creating a String Request
@@ -73,6 +74,7 @@ public class PhotosFragment extends Fragment {
                             //converting the string to json array object
                             JSONArray array = new JSONArray(response);
 
+                            String fidelity = prefs.getString("fidelity_level", "high");
 
                             //traversing through all the object
                             for (int i = 0; i < array.length(); i++) {
@@ -83,7 +85,7 @@ public class PhotosFragment extends Fragment {
                                 ArrayList<String> imagesList = new ArrayList<String>();
                                 String [] tmp = image.getString("images").split(";");
                                 for (int j=0; j<tmp.length; j++) {
-                                    imagesList.add(convertImageURLBasedonFidelity(prefs.getString("base_url", null) + image.getString("url")+tmp[j], getContext()));
+                                    imagesList.add(convertImageURLBasedonFidelity(prefs.getString("base_url", null) + image.getString("url")+tmp[j], fidelity));
                                 }
 
                                 //adding the product to product list

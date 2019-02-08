@@ -89,7 +89,7 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.newsFe
             holder.textViewName.setVisibility(View.GONE);
         }
 
-
+        String fidelity = prefs.getString("fidelity_level", "high");
 
         if (newsfeed.getType().contains("page")) {
             holder.imageView.setVisibility(View.VISIBLE);
@@ -100,7 +100,7 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.newsFe
             //loading the image
             Glide.with(mCtx)
                     .setDefaultRequestOptions(requestOptions)
-                    .load(convertImageURLBasedonFidelity(prefs.getString("base_url", null) + newsfeed.getImage(), mCtx))
+                    .load(convertImageURLBasedonFidelity(prefs.getString("base_url", null) + newsfeed.getImage(), fidelity))
 //                    .apply(new RequestOptions().signature(new ObjectKey("signature string")))
                     .apply(new RequestOptions().signature(new ObjectKey(System.currentTimeMillis())))
                     .into(holder.imageView);
@@ -111,7 +111,7 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.newsFe
             holder.mDemoSlider.setVisibility(View.GONE);
 
             Glide.with(mCtx)
-                    .load(convertImageURLBasedonFidelity(prefs.getString("base_url", null) + newsfeed.getImage(),mCtx))
+                    .load(convertImageURLBasedonFidelity(prefs.getString("base_url", null) + newsfeed.getImage(), fidelity))
                     .apply(new RequestOptions().signature(new ObjectKey(System.currentTimeMillis())))
                     .into(holder.videoView.thumbImageView);
             holder.videoView.setUp(prefs.getString("base_url", null) + newsfeed.getUrl(), "", Jzvd.SCREEN_WINDOW_NORMAL);

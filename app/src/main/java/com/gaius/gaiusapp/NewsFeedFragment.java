@@ -1,5 +1,6 @@
 package com.gaius.gaiusapp;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -45,6 +46,7 @@ public class NewsFeedFragment extends Fragment implements SwipeRefreshLayout.OnR
     RelativeLayout noFriends, noInternet;
     Button buttonReturnToTop;
     NewsFeedAdapter adapter;
+    Context mCtx;
 
     @Nullable
     @Override
@@ -52,6 +54,7 @@ public class NewsFeedFragment extends Fragment implements SwipeRefreshLayout.OnR
         View view = inflater.inflate(R.layout.fragment_newsfeed, null);
         swipeLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_container);
         swipeLayout.setOnRefreshListener(this);
+        mCtx = getActivity().getApplicationContext();
         return view;
     }
 
@@ -60,7 +63,7 @@ public class NewsFeedFragment extends Fragment implements SwipeRefreshLayout.OnR
         String token;
         noFriends = view.findViewById(R.id.noFriends);
 
-        prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+        prefs = PreferenceManager.getDefaultSharedPreferences(mCtx);
         token = prefs.getString("token", "null");
         base_URL = prefs.getString("base_url", null);
         URL= base_URL + "listPages.py?token="+token;
@@ -140,6 +143,8 @@ public class NewsFeedFragment extends Fragment implements SwipeRefreshLayout.OnR
                                 noFriends.setVisibility(View.VISIBLE);
                             }
 
+                            String fidelity = prefs.getString("fidelity_level", "high");
+
                             //traversing through all the object
                             for (int i = 0; i < array.length(); i++) {
 
@@ -149,7 +154,7 @@ public class NewsFeedFragment extends Fragment implements SwipeRefreshLayout.OnR
                                 ArrayList<String> imagesList = new ArrayList<String>();
                                 String [] tmp = newsFeed.getString("images").split(";");
                                 for (int j=0; j<tmp.length; j++) {
-                                    imagesList.add(convertImageURLBasedonFidelity(base_URL+newsFeed.getString("url")+tmp[j], getActivity().getApplicationContext()));
+                                    imagesList.add(convertImageURLBasedonFidelity(base_URL+newsFeed.getString("url")+tmp[j], fidelity));
                                 }
 
                                 newsFeedList.add(new NewsFeed(

@@ -129,7 +129,9 @@ public class MyContentFragment extends Fragment {
                                 );
 
                                 if (admin.equals("1")) {
-                                    managedContentList.add(c);
+                                    if (channel.getString("published").equals("1")) {
+                                        managedContentList.add(c);
+                                    }
 
                                     if (userName.equals(channel.getString("name"))) {
                                         myContentList.add(c);

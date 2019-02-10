@@ -1,5 +1,6 @@
 package com.gaius.gaiusapp;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -35,10 +36,14 @@ public class ApproveContentFragment extends Fragment {
     List<Content> contentList;
     RecyclerView recyclerView;
     SharedPreferences prefs;
+    Context mCtx;
+    ImageView nothingToApproveImage;
+    TextView nothingToApproveText;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        mCtx = getActivity().getApplicationContext();
 
         return inflater.inflate(R.layout.fragment_web, null);
     }
@@ -47,15 +52,18 @@ public class ApproveContentFragment extends Fragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         recyclerView =  getView().findViewById(R.id.recylcerView);
         recyclerView.setHasFixedSize(true);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        recyclerView.addItemDecoration(new DividerItemDecoration(getContext(),
+        recyclerView.setLayoutManager(new LinearLayoutManager(mCtx));
+        recyclerView.addItemDecoration(new DividerItemDecoration(mCtx,
                 DividerItemDecoration.VERTICAL));
 
         recyclerView.setTag("ContentApproval");
 
+        nothingToApproveImage = getView().findViewById(R.id.nothing_to_approve_image);
+        nothingToApproveText = getView().findViewById(R.id.nothing_to_approve_text);
+
         contentList = new ArrayList<>();
 
-        prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+        prefs = PreferenceManager.getDefaultSharedPreferences(mCtx);
         String token = prefs.getString("token", "null");
 
         URL = prefs.getString("base_url", null) + "listSubmittedContent.py";
@@ -81,10 +89,8 @@ public class ApproveContentFragment extends Fragment {
                             JSONArray array = new JSONArray(response);
 
                             if (array.length() == 0) {
-                                ImageView tmp = getActivity().findViewById(R.id.nothing_to_approve_image);
-                                tmp.setVisibility(View.VISIBLE);
-                                TextView tmp2 = getActivity().findViewById(R.id.nothing_to_approve_text);
-                                tmp2.setVisibility(View.VISIBLE);
+                                nothingToApproveImage.setVisibility(View.VISIBLE);
+                                nothingToApproveText.setVisibility(View.VISIBLE);
                             }
 
                             //traversing through all the object
@@ -109,7 +115,7 @@ public class ApproveContentFragment extends Fragment {
                             }
 
                             //creating adapter object and setting it to recyclerview
-                            ApproveContentAdapter adapter = new ApproveContentAdapter(getContext(), contentList);
+                            ApproveContentAdapter adapter = new ApproveContentAdapter(mCtx, contentList);
                             recyclerView.setAdapter(adapter);
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -127,6 +133,6 @@ public class ApproveContentFragment extends Fragment {
         Log.d("Yasir","added request "+stringRequest);
 
         //adding our stringrequest to queue
-        Volley.newRequestQueue(getContext()).add(stringRequest);
+        Volley.newRequestQueue(mCtx).add(stringRequest);
     }
 }

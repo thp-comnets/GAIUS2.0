@@ -12,6 +12,7 @@
         android:background="@drawable/gradient_background">
 
         <include layout="@layout/no_internet_layout"/>
+        <include layout="@layout/error_500_layout"/>
 
         <RelativeLayout
             android:id="@+id/noFriends"

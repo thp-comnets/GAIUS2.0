@@ -41,7 +41,7 @@ public class NewsFeedFragment extends Fragment implements SwipeRefreshLayout.OnR
     SwipeRefreshLayout swipeLayout;
     RecyclerView recyclerView;
     SharedPreferences prefs;
-    RelativeLayout noFriends, noInternet;
+    RelativeLayout noFriends, noInternet, error500;
     Button buttonReturnToTop;
     NewsFeedAdapter adapter;
     Context mCtx;
@@ -71,6 +71,8 @@ public class NewsFeedFragment extends Fragment implements SwipeRefreshLayout.OnR
                 loadPages();
             }
         });
+
+        error500 = view.findViewById(R.id.error_500);
 
         recyclerView =  getView().findViewById(R.id.recylcerView);
         recyclerView.setHasFixedSize(true);
@@ -169,6 +171,7 @@ public class NewsFeedFragment extends Fragment implements SwipeRefreshLayout.OnR
                             adapter = new NewsFeedAdapter(getContext(), newsFeedList);
                             recyclerView.setAdapter(adapter);
                             noInternet.setVisibility(View.GONE);
+                            error500.setVisibility(View.GONE);
                             recyclerView.setVisibility(View.VISIBLE);
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -189,12 +192,16 @@ public class NewsFeedFragment extends Fragment implements SwipeRefreshLayout.OnR
                                 getActivity().finish();
                                 break;
                             case 500:
-                                noInternet.setVisibility(View.VISIBLE);
+                                error500.setVisibility(View.VISIBLE);
+                                buttonReturnToTop.setVisibility(View.GONE);
+                                noInternet.setVisibility(View.GONE);
                                 recyclerView.setVisibility(View.GONE);
                                 Log.d("Yasir","Error 500"+error);
                                 break;
                             default:
                                 noInternet.setVisibility(View.VISIBLE);
+                                error500.setVisibility(View.GONE);
+                                buttonReturnToTop.setVisibility(View.GONE);
                                 recyclerView.setVisibility(View.GONE);
                                 Log.d("Yasir","Error no Internet "+error);
 

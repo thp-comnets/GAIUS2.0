@@ -22,7 +22,9 @@
         android:usesCleartextTraffic="true"
         android:theme="@style/AppTheme">
 
-        <activity android:name=".MainActivity">
+        <activity android:name=".MainActivity"
+            android:configChanges="orientation|screenSize|screenLayout|keyboardHidden"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -32,18 +34,21 @@
         <activity
             android:name=".LoginActivity"
             android:launchMode="singleTask"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme">
         </activity>
 
         <activity
             android:name=".SignUp"
             android:launchMode="singleTask"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme">
         </activity>
 
         <activity
             android:name=".ForgotPassword"
             android:launchMode="singleTask"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme">
         </activity>
 
@@ -69,12 +74,16 @@
 
         <activity
             android:name=".CreativeWebCreation"
+            android:configChanges="orientation|screenSize|screenLayout|keyboardHidden"
+            android:screenOrientation="portrait"
             android:launchMode="singleTask"
             android:theme="@style/AppTheme">
         </activity>
 
         <activity
             android:name=".SimpleWebCreation"
+            android:configChanges="orientation|screenSize|screenLayout|keyboardHidden"
+            android:screenOrientation="portrait"
             android:launchMode="singleTask"
             android:theme="@style/AppTheme">
         </activity>
@@ -94,12 +103,16 @@
         <activity
             android:name=".AdCreationActivity"
             android:launchMode="singleTask"
+            android:configChanges="orientation|screenSize|screenLayout|keyboardHidden"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme">
         </activity>
 
         <activity
             android:name=".AlbumViewActivity"
             android:launchMode="singleTask"
+            android:configChanges="orientation|screenSize|screenLayout|keyboardHidden"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme">
             <intent-filter android:label="@string/app_name">
                 <action android:name="android.intent.action.VIEW" />
@@ -116,6 +129,8 @@
         <activity
             android:name=".VideoViewActivity"
             android:launchMode="singleTask"
+            android:configChanges="orientation|screenSize|screenLayout|keyboardHidden"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme">
             <intent-filter android:label="@string/app_name">
                 <action android:name="android.intent.action.VIEW" />

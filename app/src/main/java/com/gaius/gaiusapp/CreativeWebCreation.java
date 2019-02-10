@@ -434,7 +434,6 @@ public class CreativeWebCreation extends AppCompatActivity implements TextEditor
             }
         }
 
-        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         progressDialog = new ProgressDialog(this);
         progressDialog.setCancelable(true);
     }

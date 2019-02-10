@@ -1,142 +1,147 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/scrollView"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="wrap_content"
+    android:isScrollContainer="false">
 
-    <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/scrollView"
-        android:layout_width="match_parent"
+    <RelativeLayout
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:isScrollContainer="false">
+        android:layout_margin="20dp"
+        android:orientation="vertical">
 
-        <RelativeLayout
-            android:layout_width="wrap_content"
+        <android.support.v7.widget.CardView
+            android:id="@+id/ad_text_card"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="20dp"
-            android:orientation="vertical">
-
-            <android.support.v7.widget.CardView
-                android:id="@+id/ad_text_card"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="5dp"
-                android:elevation="10dp"
-                app:cardBackgroundColor="#ffffff"
-                app:cardCornerRadius="10dp"
-                app:contentPadding="5dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:text="Ad Text"
-                    android:textSize="14dp" />
-
-                <EditText
-                    android:id="@+id/textView"
-                    android:layout_width="match_parent"
-                    android:layout_height="50dp"
-                    android:layout_margin="30dp" />
-
-            </android.support.v7.widget.CardView>
-
-            <android.support.v7.widget.CardView
-                android:layout_below="@+id/ad_text_card"
-                android:id="@+id/ad_image_card"
-                android:layout_width="match_parent"
-                android:layout_height="150dp"
-                android:layout_margin="5dp"
-                android:elevation="10dp"
-                app:cardBackgroundColor="#ffffff"
-                app:cardCornerRadius="10dp"
-                app:contentPadding="5dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_horizontal"
-                        android:text="Ad Image"
-                        android:textSize="14dp" />
-
-                    <ImageView
-                        android:id="@+id/imageView"
-                        android:layout_width="match_parent"
-                        android:layout_height="120dp"
-                        android:layout_gravity="center_horizontal"
-                        android:src="@drawable/ic_image_create" />
-
-                </LinearLayout>
-            </android.support.v7.widget.CardView>
-
-            <android.support.v7.widget.CardView
-                android:layout_below="@+id/ad_image_card"
-                android:id="@+id/ad_video_card"
-                android:layout_width="wrap_content"
-                android:layout_height="150dp"
-                android:layout_margin="5dp"
-                android:elevation="10dp"
-                app:cardBackgroundColor="#ffffff"
-                app:cardCornerRadius="10dp"
-                app:contentPadding="5dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_horizontal"
-                        android:text="Ad Video (optional)"
-                        android:textSize="14dp" />
-
-                    <cn.jzvd.JzvdStd
-                        android:id="@+id/videoView"
-                        android:layout_width="wrap_content"
-                        android:layout_height="120dp"
-                        android:layout_margin="10dp" />
-
-                </LinearLayout>
-            </android.support.v7.widget.CardView>
-
-            <android.support.v7.widget.CardView
-                android:layout_below="@+id/ad_video_card"
-                android:id="@+id/ad_link_card"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="5dp"
-                android:elevation="10dp"
-                app:cardBackgroundColor="#ffffff"
-                app:cardCornerRadius="10dp"
-                app:contentPadding="5dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:text="Link Ad to an existing page"
-                    android:textSize="14dp" />
-
-                <Spinner
-                    android:id="@+id/spinner"
-                    android:layout_width="220sp"
-                    android:layout_height="100dp"
-                    android:layout_gravity="center_horizontal"/>
-            </android.support.v7.widget.CardView>
+            android:layout_margin="5dp"
+            android:elevation="10dp"
+            app:cardBackgroundColor="#ffffff"
+            app:cardCornerRadius="10dp"
+            app:contentPadding="5dp">
 
             <TextView
-                android:layout_below="@+id/ad_link_card"
                 android:layout_width="wrap_content"
-                android:layout_height="40dp"/>
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:text="Text"
+                android:textSize="14dp" />
 
-        </RelativeLayout>
+            <EditText
+                android:id="@+id/textView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="30dp" />
 
-    </ScrollView>
-</android.support.constraint.ConstraintLayout>
+        </android.support.v7.widget.CardView>
+
+        <android.support.v7.widget.CardView
+            android:layout_below="@+id/ad_text_card"
+            android:id="@+id/ad_image_card"
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
+            android:layout_margin="5dp"
+            android:elevation="10dp"
+            app:cardBackgroundColor="#ffffff"
+            app:cardCornerRadius="10dp"
+            app:contentPadding="5dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:text="Image"
+                    android:textSize="14dp" />
+
+                <ImageView
+                    android:id="@+id/imageView"
+                    android:layout_width="match_parent"
+                    android:layout_height="120dp"
+                    android:layout_gravity="center_horizontal"
+                    android:src="@drawable/ic_image_create" />
+
+            </LinearLayout>
+        </android.support.v7.widget.CardView>
+
+        <android.support.v7.widget.CardView
+            android:layout_below="@+id/ad_image_card"
+            android:id="@+id/ad_video_card"
+            android:layout_width="wrap_content"
+            android:layout_height="150dp"
+            android:layout_margin="5dp"
+            android:elevation="10dp"
+            app:cardBackgroundColor="#ffffff"
+            app:cardCornerRadius="10dp"
+            app:contentPadding="5dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:text="Video (optional)"
+                    android:textSize="14dp" />
+
+                <ImageView
+                    android:id="@+id/video_dummy_View"
+                    android:layout_width="wrap_content"
+                    android:layout_height="120dp"
+                    android:src="@drawable/ic_video_create"/>
+
+                <cn.jzvd.JzvdStd
+                    android:id="@+id/videoAdView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="120dp"
+                    android:layout_margin="10dp"
+                    android:visibility="gone"/>
+
+            </LinearLayout>
+        </android.support.v7.widget.CardView>
+
+        <android.support.v7.widget.CardView
+            android:layout_below="@+id/ad_video_card"
+            android:id="@+id/ad_link_card"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:elevation="10dp"
+            app:cardBackgroundColor="#ffffff"
+            app:cardCornerRadius="10dp"
+            app:contentPadding="5dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:text="Link to an existing page"
+                android:textSize="14dp" />
+
+            <Spinner
+                android:id="@+id/spinner"
+                android:layout_width="220sp"
+                android:layout_height="100dp"
+                android:spinnerMode="dropdown"
+                android:dropDownVerticalOffset="-35dp"
+                android:layout_gravity="center_horizontal"/>
+        </android.support.v7.widget.CardView>
+
+        <TextView
+            android:layout_below="@+id/ad_link_card"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"/>
+
+    </RelativeLayout>
+
+</ScrollView>

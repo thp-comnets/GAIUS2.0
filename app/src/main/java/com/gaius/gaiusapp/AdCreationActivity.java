@@ -3,19 +3,26 @@ package com.gaius.gaiusapp;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.NotificationManager;
+import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.media.ThumbnailUtils;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.CursorLoader;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.util.Pair;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -27,9 +34,13 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.androidnetworking.AndroidNetworking;
+import com.androidnetworking.common.ANRequest;
 import com.androidnetworking.common.Priority;
 import com.androidnetworking.error.ANError;
+import com.androidnetworking.interfaces.AnalyticsListener;
 import com.androidnetworking.interfaces.JSONArrayRequestListener;
+import com.androidnetworking.interfaces.OkHttpResponseListener;
+import com.androidnetworking.interfaces.UploadProgressListener;
 import com.gaius.gaiusapp.adapters.NewsFeedAdapter;
 import com.gaius.gaiusapp.classes.NewsFeed;
 import com.gaius.gaiusapp.utils.AdBuilder;
@@ -50,12 +61,14 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.w3c.dom.Element;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 import cn.jzvd.Jzvd;
 import cn.jzvd.JzvdStd;
+import okhttp3.Response;
 
 import static com.gaius.gaiusapp.utils.ResourceHelper.convertImageURLBasedonFidelity;
 
@@ -68,24 +81,27 @@ public class AdCreationActivity extends AppCompatActivity {
     private String imageFilePath = null;
     private String videoFilePath = null;
 
-    private Uri mCropImageUri;
     private final int PICK_VIDEO_REQUEST = 1;
+    private final int READ_EXTERNAL_STORAGE_PERMISSIONS_REQUEST_CODE = 2;
 
     List<String> spinnerArray = new ArrayList<>();
+    ArrayList<String> hrefUrls;
     ArrayAdapter<String> adapter;
     private Spinner hrefSpinner;
+    private ProgressDialog progress;
     SharedPreferences prefs;
+    String adFilePath;
+    private Uri mCropImageUri;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        UploadService.NAMESPACE = BuildConfig.APPLICATION_ID;
-        UploadService.NAMESPACE = "com.gaius.adupload";
-
         setContentView(R.layout.activity_create_ad);
 
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
+
+        editTextAd = findViewById(R.id.editTextAd);
 
         imageViewAd = findViewById(R.id.imageView);
         imageViewAd.setOnClickListener(new View.OnClickListener() {
@@ -111,8 +127,7 @@ public class AdCreationActivity extends AppCompatActivity {
         loadMyChannels();
     }
 
-    public boolean onCreateOptionsMenu (Menu menu)
-    {
+    public boolean onCreateOptionsMenu (Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.create_ads, menu);
         return true;
@@ -133,22 +148,24 @@ public class AdCreationActivity extends AppCompatActivity {
                         try {
                             JSONObject page;
 
+                            hrefUrls = new ArrayList<>();
                             spinnerArray = new ArrayList<>();
                             spinnerArray.add("None");
 
                             //traversing through all the object
                             for (int i = 0; i < response.length(); i++) {
                                 page = response.getJSONObject(i);
+                                hrefUrls.add(page.getString("url"));
                                 spinnerArray.add(page.getString("title"));
                             }
 
-                            adapter = new ArrayAdapter<String>(getBaseContext(), android.R.layout.simple_spinner_item, spinnerArray);
+                            adapter = new ArrayAdapter<>(getApplicationContext(), android.R.layout.simple_spinner_item, spinnerArray);
                             adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                             hrefSpinner.setAdapter(adapter);
 
                         } catch (JSONException e) {
                             e.printStackTrace();
-                            Log.d("Yasir","Json error "+e);
+                            Log.d("thp","Json error "+e);
                         }
 
                     }
@@ -165,24 +182,22 @@ public class AdCreationActivity extends AppCompatActivity {
                                 finish();
                                 break;
                             case 500:
-                                Log.d("Yasir","Error 500"+error);
+                                Log.d("thp","Error 500"+error);
                                 break;
                             default:
-                                Log.d("Yasir","Error no Internet "+error);
+                                Log.d("thp","Error no Internet "+error);
 
                         }
                     }
                 });
     }
 
-    public boolean onOptionsItemSelected (MenuItem item)
-    {
+    public boolean onOptionsItemSelected (MenuItem item) {
 
         String uploadId = UUID.randomUUID().toString();
         switch (item.getItemId()) {
             case R.id.action_publish:
                 AdBuilder adBuilder = new AdBuilder();
-
 
                 if (imageFilePath == null && !getIntent().getBooleanExtra("EDIT_MODE", false)) {
                     Toast.makeText (getApplicationContext(), "No image added", Toast.LENGTH_SHORT).show ();
@@ -197,7 +212,8 @@ public class AdCreationActivity extends AppCompatActivity {
                 }
 
                 Log.d("thp", "ad creation " + adBuilder.getPageAsString());
-                uploadMultipart(getApplicationContext(), uploadId, imageFilePath, videoFilePath, adBuilder.makeFile(Constants.TEMPDIR));
+                adFilePath = adBuilder.makeFile(Constants.TEMPDIR);
+                uploadMultipart();
 
                 return true;
         }
@@ -205,77 +221,101 @@ public class AdCreationActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private void uploadMultipart(final Context context, final String uploadId, final String imagePath, final String videoPath, final String adFilePath) {
-        progressDialog.setMessage(getString(R.string.dialog_processing));
-        showDialog();
+    private void uploadMultipart() {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext());
 
-        try {
-            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
-//            String channelName = prefs.getString("channel_name", "tmp");
-            MultipartUploadRequest request = new MultipartUploadRequest(context, uploadId, BASE_URL + "uploadADs.py")
-//                    .addParameter("ad_id_hash", uploadId)
-                    .setNotificationConfig(getNotificationConfig(uploadId, R.string.notification_title))
-                    .setMaxRetries(5)
-                    .addParameter("token", prefs.getString("account_token", "null"))
-                    .addFileToUpload(adFilePath, "ad_file")
-                    .setDelegate(new UploadStatusDelegate() {
-                        @Override
-                        public void onProgress(Context context, UploadInfo uploadInfo) {
-                            // your code here
-                        }
+        progress = new ProgressDialog(this);
+        progress.setMessage("Uploading...");
+        progress.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+        progress.setCancelable(false);
+        progress.setProgress(0);
+        progress.setButton(ProgressDialog.BUTTON_NEUTRAL, "Cancel upload",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        AndroidNetworking.cancelAll();
+                    }
+                });
+        progress.show();
 
-                        @Override
-                        public void onError(Context context, UploadInfo uploadInfo, ServerResponse serverResponse,
-                                            Exception exception) {
-                            try {
-                                Log.d(Constants.TAG, "CreateAdActivity: onError"+serverResponse.getHeaders() + serverResponse.getBodyAsString() + serverResponse.getHttpCode());
-                                Toast.makeText(getApplicationContext(), "Something went wrong with the upload ("+ serverResponse.getHttpCode()+")", Toast.LENGTH_LONG).show();
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-                        }
 
-                        @Override
-                        public void onCompleted(Context context, UploadInfo uploadInfo, ServerResponse serverResponse) {
-                            // remove the notification as it is no longer needed to keep the service alive
-                            if (uploadInfo.getNotificationID() != null) {
-                                NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-                                notificationManager.cancel(uploadInfo.getNotificationID());
-                            }
-                            Log.d(Constants.TAG, "CreateAdActivity: onCompleted response "+serverResponse.getBodyAsString());
-                            if (serverResponse.getBodyAsString().contains("@@ERROR##"))  {
-                                Toast.makeText(getApplicationContext(), serverResponse.getBodyAsString().replace("@@ERROR##","ERROR:").trim(), Toast.LENGTH_LONG).show();
-                            } else {
-                                uploadSuccessful();
-                            }
-                            hideDialog();
-                        }
+        ANRequest.MultiPartBuilder multiPartBuilder = new ANRequest.MultiPartBuilder(prefs.getString("base_url", null) + "uploadADs.py");
 
-                        @Override
-                        public void onCancelled(Context context, UploadInfo uploadInfo) {
-                            hideDialog();
-                        }
-                    });
+        multiPartBuilder.addMultipartParameter("token", prefs.getString("token", "null"));
 
-            if (imagePath != null) {
-                String imagePathNew = ResourceHelper.compressImage(context, imagePath, 768, 1024);
-                request.addFileToUpload(imagePathNew, "image");
-            }
-
-            if (videoPath != null) {
-                request.addFileToUpload(videoPath, "video");
-            }
-
-            if (hrefSpinner.getSelectedItemPosition() != 0) {
-                request.addParameter("href", ""+channels.get(hrefSpinner.getSelectedItemPosition()-1).getPageUrl());
-            }
-
-            request.startUpload();
-
-            Log.d(Constants.TAG, "CreateAdActivity request " + uploadId);
-        } catch (Exception exc) {
-            Log.d("AndroidUploadService", exc.getMessage(), exc);
+        if (imageFilePath != null) {
+            String imagePathNew = ResourceHelper.compressImage(this, imageFilePath, 768, 1024);
+            multiPartBuilder.addMultipartFile("image", new File(imagePathNew));
         }
+
+        if (videoFilePath != null) {
+            multiPartBuilder.addMultipartFile("video", new File(videoFilePath));
+        }
+
+        if (hrefSpinner.getSelectedItemPosition() != 0) {
+            multiPartBuilder.addMultipartParameter("href", hrefUrls.get(hrefSpinner.getSelectedItemPosition()-1));
+        }
+
+        multiPartBuilder.addMultipartFile("ad_file", new File(adFilePath));
+
+        multiPartBuilder.build()
+                .setUploadProgressListener(new UploadProgressListener() {
+                    @Override
+                    public void onProgress(long bytesUploaded, long totalBytes) {
+                        progress.setProgress((int)((float)bytesUploaded/totalBytes * 100.0));
+                    }
+                })
+                .setAnalyticsListener(new AnalyticsListener() {
+                    @Override
+                    public void onReceived(long timeTakenInMillis, long bytesSent,
+                                           long bytesReceived, boolean isFromCache) {
+                        Log.d("thp", " timeTakenInMillis : " + timeTakenInMillis);
+                        Log.d("thp", " bytesSent : " + bytesSent);
+                        Log.d("thp", " bytesReceived : " + bytesReceived);
+                        Log.d("thp", " isFromCache : " + isFromCache);
+                    }
+                })
+                .getAsOkHttpResponse(new OkHttpResponseListener() {
+                    @Override
+                    public void onResponse(Response response) {
+                        Log.d("thp", "OnResponse " + response.code());
+                        if (response.code() == 200) {
+                            progress.dismiss();
+                             uploadSuccessful("ad");
+                        } else {
+                            Toast.makeText(getApplicationContext(), "Something went wrong with the upload ("+ response.code()+")", Toast.LENGTH_LONG).show();
+                        }
+                    }
+
+                    @Override
+                    public void onError(ANError anError) {
+                        Toast.makeText(getApplicationContext(), "Something went wrong with the upload ("+ anError.getErrorDetail()+")", Toast.LENGTH_LONG).show();
+                        progress.dismiss();
+                    }
+                });
+
+    }
+
+    private void uploadSuccessful(String contentType) {
+        Log.d("thp", "upload successful");
+
+        AlertDialog alertDialog = new AlertDialog.Builder(this).create();
+        alertDialog.setTitle("Upload successful");
+        alertDialog.setMessage("Your " + contentType + " has been successfully submitted. Someone from our team will approve it shortly.");
+        alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                        finish();
+                    }
+                });
+        alertDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialog) {
+                finish();
+            }
+        });
+        alertDialog.show();
+        ResourceHelper.cleanupFiles();
     }
 
     @SuppressLint("NewApi")
@@ -361,5 +401,37 @@ public class AdCreationActivity extends AppCompatActivity {
         result[1] = ""+cursor.getLong(sizeColInd);
         cursor.close();
         return result;
+    }
+
+
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+
+//        if (requestCode == READ_EXTERNAL_STORAGE_PERMISSIONS_REQUEST_CODE) {
+//            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+//                Log.d("Permission", "OnRequestResult granted");
+//                Toast.makeText(this, "Required permissions are granted", Toast.LENGTH_LONG).show();
+//            } else {
+//                Log.d("Permission", "OnRequestResult not granted");
+//                Toast.makeText(this, "Required permissions are not granted", Toast.LENGTH_LONG).show();
+//                finish();
+//            }
+//        }
+
+        if (requestCode == CropImage.CAMERA_CAPTURE_PERMISSIONS_REQUEST_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                CropImage.startPickImageActivity(this);
+            } else {
+                Toast.makeText(this, "Cancelling, required permissions are not granted", Toast.LENGTH_LONG).show();
+            }
+        }
+
+        if (requestCode == CropImage.PICK_IMAGE_PERMISSIONS_REQUEST_CODE) {
+            if (mCropImageUri != null && grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // required permissions granted, start crop image activity
+                startCropImageActivity(mCropImageUri);
+            } else {
+                Toast.makeText(this, "Cancelling, required permissions are not granted", Toast.LENGTH_LONG).show();
+            }
+        }
     }
 }

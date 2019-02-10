@@ -321,6 +321,8 @@ public class CreativeWebCreation extends AppCompatActivity implements TextEditor
             public void onClick(View view) {
 
                 if (!motionView.disableMovement) {
+                    motionView.unselectEntity(); //make sure a previously added image is unselected and hence not replaced with the video thumb
+
                     //FIXME Move this to the oncreate
                     if (CropImage.isExplicitCameraPermissionRequired(getApplicationContext())) {
                         requestPermissions(new String[]{Manifest.permission.CAMERA}, CropImage.CAMERA_CAPTURE_PERMISSIONS_REQUEST_CODE);

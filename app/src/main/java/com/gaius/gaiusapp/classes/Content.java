@@ -11,6 +11,7 @@ public class Content {
     String published;
     String name;
     String textViewed, textClicked, imageViewed, imageClicked, videoViewed, videoClicked;
+    String adCampaign;
 
 
     public Content(int id, String title, String url, String uploadTime, String type, String description, String thumbnail, String published) {
@@ -138,5 +139,13 @@ public class Content {
 
     public void setVideoClicked(String videoClicked) {
         this.videoClicked = videoClicked;
+    }
+
+    public String getAdCampaign() {
+        return adCampaign;
+    }
+
+    public void setAdCampaign(String adCampaign) {
+        this.adCampaign = adCampaign;
     }
 }

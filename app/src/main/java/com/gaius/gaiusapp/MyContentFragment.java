@@ -135,6 +135,7 @@ public class MyContentFragment extends Fragment {
                                     c.setTextClicked(channel.getString("textClicked"));
                                     c.setImageClicked(channel.getString("imageClicked"));
                                     c.setVideoClicked(channel.getString("videoClicked"));
+                                    c.setAdCampaign(channel.getString("campaign"));
                                 }
 
 

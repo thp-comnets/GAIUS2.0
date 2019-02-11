@@ -200,12 +200,20 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.Contentl
                 builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
 
                     public void onClick(DialogInterface dialog, int which) {
+                        String URL;
+
                         // Do nothing but close the dialog
                         dialog.dismiss();
 
                         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mCtx);
                         String token = prefs.getString("token", "null");
-                        String URL = prefs.getString("base_url", null) + "deleteContent.py?token=" + token + "&" + c.getType() + "=" + c.getUrl();
+
+                        if (c.getType().equals("ad")) {
+                            URL = prefs.getString("base_url", null) + "deleteContent.py?token=" + token + "&" + c.getType() + "=" + c.getAdCampaign();
+                        }
+                        else {
+                            URL = prefs.getString("base_url", null) + "deleteContent.py?token=" + token + "&" + c.getType() + "=" + c.getUrl();
+                        }
 
                         StringRequest stringRequest = new StringRequest(Request.Method.GET, URL,
                                 new Response.Listener<String>() {

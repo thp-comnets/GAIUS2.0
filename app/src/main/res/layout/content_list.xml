@@ -127,7 +127,7 @@
                 <ImageView
                     android:layout_width="20dp"
                     android:layout_height="20dp"
-                    android:src="@drawable/ic_views"/>
+                    android:src="@drawable/ic_seen"/>
 
                 <TextView
                     android:id="@+id/image_ad_viewed"
@@ -146,7 +146,7 @@
                 <ImageView
                     android:layout_width="20dp"
                     android:layout_height="20dp"
-                    android:src="@drawable/ic_mode_edit"/>
+                    android:src="@drawable/ic_click"/>
 
                 <TextView
                     android:id="@+id/image_ad_clicked"
@@ -176,14 +176,13 @@
                 <ImageView
                     android:layout_width="20dp"
                     android:layout_height="20dp"
-                    android:src="@drawable/ic_views"/>
+                    android:src="@drawable/ic_seen"/>
 
                 <TextView
                     android:id="@+id/video_ad_viewed"
                     android:layout_marginStart="5dp"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="1K"/>
+                    android:layout_height="wrap_content" />
             </LinearLayout>
 
             <LinearLayout
@@ -194,14 +193,13 @@
                 <ImageView
                     android:layout_width="20dp"
                     android:layout_height="20dp"
-                    android:src="@drawable/ic_mode_edit"/>
+                    android:src="@drawable/ic_click"/>
 
                 <TextView
                     android:id="@+id/video_ad_clicked"
                     android:layout_marginStart="5dp"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="1K"/>
+                    android:layout_height="wrap_content" />
             </LinearLayout>
         </LinearLayout>
 
@@ -223,14 +221,13 @@
                 <ImageView
                     android:layout_width="20dp"
                     android:layout_height="20dp"
-                    android:src="@drawable/ic_views"/>
+                    android:src="@drawable/ic_seen"/>
 
                 <TextView
                     android:id="@+id/text_ad_viewed"
                     android:layout_marginStart="5dp"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="1K"/>
+                    android:layout_height="wrap_content" />
             </LinearLayout>
 
             <LinearLayout
@@ -241,14 +238,13 @@
                 <ImageView
                     android:layout_width="20dp"
                     android:layout_height="20dp"
-                    android:src="@drawable/ic_mode_edit"/>
+                    android:src="@drawable/ic_click"/>
 
                 <TextView
                     android:id="@+id/text_ad_clicked"
                     android:layout_marginStart="5dp"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="1K"/>
+                    android:layout_height="wrap_content" />
 
             </LinearLayout>
         </LinearLayout>

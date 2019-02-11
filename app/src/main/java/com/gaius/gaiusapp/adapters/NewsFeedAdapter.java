@@ -154,11 +154,11 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.newsFe
             }
         }
 
-
         holder.textViewName.setText(newsfeed.getName());
         holder.textViewUpdateTime.setText(newsfeed.getUpdateTime());
         holder.textViewTitle.setText(newsfeed.getTitle());
         holder.textViewDescription.setText(newsfeed.getDescription());
+        holder.newsFeedCard.setOnClickListener(null);
 
         if (newsfeed.getType().contains("page")) {
             holder.newsFeedCard.setTag(position);

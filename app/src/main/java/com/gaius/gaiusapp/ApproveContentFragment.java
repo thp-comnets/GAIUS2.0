@@ -36,14 +36,12 @@ public class ApproveContentFragment extends Fragment {
     List<Content> contentList;
     RecyclerView recyclerView;
     SharedPreferences prefs;
-    Context mCtx;
     ImageView nothingToApproveImage;
     TextView nothingToApproveText;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        mCtx = getActivity().getApplicationContext();
 
         return inflater.inflate(R.layout.fragment_web, null);
     }
@@ -52,8 +50,8 @@ public class ApproveContentFragment extends Fragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         recyclerView =  getView().findViewById(R.id.recylcerView);
         recyclerView.setHasFixedSize(true);
-        recyclerView.setLayoutManager(new LinearLayoutManager(mCtx));
-        recyclerView.addItemDecoration(new DividerItemDecoration(mCtx,
+        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        recyclerView.addItemDecoration(new DividerItemDecoration(getActivity(),
                 DividerItemDecoration.VERTICAL));
 
         recyclerView.setTag("ContentApproval");
@@ -63,7 +61,7 @@ public class ApproveContentFragment extends Fragment {
 
         contentList = new ArrayList<>();
 
-        prefs = PreferenceManager.getDefaultSharedPreferences(mCtx);
+        prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
         String token = prefs.getString("token", "null");
 
         URL = prefs.getString("base_url", null) + "listSubmittedContent.py";
@@ -110,12 +108,22 @@ public class ApproveContentFragment extends Fragment {
                                         channel.getString("thumbnail"),
                                         "-100"
                                 );
+
+                                if (channel.getString("type").equals("ad")) {
+                                    c.setTextViewed(channel.getString("textViewed"));
+                                    c.setImageViewed(channel.getString("imageViewed"));
+                                    c.setVideoViewed(channel.getString("videoViewed"));
+                                    c.setTextClicked(channel.getString("textClicked"));
+                                    c.setImageClicked(channel.getString("imageClicked"));
+                                    c.setVideoClicked(channel.getString("videoClicked"));
+                                }
+
                                 c.setName(channel.getString("name"));
                                 contentList.add(c);
                             }
 
                             //creating adapter object and setting it to recyclerview
-                            ApproveContentAdapter adapter = new ApproveContentAdapter(mCtx, contentList);
+                            ApproveContentAdapter adapter = new ApproveContentAdapter(getActivity(), contentList);
                             recyclerView.setAdapter(adapter);
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -133,6 +141,6 @@ public class ApproveContentFragment extends Fragment {
         Log.d("Yasir","added request "+stringRequest);
 
         //adding our stringrequest to queue
-        Volley.newRequestQueue(mCtx).add(stringRequest);
+        Volley.newRequestQueue(getActivity()).add(stringRequest);
     }
 }

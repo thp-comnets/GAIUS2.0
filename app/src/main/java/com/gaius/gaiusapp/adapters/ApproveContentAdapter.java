@@ -4,9 +4,11 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -33,7 +35,7 @@ import java.util.List;
 
 import static com.gaius.gaiusapp.utils.ResourceHelper.convertImageURLBasedonFidelity;
 
-public class ApproveContentAdapter extends RecyclerView.Adapter<ApproveContentAdapter.ApproveContentlViewHolder> {
+public class ApproveContentAdapter extends RecyclerView.Adapter<ApproveContentAdapter.ApproveContentViewHolder> {
     private Context mCtx;
     private List<Content> contentsList;
     private SharedPreferences prefs;
@@ -44,17 +46,17 @@ public class ApproveContentAdapter extends RecyclerView.Adapter<ApproveContentAd
     }
 
     @Override
-    public ApproveContentlViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public ApproveContentViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(mCtx);
         View view = inflater.inflate(R.layout.content_list, null);
 
         prefs = PreferenceManager.getDefaultSharedPreferences(mCtx);
 
-        return new ApproveContentAdapter.ApproveContentlViewHolder(view);
+        return new ApproveContentViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(ApproveContentAdapter.ApproveContentlViewHolder holder, int position) {
+    public void onBindViewHolder(ApproveContentViewHolder holder, int position) {
         final Content content = contentsList.get(position);
 
         RequestOptions requestOptions = new RequestOptions();
@@ -76,6 +78,11 @@ public class ApproveContentAdapter extends RecyclerView.Adapter<ApproveContentAd
                     .into(holder.imageView);
         }
 
+        holder.imageStats.setVisibility(View.GONE);
+        holder.textStats.setVisibility(View.GONE);
+        holder.videoStats.setVisibility(View.GONE);
+        holder.videoCardView.setVisibility(View.GONE);
+
         holder.textViewTitle.setText(content.getTitle());
         holder.getTextViewDescription.setText(content.getDescription());
 
@@ -88,12 +95,57 @@ public class ApproveContentAdapter extends RecyclerView.Adapter<ApproveContentAd
 
         if (content.getType().equals("video")) {
             holder.typeView.setImageResource(R.drawable.ic_video_create);
-        }
-        else if (content.getType().equals("page")) {
+        } else if (content.getType().equals("page")) {
             holder.typeView.setImageResource(R.drawable.ic_simple_creation);
         } else if (content.getType().equals("image")) {
             holder.typeView.setImageResource(R.drawable.images_app);
-        }
+        } else if (content.getType().equals("ad")) {
+                holder.typeView.setImageResource(R.drawable.ic_ad_create);
+
+                holder.imageStats.setVisibility(View.VISIBLE);
+                holder.textStats.setVisibility(View.VISIBLE);
+
+                if (!content.getUrl().equals("")) {
+                    holder.videoCardView.setVisibility(View.VISIBLE);
+                    holder.videoStats.setVisibility(View.VISIBLE);
+
+                    Glide.with(mCtx)
+                            .setDefaultRequestOptions(requestOptions)
+                            .load(convertImageURLBasedonFidelity(prefs.getString("base_url", null) + content.getUrl(), fidelity))
+                            .into(holder.videoView);
+//                holder.videoView.setUp(prefs.getString("base_url", null) + content.getUrl(), "", Jzvd.SCREEN_WINDOW_NORMAL);
+                    holder.videoView.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Bundle bundle = new Bundle();
+                            Intent i = new Intent(mCtx, VideoViewActivity.class);
+                            bundle.putString("URL", content.getUrl());
+                            i.putExtras(bundle);
+                            mCtx.startActivity(i);
+                        }
+                    });
+                }
+
+                holder.imageView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Log.d("ad", content.getThumbnail());
+
+                        Intent target = new Intent(Intent.ACTION_VIEW);
+                        target.setDataAndType(Uri.parse(prefs.getString("base_url", null) + content.getThumbnail()), "image/*");
+                        target.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+                        mCtx.startActivity(target);
+                    }
+                });
+
+                holder.textViewed.setText(content.getTextViewed());
+                holder.imageViewed.setText(content.getImageViewed());
+                holder.videoViewed.setText(content.getVideoViewed());
+                holder.textClicked.setText(content.getTextClicked());
+                holder.imageClicked.setText(content.getImageClicked());
+                holder.videoClicked.setText(content.getVideoClicked());
+
+            }
 
         holder.linearLayout.setTag(position);
         holder.linearLayout.setOnClickListener(new View.OnClickListener() {
@@ -103,6 +155,10 @@ public class ApproveContentAdapter extends RecyclerView.Adapter<ApproveContentAd
                 Bundle bundle = new Bundle();
                 Intent i=null;
 
+                if (content.getType().equals("ad")) {
+                    //clicks are handled by their individual views
+                    return;
+                }
                 if (content.getType().equals("page")) {
                     i = new Intent(mCtx, RenderMAML.class);
                     bundle.putSerializable("BASEURL", prefs.getString("base_url", null));
@@ -135,7 +191,6 @@ public class ApproveContentAdapter extends RecyclerView.Adapter<ApproveContentAd
                 builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
 
                     public void onClick(DialogInterface dialog, int which) {
-                        // Do nothing but close the dialog
                         dialog.dismiss();
 
                         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mCtx);
@@ -245,13 +300,16 @@ public class ApproveContentAdapter extends RecyclerView.Adapter<ApproveContentAd
         return contentsList.size();
     }
 
-    class ApproveContentlViewHolder extends RecyclerView.ViewHolder {
+    class ApproveContentViewHolder extends RecyclerView.ViewHolder {
 
         TextView textViewTitle, getTextViewDescription, status;
-        ImageView imageView, typeView, deleteButton, editButton;
-        LinearLayout linearLayout;
+        ImageView imageView, typeView, deleteButton, editButton, videoView;
+        CardView videoCardView;
+        LinearLayout linearLayout, imageStats, videoStats, textStats;
+        TextView textViewed, imageViewed, videoViewed, textClicked, imageClicked, videoClicked;
 
-        public ApproveContentlViewHolder(View itemView) {
+
+        public ApproveContentViewHolder(View itemView) {
             super(itemView);
 
             textViewTitle = itemView.findViewById(R.id.textViewName);
@@ -262,6 +320,20 @@ public class ApproveContentAdapter extends RecyclerView.Adapter<ApproveContentAd
             deleteButton = itemView.findViewById(R.id.binButton);
             editButton = itemView.findViewById(R.id.editButton);
             linearLayout = itemView.findViewById(R.id.channelItem);
+
+            videoCardView = itemView.findViewById(R.id.cardview2);
+            videoView = itemView.findViewById(R.id.videoView);
+
+            imageStats = itemView.findViewById(R.id.image_ad_stats);
+            videoStats = itemView.findViewById(R.id.video_ad_stats);
+            textStats = itemView.findViewById(R.id.text_ad_stats);
+
+            textViewed = itemView.findViewById(R.id.text_ad_viewed);
+            imageViewed = itemView.findViewById(R.id.image_ad_viewed);
+            videoViewed = itemView.findViewById(R.id.video_ad_viewed);
+            textClicked = itemView.findViewById(R.id.text_ad_clicked);
+            imageClicked = itemView.findViewById(R.id.image_ad_clicked);
+            videoClicked = itemView.findViewById(R.id.video_ad_clicked);
         }
     }
 }

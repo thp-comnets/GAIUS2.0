@@ -4,15 +4,18 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.android.volley.Request;
@@ -22,11 +25,17 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+import com.bumptech.glide.signature.ObjectKey;
+import com.gaius.gaiusapp.AlbumViewActivity;
 import com.gaius.gaiusapp.CreativeWebCreation;
+import com.gaius.gaiusapp.VideoViewActivity;
 import com.gaius.gaiusapp.classes.Content;
 import com.gaius.gaiusapp.R;
 
 import java.util.List;
+
+import cn.jzvd.Jzvd;
+import cn.jzvd.JzvdStd;
 
 import static com.gaius.gaiusapp.utils.ResourceHelper.convertImageURLBasedonFidelity;
 
@@ -51,8 +60,8 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.Contentl
     }
 
     @Override
-    public void onBindViewHolder(ContentAdapter.ContentlViewHolder holder, int position) {
-        Content content = contentsList.get(position);
+    public void onBindViewHolder(final ContentAdapter.ContentlViewHolder holder, int position) {
+        final Content content = contentsList.get(position);
 
         RequestOptions requestOptions = new RequestOptions();
         requestOptions.error(R.drawable.ic_avatar);
@@ -73,11 +82,17 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.Contentl
                     .into(holder.imageView);
         }
 
+        holder.imageStats.setVisibility(View.GONE);
+        holder.textStats.setVisibility(View.GONE);
+        holder.videoStats.setVisibility(View.GONE);
+        holder.videoCardView.setVisibility(View.GONE);
+
         if (content.getType().equals("video")) {
             holder.typeView.setImageResource(R.drawable.ic_video_create);
             holder.editButton.setVisibility(View.GONE);
         }
         else if (content.getType().equals("page")) {
+
             holder.editButton.setVisibility(View.VISIBLE);
             holder.typeView.setImageResource(R.drawable.ic_simple_creation);
 
@@ -102,6 +117,54 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.Contentl
         else if (content.getType().equals("image")) {
             holder.typeView.setImageResource(R.drawable.images_app);
             holder.editButton.setVisibility(View.GONE);
+        }
+        else if (content.getType().equals("ad")) {
+            holder.typeView.setImageResource(R.drawable.ic_ad_create);
+            holder.editButton.setVisibility(View.GONE);
+
+            holder.imageStats.setVisibility(View.VISIBLE);
+            holder.textStats.setVisibility(View.VISIBLE);
+
+            if (!content.getUrl().equals("")) {
+                holder.videoCardView.setVisibility(View.VISIBLE);
+                holder.videoStats.setVisibility(View.VISIBLE);
+
+                Glide.with(mCtx)
+                        .setDefaultRequestOptions(requestOptions)
+                        .load(convertImageURLBasedonFidelity(prefs.getString("base_url", null) + content.getUrl(), fidelity))
+                        .into(holder.videoView);
+//                holder.videoView.setUp(prefs.getString("base_url", null) + content.getUrl(), "", Jzvd.SCREEN_WINDOW_NORMAL);
+                holder.videoView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Bundle bundle = new Bundle();
+                        Intent i = new Intent(mCtx, VideoViewActivity.class);
+                        bundle.putString("URL", content.getUrl());
+                        i.putExtras(bundle);
+                        mCtx.startActivity(i);
+                    }
+                });
+            }
+
+            holder.imageView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Log.d("ad", content.getThumbnail());
+
+                    Intent target = new Intent(Intent.ACTION_VIEW);
+                    target.setDataAndType(Uri.parse(prefs.getString("base_url", null) + content.getThumbnail()), "image/*");
+                    target.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+                    mCtx.startActivity(target);
+                }
+            });
+
+            holder.textViewed.setText(content.getTextViewed());
+            holder.imageViewed.setText(content.getImageViewed());
+            holder.videoViewed.setText(content.getVideoViewed());
+            holder.textClicked.setText(content.getTextClicked());
+            holder.imageClicked.setText(content.getImageClicked());
+            holder.videoClicked.setText(content.getVideoClicked());
+
         }
 
         holder.textViewTitle.setText(content.getTitle());
@@ -191,7 +254,10 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.Contentl
     class ContentlViewHolder extends RecyclerView.ViewHolder {
 
         TextView textViewTitle, getTextViewDescription, status;
-        ImageView imageView, typeView, deleteButton, editButton;
+        ImageView imageView, typeView, deleteButton, editButton, videoView;
+        CardView videoCardView;
+        LinearLayout imageStats, videoStats, textStats;
+        TextView textViewed, imageViewed, videoViewed, textClicked, imageClicked, videoClicked;
 
         public ContentlViewHolder(View itemView) {
             super(itemView);
@@ -203,6 +269,19 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.Contentl
             typeView = itemView.findViewById(R.id.typeView);
             deleteButton = itemView.findViewById(R.id.binButton);
             editButton = itemView.findViewById(R.id.editButton);
+            videoCardView = itemView.findViewById(R.id.cardview2);
+            videoView = itemView.findViewById(R.id.videoView);
+
+            imageStats = itemView.findViewById(R.id.image_ad_stats);
+            videoStats = itemView.findViewById(R.id.video_ad_stats);
+            textStats = itemView.findViewById(R.id.text_ad_stats);
+
+            textViewed = itemView.findViewById(R.id.text_ad_viewed);
+            imageViewed = itemView.findViewById(R.id.image_ad_viewed);
+            videoViewed = itemView.findViewById(R.id.video_ad_viewed);
+            textClicked = itemView.findViewById(R.id.text_ad_clicked);
+            imageClicked = itemView.findViewById(R.id.image_ad_clicked);
+            videoClicked = itemView.findViewById(R.id.video_ad_clicked);
         }
     }
 }

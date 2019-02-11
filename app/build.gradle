@@ -51,5 +51,4 @@ dependencies {
     implementation 'com.github.BrotherJing:android-gallery-view:v1.0.0'
 
     implementation 'com.amitshekhar.android:android-networking:1.0.2'
-
 }

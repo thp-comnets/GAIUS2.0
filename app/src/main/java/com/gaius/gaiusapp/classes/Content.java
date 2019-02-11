@@ -10,6 +10,8 @@ public class Content {
     String thumbnail;
     String published;
     String name;
+    String textViewed, textClicked, imageViewed, imageClicked, videoViewed, videoClicked;
+
 
     public Content(int id, String title, String url, String uploadTime, String type, String description, String thumbnail, String published) {
         this.id = id;
@@ -88,5 +90,53 @@ public class Content {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getTextViewed() {
+        return textViewed;
+    }
+
+    public void setTextViewed(String textViewed) {
+        this.textViewed = textViewed;
+    }
+
+    public String getTextClicked() {
+        return textClicked;
+    }
+
+    public void setTextClicked(String textClicked) {
+        this.textClicked = textClicked;
+    }
+
+    public String getImageViewed() {
+        return imageViewed;
+    }
+
+    public void setImageViewed(String imageViewed) {
+        this.imageViewed = imageViewed;
+    }
+
+    public String getImageClicked() {
+        return imageClicked;
+    }
+
+    public void setImageClicked(String imageClicked) {
+        this.imageClicked = imageClicked;
+    }
+
+    public String getVideoViewed() {
+        return videoViewed;
+    }
+
+    public void setVideoViewed(String videoViewed) {
+        this.videoViewed = videoViewed;
+    }
+
+    public String getVideoClicked() {
+        return videoClicked;
+    }
+
+    public void setVideoClicked(String videoClicked) {
+        this.videoClicked = videoClicked;
     }
 }

@@ -128,6 +128,16 @@ public class MyContentFragment extends Fragment {
                                         channel.getString("published")
                                 );
 
+                                if (channel.getString("type").equals("ad")) {
+                                    c.setTextViewed(channel.getString("textViewed"));
+                                    c.setImageViewed(channel.getString("imageViewed"));
+                                    c.setVideoViewed(channel.getString("videoViewed"));
+                                    c.setTextClicked(channel.getString("textClicked"));
+                                    c.setImageClicked(channel.getString("imageClicked"));
+                                    c.setVideoClicked(channel.getString("videoClicked"));
+                                }
+
+
                                 if (admin.equals("1")) {
                                     if (channel.getString("published").equals("1")) {
                                         managedContentList.add(c);

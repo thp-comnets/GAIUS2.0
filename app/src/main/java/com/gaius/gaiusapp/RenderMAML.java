@@ -11,14 +11,17 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.util.TypedValue;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -141,7 +144,7 @@ public class RenderMAML extends AppCompatActivity {
                                 drawVideo(mUrl + "/" + mPageUrl + "/" + videoUrl, objects[i], root);
                         }
                         else if (type.equals("rect")) {
-                            drawImage(objects[i], null, root);
+                            drawImage(objects[i], null, root, "");
                         } else if (type.equals("txt")) {
                             drawText(objects[i], root);
                         } else if (type.equals("txtField")) {
@@ -318,7 +321,7 @@ public class RenderMAML extends AppCompatActivity {
         mRequestQueue.add(request);
     }
 
-    private void drawImage(String data, Bitmap img_file, FrameLayout root) {
+    private void drawImage(String data, Bitmap img_file, FrameLayout root, final String url) {
         try {
             JSONObject parser = new JSONObject(data);
             int x = parser.getInt("x");
@@ -369,9 +372,40 @@ public class RenderMAML extends AppCompatActivity {
 
             }
             catch(Exception e) {
-//                Log.d(Constants.TAG, "MamlPageActivity: href exception " + e.getMessage());
+//                Log.d("MAML", "MamlPageActivity: href exception " + e.getMessage());
                 //e.printStackTrace();
             }
+
+            // enable image saving
+            if (img_file != null) {
+                final Bitmap finalImg_file = img_file;
+                img.setOnLongClickListener(new View.OnLongClickListener() {
+                    @Override
+                    public boolean onLongClick(View view) {
+                        final PopupMenu popupMenu = new PopupMenu(getApplicationContext(), view);
+                        popupMenu.setOnDismissListener(new PopupMenu.OnDismissListener() {
+                            @Override
+                            public void onDismiss(PopupMenu menu) {
+                                popupMenu.dismiss();
+                            }
+                        });
+                        popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                            @Override
+                            public boolean onMenuItemClick(MenuItem item) {
+                                MediaStore.Images.Media.insertImage(getApplicationContext().getContentResolver(), finalImg_file, url.substring(url.lastIndexOf('/')) , "");
+                                popupMenu.dismiss();
+
+                                return true;
+                            }
+                        });
+                        popupMenu.inflate(R.menu.save_image_popup_menu);
+                        popupMenu.show();
+
+                        return true;
+                    }
+                });
+            }
+
 
             FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(w, h);
             if (root.getLayoutDirection() == View.LAYOUT_DIRECTION_RTL) {
@@ -399,7 +433,7 @@ public class RenderMAML extends AppCompatActivity {
                             if (response != null) {
                                 Bitmap bmp = BitmapFactory.decodeByteArray(response, 0, response.length);
 
-                                drawImage(jsonstring, bmp, root);
+                                drawImage(jsonstring, bmp, root, mUrl);
                             }
                         } catch (Exception e) {
 //                                    Log.d("KEY_ERROR", "UNABLE TO DOWNLOAD FILE 2");

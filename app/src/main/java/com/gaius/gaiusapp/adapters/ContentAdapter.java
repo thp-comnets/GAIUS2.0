@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AlertDialog;
@@ -25,17 +24,13 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
-import com.bumptech.glide.signature.ObjectKey;
-import com.gaius.gaiusapp.AlbumViewActivity;
 import com.gaius.gaiusapp.CreativeWebCreation;
+import com.gaius.gaiusapp.ImageViewActivity;
 import com.gaius.gaiusapp.VideoViewActivity;
 import com.gaius.gaiusapp.classes.Content;
 import com.gaius.gaiusapp.R;
 
 import java.util.List;
-
-import cn.jzvd.Jzvd;
-import cn.jzvd.JzvdStd;
 
 import static com.gaius.gaiusapp.utils.ResourceHelper.convertImageURLBasedonFidelity;
 
@@ -63,10 +58,10 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.Contentl
     public void onBindViewHolder(final ContentAdapter.ContentlViewHolder holder, int position) {
         final Content content = contentsList.get(position);
 
-        RequestOptions requestOptions = new RequestOptions();
+        final RequestOptions requestOptions = new RequestOptions();
         requestOptions.error(R.drawable.ic_avatar);
 
-        String fidelity = prefs.getString("fidelity_level", "high");
+        final String fidelity = prefs.getString("fidelity_level", "high");
 
         if (content.getThumbnail().contains("None")) {
             //loading the image
@@ -86,6 +81,7 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.Contentl
         holder.textStats.setVisibility(View.GONE);
         holder.videoStats.setVisibility(View.GONE);
         holder.videoCardView.setVisibility(View.GONE);
+        holder.imageView.setOnClickListener(null);
 
         if (content.getType().equals("video")) {
             holder.typeView.setImageResource(R.drawable.ic_video_create);
@@ -149,11 +145,15 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.Contentl
             holder.imageView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Log.d("ad", content.getThumbnail());
+//                    Intent target = new Intent(Intent.ACTION_VIEW);
+//                    target.setDataAndType(Uri.parse(prefs.getString("base_url", null) + content.getThumbnail()), "image/*");
+//                    target.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+//                    mCtx.startActivity(target);
 
-                    Intent target = new Intent(Intent.ACTION_VIEW);
-                    target.setDataAndType(Uri.parse(prefs.getString("base_url", null) + content.getThumbnail()), "image/*");
-                    target.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+                    Bundle bundle = new Bundle();
+                    Intent target = new Intent(mCtx, ImageViewActivity.class);
+                    bundle.putString("URL", prefs.getString("base_url", null) + content.getThumbnail());
+                    target.putExtras(bundle);
                     mCtx.startActivity(target);
                 }
             });

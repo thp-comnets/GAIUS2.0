@@ -144,6 +144,11 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name=".ImageViewActivity"
+            android:launchMode="singleTask"
+            android:theme="@style/AppTheme">
+        </activity>
 
     </application>
 </manifest>

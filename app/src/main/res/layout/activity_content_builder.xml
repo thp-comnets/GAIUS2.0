@@ -33,30 +33,29 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <ImageButton
+        <ImageView
             android:id="@+id/text_entity_font_size_decrease"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:src="@drawable/ic_neg_1"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:layout_gravity="center_vertical"
+            android:src="@drawable/ic_minus_sign"
             />
 
         <Button
             android:id="@+id/text_font_size"
-            android:layout_width="0dp"
-            android:layout_height="44dp"
+            android:layout_width="60dp"
+            android:layout_height="wrap_content"
             android:gravity="center"
-            android:layout_weight="1"
             android:textSize="20dp"
             android:backgroundTint="@color/white"
             android:text="30" />
 
-        <ImageButton
+        <ImageView
             android:id="@+id/text_entity_font_size_increase"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:src="@drawable/ic_plus_1"
+            android:layout_width="25dp"
+            android:layout_gravity="center_vertical"
+            android:layout_height="25dp"
+            android:src="@drawable/ic_plus_sign"
             />
 
         <ImageButton

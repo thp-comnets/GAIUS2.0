@@ -15,6 +15,7 @@ import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,6 +26,8 @@ import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.alexvasilkov.gestures.Settings;
+import com.alexvasilkov.gestures.views.interfaces.GestureView;
 import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -50,6 +53,7 @@ public class RenderMAML extends AppCompatActivity {
     private RequestQueue mRequestQueue;
     private String response_var = "";
     private boolean EDIT_MODE = false;
+    private GestureView gestureView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,7 +67,23 @@ public class RenderMAML extends AppCompatActivity {
         String hostPath;
 
         setContentView(R.layout.maml_page);
+
         super.onCreate(savedInstanceState);
+
+        gestureView = findViewById(R.id.drawer_layout);
+        gestureView.getController().getSettings()
+                .setMaxZoom(4f)
+                .setDoubleTapZoom(-1f) // Falls back to max zoom level
+                .setPanEnabled(true)
+                .setZoomEnabled(true)
+                .setDoubleTapEnabled(true)
+                .setRotationEnabled(false)
+                .setRestrictRotation(false)
+                .setOverscrollDistance(0f, 0f)
+                .setOverzoomFactor(2f)
+                .setFillViewport(false)
+                .setFitMethod(Settings.Fit.INSIDE)
+                .setGravity(Gravity.CENTER);
 
         mRequestQueue = Volley.newRequestQueue(getApplicationContext());
 

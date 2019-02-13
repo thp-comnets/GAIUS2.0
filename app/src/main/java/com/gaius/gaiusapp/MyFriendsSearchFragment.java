@@ -1,13 +1,10 @@
 package com.gaius.gaiusapp;
 
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.provider.ContactsContract;
@@ -32,17 +29,14 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.androidnetworking.common.ANRequest;
+import com.androidnetworking.error.ANError;
+import com.androidnetworking.interfaces.AnalyticsListener;
+import com.androidnetworking.interfaces.JSONArrayRequestListener;
 import com.gaius.gaiusapp.adapters.FriendsAdapter;
 import com.gaius.gaiusapp.classes.Friend;
 import com.gaius.gaiusapp.interfaces.FragmentVisibleInterface;
 import com.gaius.gaiusapp.utils.LogOut;
-
-import net.gotev.uploadservice.MultipartUploadRequest;
-import net.gotev.uploadservice.ServerResponse;
-import net.gotev.uploadservice.UploadInfo;
-import net.gotev.uploadservice.UploadNotificationConfig;
-import net.gotev.uploadservice.UploadService;
-import net.gotev.uploadservice.UploadStatusDelegate;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -54,18 +48,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
-
-import static net.gotev.uploadservice.Placeholders.ELAPSED_TIME;
-import static net.gotev.uploadservice.Placeholders.PROGRESS;
-import static net.gotev.uploadservice.Placeholders.TOTAL_FILES;
-import static net.gotev.uploadservice.Placeholders.UPLOADED_FILES;
-import static net.gotev.uploadservice.Placeholders.UPLOAD_RATE;
 
 public class MyFriendsSearchFragment extends Fragment implements FragmentVisibleInterface {
     SharedPreferences prefs;
     public static File path;
-    private static ProgressDialog progressDialog;
     public static Context context;
     List<Friend> friendList, friendList2;
     RecyclerView recyclerView, recyclerView2;
@@ -95,9 +81,6 @@ public class MyFriendsSearchFragment extends Fragment implements FragmentVisible
 
         friendList = new ArrayList<>();
 
-        UploadService.NAMESPACE = BuildConfig.APPLICATION_ID;
-        UploadService.NAMESPACE = "com.gaius.contentupload";
-
         loadPossibleFriends();
 
         final EditText searchName  = getView().findViewById(R.id.search_name_edittext);
@@ -124,9 +107,6 @@ public class MyFriendsSearchFragment extends Fragment implements FragmentVisible
     }
 
     public void loadPossibleFriends() {
-        progressDialog = new ProgressDialog(getActivity());
-        progressDialog.setCancelable(true);
-
         path = context.getExternalFilesDir(null);
         File file = new File(path, "contacts.txt");
         ArrayList<String> phoneNumbers = new ArrayList<String>();
@@ -137,7 +117,7 @@ public class MyFriendsSearchFragment extends Fragment implements FragmentVisible
             Cursor phones = context.getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, null, null, null);
 
             while (phones.moveToNext()) {
-                String name = phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
+//                String name = phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
                 String phoneNumber = phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
 
                 phoneNumber = phoneNumber.replace("+","00").replace("(","").replace(")","").replace("-","").replace(" ","").replace("/","");
@@ -168,151 +148,80 @@ public class MyFriendsSearchFragment extends Fragment implements FragmentVisible
 
     public void uploadMultipart(final Context context, final String contactPath, final String button, final String phoneNumber) {
 
-        progressDialog.setMessage("Checking");
-        showDialog();
+        ANRequest.MultiPartBuilder multiPartBuilder = new ANRequest.MultiPartBuilder(prefs.getString("base_url", null) + "findFriends2.py");
 
-        String uploadId = UUID.randomUUID().toString();
-        try {
-            MultipartUploadRequest request = new MultipartUploadRequest(context, uploadId,  prefs.getString("base_url", null) + "findFriends2.py")
-                    .addParameter("token", prefs.getString("token", "null"))
-                    .setUtf8Charset()
-                    .setNotificationConfig(getNotificationConfig(uploadId, R.string.notification_title))
-                    .setMaxRetries(5)
-                    .addFileToUpload(contactPath, "contacts")
-                    .setDelegate(new UploadStatusDelegate() {
-                        @Override
-                        public void onProgress(Context context, UploadInfo uploadInfo) {
-                            // your code here
-                        }
+        multiPartBuilder.addMultipartFile("contacts", new File (contactPath));
+        multiPartBuilder.addMultipartParameter("token", prefs.getString("token", "null"));
+        multiPartBuilder.build()
+                .setAnalyticsListener(new AnalyticsListener() {
+                    @Override
+                    public void onReceived(long timeTakenInMillis, long bytesSent,
+                                           long bytesReceived, boolean isFromCache) {
+                        Log.d("thp", " timeTakenInMillis : " + timeTakenInMillis);
+                        Log.d("thp", " bytesSent : " + bytesSent);
+                        Log.d("thp", " bytesReceived : " + bytesReceived);
+                        Log.d("thp", " isFromCache : " + isFromCache);
+                    }
+                })
+                .getAsJSONArray(new JSONArrayRequestListener() {
+                    @Override
+                    public void onResponse(JSONArray response) {
+                        try {
+                            //converting the string to json array object
+                            JSONObject friend;
 
-                        @Override
-                        public void onError(Context context, UploadInfo uploadInfo, ServerResponse serverResponse, Exception exception) {
-                            try {
-                                Log.d("Account Requests", "onError"+serverResponse.getHeaders() + serverResponse.getBodyAsString() + serverResponse.getHttpCode());
-//                                Toast.makeText(getApplicationContext(), "Something went wrong with the upload ("+ serverResponse.getHttpCode()+")", Toast.LENGTH_LONG).show();
-                            } catch (Exception e) {
-                                e.printStackTrace();
+                            if (response.length() == 0 ) {
+                                importFriendsTitle.setVisibility(View.GONE);
                             }
-                        }
-
-                        @Override
-                        public void onCompleted(Context context, UploadInfo uploadInfo, ServerResponse serverResponse) {
-                            // remove the notification as it is no longer needed to keep the service alive
-                            if (uploadInfo.getNotificationID() != null) {
-                                NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-                                notificationManager.cancel(uploadInfo.getNotificationID());
+                            else {
+                                importFriendsTitle.setVisibility(View.VISIBLE);
                             }
 
-                            if (serverResponse.getBodyAsString().contains("@@ERROR##"))  {
-                                Toast.makeText(context, serverResponse.getBodyAsString().replace("@@ERROR##","ERROR:").trim(), Toast.LENGTH_LONG).show();
-                            } else {
-                                Log.d("yasir", serverResponse.getBodyAsString()+"");
-                                try {
-                                    //converting the string to json array object
-                                    JSONArray array = new JSONArray(serverResponse.getBodyAsString());
+                            //traversing through all the object
+                            for (int i = 0; i < response.length(); i++) {
 
-                                    if (array.length() == 0 ) {
-                                        importFriendsTitle.setVisibility(View.GONE);
-                                    }
-                                    else {
-                                        importFriendsTitle.setVisibility(View.VISIBLE);
-                                    }
+                                //getting product object from json array
+                                friend = response.getJSONObject(i);
 
-                                    //traversing through all the object
-                                    for (int i = 0; i < array.length(); i++) {
-
-                                        //getting product object from json array
-                                        JSONObject friend = array.getJSONObject(i);
-
-                                        //adding the product to product list
-                                        friendList.add(new Friend(
-                                                friend.getInt("id"),
-                                                friend.getString("name"),
-                                                "current status",
-                                                friend.getString("avatar"),
-                                                friend.getString("userID"),
-                                                friend.getString("type"),
-                                                false
-                                        ));
-                                    }
-
-                                    //creating adapter object and setting it to recyclerview
-                                    FriendsAdapter adapter = new FriendsAdapter(getContext(), friendList);
-                                    recyclerView.setAdapter(adapter);
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
-                                    Log.d("Yasir","Json error "+e);
-
-                                    if (serverResponse.getBodyAsString().contains("invalid token")) {
-                                        LogOut.logout(getContext());
-                                        Toast.makeText(getContext(), "You have logged in from another device. Please login again.",
-                                                Toast.LENGTH_LONG).show();
-                                        Intent i = new Intent(getContext(), LoginActivity.class);
-                                        startActivity(i);
-                                        getActivity().finish();
-                                    }
-                                }
+                                //adding the product to product list
+                                friendList.add(new Friend(
+                                        friend.getInt("id"),
+                                        friend.getString("name"),
+                                        "current status",
+                                        friend.getString("avatar"),
+                                        friend.getString("userID"),
+                                        friend.getString("type"),
+                                        false
+                                ));
                             }
-                            hideDialog();
+
+                            //creating adapter object and setting it to recyclerview
+                            FriendsAdapter adapter = new FriendsAdapter(getContext(), friendList);
+                            recyclerView.setAdapter(adapter);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                            Log.d("Yasir", "Json error " + e);
                         }
+                    }
 
-                        @Override
-                        public void onCancelled(Context context, UploadInfo uploadInfo) {
-                            hideDialog();
-                        }
-                    });
-
-            if (button != null) {
-                request.addParameter(button, phoneNumber);
-            }
-
-            Log.d("thp",request.toString());
-
-            request.startUpload();
-        } catch (Exception exc) {
-            Log.d("Account Requests", exc.getMessage(), exc);
-        }
-    }
-
-    private static void showDialog() {
-        if (!progressDialog.isShowing())
-            progressDialog.show();
-    }
-
-    private static void hideDialog() {
-        if (progressDialog.isShowing())
-            progressDialog.dismiss();
-    }
-
-    private static UploadNotificationConfig getNotificationConfig(final String uploadId, @StringRes int title) {
-        UploadNotificationConfig config = new UploadNotificationConfig();
-
-        PendingIntent clickIntent = PendingIntent.getActivity(
-                context, 1, new Intent(context, MainActivity.class), PendingIntent.FLAG_UPDATE_CURRENT);
-
-        config.setTitleForAllStatuses("title")
-                .setRingToneEnabled(false)
-                .setClickIntentForAllStatuses(clickIntent)
-                .setClearOnActionForAllStatuses(true);
-
-        config.getProgress().message = "Uploaded " + UPLOADED_FILES + " of " + TOTAL_FILES
-                + " at " + UPLOAD_RATE + " - " + PROGRESS;
-        config.getProgress().iconResourceID = R.drawable.ic_upload;
-        config.getProgress().iconColorResourceID = Color.BLUE;
-
-        config.getCompleted().message = "Upload completed successfully in " + ELAPSED_TIME;
-        config.getCompleted().iconResourceID = R.drawable.ic_upload_success;
-        config.getCompleted().iconColorResourceID = Color.GREEN;
-
-        config.getError().message = "Error while uploading";
-        config.getError().iconResourceID = R.drawable.ic_upload_error;
-        config.getError().iconColorResourceID = Color.RED;
-
-        config.getCancelled().message = "Upload has been cancelled";
-        config.getCancelled().iconResourceID = R.drawable.ic_cancelled;
-        config.getCancelled().iconColorResourceID = Color.YELLOW;
-
-        return config;
+                    @Override
+                    public void onError(ANError error) {
+                        switch (error.getErrorCode()) {
+                            case 401:
+                                LogOut.logout(getActivity());
+                                Toast.makeText(getContext(), "You have logged in from another device. Please login again.",
+                                        Toast.LENGTH_LONG).show();
+                                Intent i = new Intent(getContext(), LoginActivity.class);
+                                startActivity(i);
+                                getActivity().finish();
+                                break;
+                            case 500:
+                                Log.d("Yasir","Error 500"+error);
+                                break;
+                            default:
+                                Log.d("Yasir","Error no Internet "+error);
+                    }
+                }});
     }
 
     private void searchFriend(String name) {

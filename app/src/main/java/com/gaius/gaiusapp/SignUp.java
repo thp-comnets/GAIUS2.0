@@ -1,20 +1,15 @@
 package com.gaius.gaiusapp;
 
 import android.Manifest;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
-import android.support.annotation.StringRes;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -23,29 +18,24 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.androidnetworking.common.ANRequest;
+import com.androidnetworking.error.ANError;
+import com.androidnetworking.interfaces.AnalyticsListener;
+import com.androidnetworking.interfaces.OkHttpResponseListener;
 import com.gaius.gaiusapp.utils.ResourceHelper;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
 
-import net.gotev.uploadservice.MultipartUploadRequest;
-import net.gotev.uploadservice.ServerResponse;
-import net.gotev.uploadservice.UploadInfo;
-import net.gotev.uploadservice.UploadNotificationConfig;
-import net.gotev.uploadservice.UploadService;
-import net.gotev.uploadservice.UploadStatusDelegate;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.UUID;
+import java.io.File;
+import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static net.gotev.uploadservice.Placeholders.ELAPSED_TIME;
-import static net.gotev.uploadservice.Placeholders.PROGRESS;
-import static net.gotev.uploadservice.Placeholders.TOTAL_FILES;
-import static net.gotev.uploadservice.Placeholders.UPLOADED_FILES;
-import static net.gotev.uploadservice.Placeholders.UPLOAD_RATE;
+import okhttp3.Response;
+
 
 public class SignUp extends AppCompatActivity {
     private static final int PICK_ICON_REQUEST = 1;
@@ -59,9 +49,6 @@ public class SignUp extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         setContentView(R.layout.signup_activity);
         super.onCreate(savedInstanceState);
-
-        UploadService.NAMESPACE = BuildConfig.APPLICATION_ID;
-        UploadService.NAMESPACE = "com.gaius.contentupload";
 
         prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
         URL_FOR_REGISTRATION = prefs.getString("base_url", null)+"register.php";
@@ -192,63 +179,48 @@ public class SignUp extends AppCompatActivity {
 
         loadingImageView.setVisibility(View.VISIBLE);
 
-        String uploadId = UUID.randomUUID().toString();
+        ANRequest.MultiPartBuilder multiPartBuilder = new ANRequest.MultiPartBuilder(URL_FOR_REGISTRATION);
 
-        try {
+        if (filePath != null) {
+            multiPartBuilder.addMultipartFile("avatar", new File (filePath));
+            SharedPreferences.Editor editor = prefs.edit();
+            editor.putString("account_avatar", filePath);
+            editor.commit();
+        }
 
-            MultipartUploadRequest request = new MultipartUploadRequest(getApplicationContext(), uploadId, URL_FOR_REGISTRATION)
-                    .addParameter("name", name)
-                    .addParameter("channel", channel)
-                    .addParameter("phoneNumber", phoneNumber)
-                    .addParameter("email", email)
-                    .addParameter("password", password)
-                    .addParameter("gender", gender)
-                    .addParameter("age", dob)
-                    .addParameter("type", "Register")
-                    .setUtf8Charset()
-                    .setNotificationConfig(getNotificationConfig(uploadId, R.string.notification_title))
-                    .setMaxRetries(5)
-                    .setDelegate(new UploadStatusDelegate() {
-                        @Override
-                        public void onProgress(Context context, UploadInfo uploadInfo) {
-                            // your code here
-                        }
+        multiPartBuilder.addMultipartParameter("name", name);
+        multiPartBuilder.addMultipartParameter("channel", channel);
+        multiPartBuilder.addMultipartParameter("phoneNumber", phoneNumber);
+        multiPartBuilder.addMultipartParameter("email", email);
+        multiPartBuilder.addMultipartParameter("password", password);
+        multiPartBuilder.addMultipartParameter("gender", gender);
+        multiPartBuilder.addMultipartParameter("age", dob);
+        multiPartBuilder.addMultipartParameter("type", "Register");
 
-                        @Override
-                        public void onError(Context context, UploadInfo uploadInfo, ServerResponse serverResponse,
-                                            Exception exception) {
-                            try {
-                                Log.d("yasir", "RegisterActivity: onError"+serverResponse.getHeaders() + serverResponse.getBodyAsString() + serverResponse.getHttpCode());
-
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-
-                            loadingImageView.setVisibility(View.GONE);
-
-                            Toast.makeText(context,
-                                    serverResponse.getHttpCode(), Toast.LENGTH_LONG).show();
-                        }
-
-                        @Override
-                        public void onCompleted(Context context, UploadInfo uploadInfo, ServerResponse serverResponse) {
-
-                            // remove the notification as it is no longer needed to keep the service alive
-                            if (uploadInfo.getNotificationID() != null) {
-                                NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-                                notificationManager.cancel(uploadInfo.getNotificationID());
-                            }
-                            Log.d("yasir", "RegisterActivity: onCompleted response "+serverResponse.getBodyAsString());
-
+        multiPartBuilder.build()
+                .setAnalyticsListener(new AnalyticsListener() {
+                    @Override
+                    public void onReceived(long timeTakenInMillis, long bytesSent,
+                                           long bytesReceived, boolean isFromCache) {
+                        Log.d("thp", " timeTakenInMillis : " + timeTakenInMillis);
+                        Log.d("thp", " bytesSent : " + bytesSent);
+                        Log.d("thp", " bytesReceived : " + bytesReceived);
+                        Log.d("thp", " isFromCache : " + isFromCache);
+                    }
+                })
+                .getAsOkHttpResponse(new OkHttpResponseListener() {
+                    @Override
+                    public void onResponse(Response response) {
+                        Log.d("thp", "OnResponse " + response.code());
+                        if (response.code() == 200) {
                             JSONObject jObj = null;
                             try {
-                                jObj = new JSONObject(serverResponse.getBodyAsString());
+                                jObj = new JSONObject(response.body().string());
                                 boolean error = jObj.getBoolean("error");
 
                                 if (!error) {
                                     String user = jObj.getJSONObject("user").getString("name");
                                     Log.d("yasir","RegisterActivity: Received token: " + jObj.getJSONObject("user").getString("token"));
-
 
                                     Toast.makeText(getApplicationContext(), "Your account was successfully", Toast.LENGTH_SHORT).show();
 
@@ -262,7 +234,6 @@ public class SignUp extends AppCompatActivity {
                                     editor.putString("age", jObj.getJSONObject("user").getString("age"));
                                     editor.putString("userID", jObj.getJSONObject("user").getString("userID"));
                                     editor.putString("number", jObj.getJSONObject("user").getString("phoneNumber"));
-
                                     editor.commit();
 
                                     Intent i = new Intent(getApplicationContext(), MainActivity.class);
@@ -279,63 +250,24 @@ public class SignUp extends AppCompatActivity {
 
                             } catch (JSONException e) {
                                 e.printStackTrace();
+                            } catch (IOException e) {
+                                e.printStackTrace();
                             }
+                        } else {
+                            Toast.makeText(getApplicationContext(), "Something went wrong with the registration ("+ response.code()+")", Toast.LENGTH_LONG).show();
                         }
+                    }
 
-                        @Override
-                        public void onCancelled(Context context, UploadInfo uploadInfo) {
-                            // your code here
-                        }
-                    });
+                    @Override
+                    public void onError(ANError anError) {
+                        loadingImageView.setVisibility(View.GONE);
+
+                        Toast.makeText(getApplicationContext(),
+                                anError.getErrorDetail(), Toast.LENGTH_LONG).show();
+                    }
+                });
 
 
-            if (filePath != null) {
-//                String iconPathNew = ResourceHelper.compressImage(getApplicationContext(), filePath, 80, 80);
-                request.addFileToUpload(filePath, "avatar");
-                SharedPreferences.Editor editor = prefs.edit();
-                editor.putString("account_avatar", filePath);
-                editor.commit();
-//                ImageLoader.getInstance().clearDiskCache();
-//                ImageLoader.getInstance().clearMemoryCache();
-
-            }
-
-            request.startUpload();
-
-        } catch (Exception exc) {
-            Log.d("yasir", exc.getMessage(), exc);
-        }
-    }
-
-    private UploadNotificationConfig getNotificationConfig(final String uploadId, @StringRes int title) {
-        UploadNotificationConfig config = new UploadNotificationConfig();
-
-        PendingIntent clickIntent = PendingIntent.getActivity(
-                this, 1, new Intent(this, MainActivity.class), PendingIntent.FLAG_UPDATE_CURRENT);
-
-        config.setTitleForAllStatuses(getString(title))
-                .setRingToneEnabled(false)
-                .setClickIntentForAllStatuses(clickIntent)
-                .setClearOnActionForAllStatuses(true);
-
-        config.getProgress().message = "Uploaded " + UPLOADED_FILES + " of " + TOTAL_FILES
-                + " at " + UPLOAD_RATE + " - " + PROGRESS;
-        config.getProgress().iconResourceID = R.drawable.ic_upload;
-        config.getProgress().iconColorResourceID = Color.BLUE;
-
-        config.getCompleted().message = "Upload completed successfully in " + ELAPSED_TIME;
-        config.getCompleted().iconResourceID = R.drawable.ic_upload_success;
-        config.getCompleted().iconColorResourceID = Color.GREEN;
-
-        config.getError().message = "Error while uploading";
-        config.getError().iconResourceID = R.drawable.ic_upload_error;
-        config.getError().iconColorResourceID = Color.RED;
-
-        config.getCancelled().message = "Upload has been cancelled";
-        config.getCancelled().iconResourceID = R.drawable.ic_cancelled;
-        config.getCancelled().iconColorResourceID = Color.YELLOW;
-
-        return config;
     }
 }
 

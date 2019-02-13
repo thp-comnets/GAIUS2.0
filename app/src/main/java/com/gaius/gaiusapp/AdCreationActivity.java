@@ -2,9 +2,7 @@ package com.gaius.gaiusapp;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.app.NotificationManager;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -13,16 +11,13 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.media.ThumbnailUtils;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.CursorLoader;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.util.Pair;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -41,8 +36,6 @@ import com.androidnetworking.interfaces.AnalyticsListener;
 import com.androidnetworking.interfaces.JSONArrayRequestListener;
 import com.androidnetworking.interfaces.OkHttpResponseListener;
 import com.androidnetworking.interfaces.UploadProgressListener;
-import com.gaius.gaiusapp.adapters.NewsFeedAdapter;
-import com.gaius.gaiusapp.classes.NewsFeed;
 import com.gaius.gaiusapp.utils.AdBuilder;
 import com.gaius.gaiusapp.utils.Constants;
 import com.gaius.gaiusapp.utils.LogOut;
@@ -50,16 +43,9 @@ import com.gaius.gaiusapp.utils.ResourceHelper;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
 
-import net.gotev.uploadservice.MultipartUploadRequest;
-import net.gotev.uploadservice.ServerResponse;
-import net.gotev.uploadservice.UploadInfo;
-import net.gotev.uploadservice.UploadService;
-import net.gotev.uploadservice.UploadStatusDelegate;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.w3c.dom.Element;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -69,9 +55,6 @@ import java.util.UUID;
 import cn.jzvd.Jzvd;
 import cn.jzvd.JzvdStd;
 import okhttp3.Response;
-
-import static com.gaius.gaiusapp.utils.ResourceHelper.convertImageURLBasedonFidelity;
-
 
 public class AdCreationActivity extends AppCompatActivity {
     private ImageView imageViewAd, videoDummyViewAd;

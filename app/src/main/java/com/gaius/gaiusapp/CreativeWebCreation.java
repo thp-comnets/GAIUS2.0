@@ -90,8 +90,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import ly.kite.instagramphotopicker.InstagramPhoto;
-import ly.kite.instagramphotopicker.InstagramPhotoPicker;
+//import ly.kite.instagramphotopicker.InstagramPhoto;
+//import ly.kite.instagramphotopicker.InstagramPhotoPicker;
 
 import static com.gaius.gaiusapp.utils.ResourceHelper.getResizedBitmap;
 
@@ -380,19 +380,19 @@ public class CreativeWebCreation extends AppCompatActivity implements TextEditor
             }
         });
 
-        instagramButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-//                Intent launchIntent = getPackageManager().getLaunchIntentForPackage("com.google.android.apps.photos");
-//                if (launchIntent != null) {
-//                    startActivity(launchIntent);//null pointer check in case package name was not found
+//        instagramButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+////                Intent launchIntent = getPackageManager().getLaunchIntentForPackage("com.google.android.apps.photos");
+////                if (launchIntent != null) {
+////                    startActivity(launchIntent);//null pointer check in case package name was not found
+////                }
+//                Toast.makeText (getApplicationContext(), "This feature might not work. Currently its by invite only!", Toast.LENGTH_LONG).show ();
+//                if (!motionView.disableMovement) {
+//                    InstagramPhotoPicker.startPhotoPickerForResult(CreativeWebCreation.this, CLIENT_ID, REDIRECT_URI, REQUEST_CODE_INSTAGRAM_PICKER);
 //                }
-                Toast.makeText (getApplicationContext(), "This feature might not work. Currently its by invite only!", Toast.LENGTH_LONG).show ();
-                if (!motionView.disableMovement) {
-                    InstagramPhotoPicker.startPhotoPickerForResult(CreativeWebCreation.this, CLIENT_ID, REDIRECT_URI, REQUEST_CODE_INSTAGRAM_PICKER);
-                }
-            }
-        });
+//            }
+//        });
 
 
         mRequestQueue = Volley.newRequestQueue(getApplicationContext(), new HurlStack());
@@ -1204,17 +1204,17 @@ public class CreativeWebCreation extends AppCompatActivity implements TextEditor
             }
         }
 
-        if (requestCode == REQUEST_CODE_INSTAGRAM_PICKER) {
-            if (resultCode == CreativeWebCreation.RESULT_OK) {
-                InstagramPhoto[] instagramPhotos = InstagramPhotoPicker.getResultPhotos(data);
-
-                for (int i = 0; i < instagramPhotos.length; ++i) {
-                    String dataImg = "{\"type\":\"img\",\"url\":\"" + instagramPhotos[i].getFullURL().toString() + "\"}";
-                    downloadImage(instagramPhotos[i].getFullURL().toString(), dataImg, mRequestQueue);
-
-                }
-            }
-        }
+//        if (requestCode == REQUEST_CODE_INSTAGRAM_PICKER) {
+//            if (resultCode == CreativeWebCreation.RESULT_OK) {
+//                InstagramPhoto[] instagramPhotos = InstagramPhotoPicker.getResultPhotos(data);
+//
+//                for (int i = 0; i < instagramPhotos.length; ++i) {
+//                    String dataImg = "{\"type\":\"img\",\"url\":\"" + instagramPhotos[i].getFullURL().toString() + "\"}";
+//                    downloadImage(instagramPhotos[i].getFullURL().toString(), dataImg, mRequestQueue);
+//
+//                }
+//            }
+//        }
     }
 
     private void startCropImageActivity(Uri imageUri, Boolean isIcon) {

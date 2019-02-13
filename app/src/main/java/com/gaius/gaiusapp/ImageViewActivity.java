@@ -9,12 +9,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.PopupMenu;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.transition.Transition;
-import com.github.chrisbanes.photoview.PhotoView;
 
 public class ImageViewActivity extends AppCompatActivity {
     public Bitmap mBitmap;
@@ -27,7 +27,7 @@ public class ImageViewActivity extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
 
-        final PhotoView photoView = findViewById(R.id.imageView);
+        final ImageView photoView = findViewById(R.id.imageView);
 
         Bundle bundle = getIntent().getExtras();
         final String url = bundle.getString("URL");

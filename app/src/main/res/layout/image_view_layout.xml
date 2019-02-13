@@ -6,12 +6,20 @@
     android:numColumns="auto_fit"
     android:gravity="center">
 
-    <com.github.chrisbanes.photoview.PhotoView android:id="@+id/imageView"
+    <com.alexvasilkov.gestures.views.GestureFrameLayout
+        android:id="@+id/drawer_layout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:adjustViewBounds="true"
-        xmlns:android="http://schemas.android.com/apk/res/android" />
+        android:layout_height="match_parent"
+        android:fitsSystemWindows="true"
+        xmlns:android="http://schemas.android.com/apk/res/android">
+
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:adjustViewBounds="true" />
+    </com.alexvasilkov.gestures.views.GestureFrameLayout>
 
 </RelativeLayout>
 

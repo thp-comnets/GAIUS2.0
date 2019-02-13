@@ -46,6 +46,8 @@ import java.util.Map;
 
 import cn.jzvd.JzvdStd;
 
+import static com.gaius.gaiusapp.utils.ResourceHelper.getImageUri;
+
 public class RenderMAML extends AppCompatActivity {
     SharedPreferences prefs;
     String fidelity;
@@ -412,7 +414,17 @@ public class RenderMAML extends AppCompatActivity {
                         popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                             @Override
                             public boolean onMenuItemClick(MenuItem item) {
-                                MediaStore.Images.Media.insertImage(getApplicationContext().getContentResolver(), finalImg_file, url.substring(url.lastIndexOf('/')) , "");
+                                switch (item.toString()) {
+                                    case "Save":
+                                        MediaStore.Images.Media.insertImage(getApplicationContext().getContentResolver(), finalImg_file ,url.substring(url.lastIndexOf('/')) , "");
+                                        Toast.makeText(getApplicationContext(), "Image saved locally on device.", Toast.LENGTH_LONG).show();
+
+                                    case "Share":
+                                        Intent shareIntent = new Intent(android.content.Intent.ACTION_SEND);
+                                        shareIntent.putExtra(Intent.EXTRA_STREAM, getImageUri(getApplicationContext(), finalImg_file));
+                                        shareIntent.setType("image/jpeg");
+                                        startActivity(Intent.createChooser(shareIntent, "Share image with:"));
+                                }
                                 popupMenu.dismiss();
 
                                 return true;

@@ -1,17 +1,16 @@
 package com.gaius.gaiusapp.adapters;
 
 import android.content.Context;
+import android.net.Uri;
+import android.util.Log;
 import android.widget.ImageView;
 
-import com.squareup.picasso.Picasso;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
+import com.bumptech.glide.signature.ObjectKey;
 
 import java.util.List;
-
 import io.brotherjing.galleryview.GalleryAdapter;
-
-/**
- * Created by jingyanga on 2016/9/28.
- */
 
 public class UrlGalleryAdapter extends GalleryAdapter {
 
@@ -35,7 +34,6 @@ public class UrlGalleryAdapter extends GalleryAdapter {
     @Override
     public void fillViewAtPosition(int position, ImageView imageView) {
         String url = data.get(position);
-        Picasso.with(context).cancelRequest(imageView);
-        Picasso.with(context).load(url).placeholder(android.R.drawable.ic_menu_gallery).into(imageView);
+        imageView.setImageURI(Uri.parse(url));
     }
 }

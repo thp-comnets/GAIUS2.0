@@ -12,12 +12,13 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:src="@drawable/ic_error500" />
+        android:src="@drawable/ic_error500"
+        android:layout_marginBottom="10dp"/>
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/no_internet_view"
+        android:layout_below="@+id/lonely_animation"
         android:paddingStart="50dp"
         android:paddingEnd="50dp"
         android:layout_centerHorizontal="true"

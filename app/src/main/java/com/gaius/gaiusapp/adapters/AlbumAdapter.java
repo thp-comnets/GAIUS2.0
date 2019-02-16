@@ -11,11 +11,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.RequestOptions;
-import com.bumptech.glide.signature.ObjectKey;
 import com.gaius.gaiusapp.ImageViewActivity;
 import com.gaius.gaiusapp.R;
+import com.gaius.gaiusapp.networking.GlideApp;
 
 import java.util.ArrayList;
 
@@ -46,16 +44,9 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.albumViewHol
         final String imageURI = imagesList.get(position);
 //        holder.setIsRecyclable(false);
 
-        holder.imageView.setImageResource(R.drawable.ic_avatar);
-
-        RequestOptions requestOptions = new RequestOptions();
-        requestOptions.error(R.drawable.ic_avatar);
-
-        Glide.with(mCtx)
-                .setDefaultRequestOptions(requestOptions)
+        GlideApp.with(mCtx)
                 .load(imageURI)
-//                .apply(new RequestOptions().signature(new ObjectKey("signature string")))
-                .apply(new RequestOptions().signature(new ObjectKey(System.currentTimeMillis())))
+                .content()
                 .into(holder.imageView);
 
         holder.imageView.setOnClickListener(new View.OnClickListener() {
@@ -69,7 +60,6 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.albumViewHol
             }
         });
 
-        Log.d("thomas", imageURI);
     }
 
     @Override

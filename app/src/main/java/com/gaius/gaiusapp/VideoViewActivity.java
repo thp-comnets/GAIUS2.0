@@ -7,9 +7,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.RequestOptions;
-import com.bumptech.glide.signature.ObjectKey;
+import com.gaius.gaiusapp.networking.GlideApp;
 
 import cn.jzvd.Jzvd;
 import cn.jzvd.JzvdStd;
@@ -35,9 +33,9 @@ public class VideoViewActivity extends AppCompatActivity {
 
             videoView = findViewById(R.id.videoView);
 
-            Glide.with(this)
+            GlideApp.with(this)
                     .load(convertImageURLBasedonFidelity(videoURL.replace(".mp4",".jpg"), prefs.getString("fidelity_level", "high"))) //fixme: if not .mp4
-                    .apply(new RequestOptions().signature(new ObjectKey(System.currentTimeMillis())))
+                    .content()
                     .into(videoView.thumbImageView);
 
             videoView.setUp(videoURL, "", Jzvd.SCREEN_WINDOW_NORMAL);
@@ -51,9 +49,9 @@ public class VideoViewActivity extends AppCompatActivity {
 
             videoView = findViewById(R.id.videoView);
 
-            Glide.with(this)
+            GlideApp.with(this)
                     .load(convertImageURLBasedonFidelity(videoURL.replace(".mp4",".jpg"), prefs.getString("fidelity_level", "high"))) //fixme: if not .mp4
-                    .apply(new RequestOptions().signature(new ObjectKey(System.currentTimeMillis())))
+                    .content()
                     .into(videoView.thumbImageView);
 
             videoView.setUp(videoURL, "", Jzvd.SCREEN_WINDOW_NORMAL);

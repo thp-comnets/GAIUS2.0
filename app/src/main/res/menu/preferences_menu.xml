@@ -25,6 +25,11 @@
                 android:id="@+id/settingsButton"
                 android:title="Settings"
                 app:showAsAction="always"/>
+
+            <item
+                android:id="@+id/clearCacheButton"
+                android:title="Clear Cache"
+                app:showAsAction="always"/>
         </menu>
     </item>
 

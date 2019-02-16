@@ -101,7 +101,7 @@ public class ContentFragment extends Fragment implements View.OnClickListener {
         //adding the product to product list
         contentCategoryList.add(new ContentCategory(0, "Browse Web", R.drawable.ic_web_animation));
         contentCategoryList.add(new ContentCategory(1, "Browse Videos", R.drawable.ic_video_animation));
-        contentCategoryList.add(new ContentCategory(2, "Browse Photos", R.drawable.ic_photos_animation));
+        contentCategoryList.add(new ContentCategory(2, "Browse Images", R.drawable.ic_photos_animation));
         contentCategoryList.add(new ContentCategory(3, "Create Content", R.drawable.ic_create));
         contentCategoryList.add(new ContentCategory(4, "My Content", R.drawable.ic_my_content));
 
@@ -332,21 +332,21 @@ public class ContentFragment extends Fragment implements View.OnClickListener {
         ContentCategory c = contentCategoryList.get((Integer) v.getTag());
 
         if (c.getTitle().equals("Browse Web")) {
-            Fragment fragment = new WebFragment();
+            Fragment fragment = new BrowseWebFragment();
 
             getActivity().getSupportFragmentManager().beginTransaction()
                     .replace(R.id.fragment_container, fragment)
                     .commit();
         }
         else if (c.getTitle().equals("Browse Videos")) {
-            Fragment fragment = new VideosFragment();
+            Fragment fragment = new BrowseVideosFragment();
 
             getActivity().getSupportFragmentManager().beginTransaction()
                     .replace(R.id.fragment_container, fragment)
                     .commit();
         }
-        else if (c.getTitle().equals("Browse Photos")) {
-            Fragment fragment = new PhotosFragment();
+        else if (c.getTitle().equals("Browse Images")) {
+            Fragment fragment = new BrowseImagesFragment();
 
             getActivity().getSupportFragmentManager().beginTransaction()
                     .replace(R.id.fragment_container, fragment)
@@ -356,7 +356,7 @@ public class ContentFragment extends Fragment implements View.OnClickListener {
             displayIntentOptions();
         }
         else if (c.getTitle().equals("My Content")) {
-            Fragment fragment = new MyContentFragment();
+            Fragment fragment = new BrowseMyContentFragment();
 
             getActivity().getSupportFragmentManager().beginTransaction()
                     .replace(R.id.fragment_container, fragment)

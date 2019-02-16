@@ -41,10 +41,18 @@
                     app:cardBackgroundColor="#ffffff"
                     app:contentPadding="5dp">
 
-                    <com.daimajia.slider.library.SliderLayout
+                    <!--<com.daimajia.slider.library.SliderLayout-->
+                        <!--android:id="@+id/slider"-->
+                        <!--android:layout_width="wrap_content"-->
+                        <!--android:layout_height="wrap_content"-->
+                        <!--/>-->
+
+                    <ss.com.bannerslider.Slider
                         android:id="@+id/slider"
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        app:slider_loopSlides="true"
+                        app:slider_animateIndicators="true"
                         />
 
                 </android.support.v7.widget.CardView>

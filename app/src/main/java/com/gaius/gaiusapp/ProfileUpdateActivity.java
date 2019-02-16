@@ -30,9 +30,7 @@ import com.androidnetworking.error.ANError;
 import com.androidnetworking.interfaces.AnalyticsListener;
 import com.androidnetworking.interfaces.OkHttpResponseListener;
 import com.androidnetworking.interfaces.UploadProgressListener;
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.RequestOptions;
-import com.bumptech.glide.signature.ObjectKey;
+import com.gaius.gaiusapp.networking.GlideApp;
 import com.gaius.gaiusapp.utils.ResourceHelper;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
@@ -119,13 +117,9 @@ public class ProfileUpdateActivity extends AppCompatActivity {
             signupInputAge.setText(prefs.getString("age", "null"));
         }
 
-        RequestOptions requestOptions = new RequestOptions();
-        requestOptions.error(R.drawable.ic_avatar);
-
-        Glide.with(getBaseContext())
-                .setDefaultRequestOptions(requestOptions)
+        GlideApp.with(getBaseContext())
                 .load(base_url + "/content/usersIcons/"+prefs.getString("userID","None")+".png")
-                .apply(new RequestOptions().signature(new ObjectKey(System.currentTimeMillis())))
+                .content()
                 .into(avatarImageView);
 
 

@@ -22,24 +22,23 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.RequestOptions;
 import com.gaius.gaiusapp.CreativeWebCreation;
 import com.gaius.gaiusapp.ImageViewActivity;
+import com.gaius.gaiusapp.R;
 import com.gaius.gaiusapp.VideoViewActivity;
 import com.gaius.gaiusapp.classes.Content;
-import com.gaius.gaiusapp.R;
+import com.gaius.gaiusapp.networking.GlideApp;
 
 import java.util.List;
 
 import static com.gaius.gaiusapp.utils.ResourceHelper.convertImageURLBasedonFidelity;
 
-public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.ContentlViewHolder> {
+public class BrowseMyContentAdapter extends RecyclerView.Adapter<BrowseMyContentAdapter.ContentlViewHolder> {
     private Context mCtx;
     private List<Content> contentsList;
     private SharedPreferences prefs;
 
-    public ContentAdapter(Context mCtx, List<Content> contentsList) {
+    public BrowseMyContentAdapter(Context mCtx, List<Content> contentsList) {
         this.mCtx = mCtx;
         this.contentsList = contentsList;
     }
@@ -51,29 +50,23 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.Contentl
 
         prefs = PreferenceManager.getDefaultSharedPreferences(mCtx);
 
-        return new ContentAdapter.ContentlViewHolder(view);
+        return new BrowseMyContentAdapter.ContentlViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(final ContentAdapter.ContentlViewHolder holder, int position) {
+    public void onBindViewHolder(final BrowseMyContentAdapter.ContentlViewHolder holder, int position) {
         final Content content = contentsList.get(position);
-
-        final RequestOptions requestOptions = new RequestOptions();
-        requestOptions.error(R.drawable.ic_avatar);
 
         final String fidelity = prefs.getString("fidelity_level", "high");
 
         if (content.getThumbnail().contains("None")) {
-            //loading the image
-            Glide.with(mCtx)
-                    .load(R.drawable.ic_avatar)
-                    .into(holder.imageView);
+            //FIXME: are we ever coming here? Shouldn't we always have a thumbnail?
+            holder.imageView.setImageDrawable(mCtx.getResources().getDrawable(R.drawable.placeholder));
         }
         else {
-            //loading the image
-            Glide.with(mCtx)
-                    .setDefaultRequestOptions(requestOptions)
+            GlideApp.with(mCtx)
                     .load(convertImageURLBasedonFidelity(prefs.getString("base_url", null) + content.getThumbnail(), fidelity))
+                    .content()
                     .into(holder.imageView);
         }
 
@@ -125,11 +118,11 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.Contentl
                 holder.videoCardView.setVisibility(View.VISIBLE);
                 holder.videoStats.setVisibility(View.VISIBLE);
 
-                Glide.with(mCtx)
-                        .setDefaultRequestOptions(requestOptions)
+                GlideApp.with(mCtx)
                         .load(convertImageURLBasedonFidelity(prefs.getString("base_url", null) + content.getUrl(), fidelity))
+                        .content()
                         .into(holder.videoView);
-//                holder.videoView.setUp(prefs.getString("base_url", null) + content.getUrl(), "", Jzvd.SCREEN_WINDOW_NORMAL);
+
                 holder.videoView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {

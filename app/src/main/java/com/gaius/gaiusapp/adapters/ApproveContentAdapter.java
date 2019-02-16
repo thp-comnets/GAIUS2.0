@@ -23,13 +23,12 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.RequestOptions;
 import com.gaius.gaiusapp.AlbumViewActivity;
+import com.gaius.gaiusapp.R;
 import com.gaius.gaiusapp.RenderMAML;
 import com.gaius.gaiusapp.VideoViewActivity;
 import com.gaius.gaiusapp.classes.Content;
-import com.gaius.gaiusapp.R;
+import com.gaius.gaiusapp.networking.GlideApp;
 
 import java.util.List;
 
@@ -59,22 +58,16 @@ public class ApproveContentAdapter extends RecyclerView.Adapter<ApproveContentAd
     public void onBindViewHolder(ApproveContentViewHolder holder, int position) {
         final Content content = contentsList.get(position);
 
-        RequestOptions requestOptions = new RequestOptions();
-        requestOptions.error(R.drawable.ic_avatar);
-
         String fidelity = prefs.getString("fidelity_level", "high");
 
         if (content.getThumbnail().contains("None")) {
-            //loading the image
-            Glide.with(mCtx)
-                    .load(R.drawable.ic_avatar)
-                    .into(holder.imageView);
+            //FIXME: are we ever coming here? Shouldn't we always have a thumbnail?
+            holder.imageView.setImageDrawable(mCtx.getResources().getDrawable(R.drawable.placeholder));
         }
         else {
-            //loading the image
-            Glide.with(mCtx)
-                    .setDefaultRequestOptions(requestOptions)
+            GlideApp.with(mCtx)
                     .load(convertImageURLBasedonFidelity(prefs.getString("base_url", null) + content.getThumbnail(), fidelity))
+                    .content()
                     .into(holder.imageView);
         }
 
@@ -109,11 +102,11 @@ public class ApproveContentAdapter extends RecyclerView.Adapter<ApproveContentAd
                     holder.videoCardView.setVisibility(View.VISIBLE);
                     holder.videoStats.setVisibility(View.VISIBLE);
 
-                    Glide.with(mCtx)
-                            .setDefaultRequestOptions(requestOptions)
+                    GlideApp.with(mCtx)
                             .load(convertImageURLBasedonFidelity(prefs.getString("base_url", null) + content.getUrl(), fidelity))
+                            .content()
                             .into(holder.videoView);
-//                holder.videoView.setUp(prefs.getString("base_url", null) + content.getUrl(), "", Jzvd.SCREEN_WINDOW_NORMAL);
+
                     holder.videoView.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {

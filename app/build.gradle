@@ -34,9 +34,13 @@ dependencies {
     implementation "com.android.support:cardview-v7:$compat_version"
     implementation "com.android.support:support-v4:$compat_version"
 
+    def glide_version = "4.8.0"
+
+    implementation "com.github.bumptech.glide:glide:$glide_version"
+    annotationProcessor "com.github.bumptech.glide:compiler:$glide_version"
+
     implementation 'com.android.support.constraint:constraint-layout:1.1.3'
     implementation 'com.android.volley:volley:1.1.0'
-    implementation 'com.github.bumptech.glide:glide:4.7.1'
     implementation 'de.hdodenhof:circleimageview:2.2.0'
 
     implementation 'cn.jzvd:jiaozivideoplayer:6.3.1'
@@ -46,19 +50,20 @@ dependencies {
     implementation 'petrov.kristiyan:colorpicker-library:1.1.8'
 
     implementation 'net.rimoto:intlphoneinput:1.0.1'
-
-    implementation 'com.squareup.picasso:picasso:2.5.2'
     implementation 'com.nineoldandroids:library:2.4.0'
-    implementation 'com.daimajia.slider:library:1.1.5@aar'
 
     implementation 'com.github.BrotherJing:android-gallery-view:v1.0.0'
     implementation 'com.amitshekhar.android:android-networking:1.0.2'
     implementation 'com.alexvasilkov:gesture-views:2.5.2'
+
+    implementation 'com.ss.bannerslider:bannerslider:2.0.0'
 
 //    implementation 'q.rorbin:badgeview:1.1.3'
 //    implementation 'com.github.chrisbanes:PhotoView:2.1.3'
 //    implementation 'com.nostra13.universalimageloader:universal-image-loader:1.9.5'
 //    implementation 'ly.kite:instagram-photo-picker:1.+'
 //    implementation 'net.gotev:uploadservice:3.4.2'
+//    implementation 'com.squareup.picasso:picasso:2.5.2'
+//    implementation 'com.daimajia.slider:library:1.1.5@aar'
 
 }

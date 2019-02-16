@@ -1,9 +1,11 @@
 package com.gaius.gaiusapp;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
@@ -19,12 +21,15 @@ import android.view.MenuItem;
 import android.view.View;
 
 import com.androidnetworking.AndroidNetworking;
+import com.gaius.gaiusapp.networking.GlideApp;
+import com.gaius.gaiusapp.networking.GlideImageLoadingService;
 import com.gaius.gaiusapp.utils.LogOut;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import cn.jzvd.Jzvd;
+import ss.com.bannerslider.Slider;
 
 import static com.gaius.gaiusapp.utils.Constants.MULTIPLE_PERMISSIONS;
 
@@ -64,6 +69,8 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
         // asking the user for all required permissions
         checkPermissions ();
+
+        Slider.init(new GlideImageLoadingService(this));
 
         setContentView(R.layout.activity_main);
 
@@ -170,9 +177,10 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
             Intent i = new Intent(this, LoginActivity.class);
             startActivity(i);
             finish();
-        }
-        else if (id == R.id.settingsButton) {
+        } else if (id == R.id.settingsButton) {
             startActivity(new Intent(MainActivity.this, PreferencesActivity.class));
+        } else if (id == R.id.clearCacheButton) {
+            clearGlideCache(this);
         }
         return super.onOptionsItemSelected(item);
     }
@@ -210,7 +218,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
                 if ((recycler.getTag()+"").contains("SubWeb")) {
                     setTitle("Content Browser");
-                    loadFragment(new WebFragment());
+                    loadFragment(new BrowseWebFragment());
                     break;
                 }
                 else if ((recycler.getTag()+"").contains("MainWeb") || (recycler.getTag()+"").contains("MainVideo")
@@ -230,5 +238,20 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
     protected void onPause() {
         super.onPause();
         Jzvd.releaseAllVideos();
+    }
+
+    static void clearGlideCache(final Context ctx)
+    {
+        new AsyncTask<Void, Void, Void>() {
+            protected Void doInBackground(Void... unused) {
+                // clearDiskCache() must be called from background thread
+                GlideApp.get(ctx).clearDiskCache();
+                return null;
+            }
+            protected void onPostExecute(Void unused) {
+                // clearMemory() must be called from main thread
+                GlideApp.get(ctx).clearMemory();
+            }
+        }.execute();
     }
 }

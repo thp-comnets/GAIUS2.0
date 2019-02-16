@@ -19,23 +19,22 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.RequestOptions;
-import com.bumptech.glide.signature.ObjectKey;
-import com.daimajia.slider.library.SliderLayout;
-import com.daimajia.slider.library.SliderTypes.BaseSliderView;
-import com.daimajia.slider.library.SliderTypes.TextSliderView;
+import com.bumptech.glide.Priority;
 import com.gaius.gaiusapp.AlbumViewActivity;
-import com.gaius.gaiusapp.classes.NewsFeed;
 import com.gaius.gaiusapp.R;
 import com.gaius.gaiusapp.RenderMAML;
+import com.gaius.gaiusapp.classes.NewsFeed;
+import com.gaius.gaiusapp.networking.GlideApp;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import cn.jzvd.Jzvd;
 import cn.jzvd.JzvdStd;
+import ss.com.bannerslider.Slider;
+import ss.com.bannerslider.adapters.SliderAdapter;
+import ss.com.bannerslider.event.OnSlideClickListener;
+import ss.com.bannerslider.viewholder.ImageSlideViewHolder;
 
 import static com.gaius.gaiusapp.utils.ResourceHelper.convertImageURLBasedonFidelity;
 
@@ -55,7 +54,6 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.newsFe
         View view = inflater.inflate(R.layout.newsfeed_list, null);
 
         prefs = PreferenceManager.getDefaultSharedPreferences(mCtx);
-
         return new newsFeedViewHolder(view);
     }
 
@@ -63,23 +61,14 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.newsFe
     public void onBindViewHolder(final newsFeedViewHolder holder, int position) {
         NewsFeed newsfeed = newsFeedList.get(position);
 
-        RequestOptions requestOptions = new RequestOptions();
-        requestOptions.error(R.drawable.ic_avatar);
-
         if (newsfeed.getShowAvatar() == true) {
             if (newsfeed.getAvatar().contains("None")) {
-                //loading the image
-                Glide.with(mCtx)
-                        .load(R.drawable.ic_avatar)
-                        .into(holder.avatarView);
+                holder.avatarView.setImageDrawable(mCtx.getResources().getDrawable(R.drawable.ic_avatar));
             }
             else{
-                //loading the image
-                Glide.with(mCtx)
-                        .setDefaultRequestOptions(requestOptions)
+                GlideApp.with(mCtx)
                         .load(prefs.getString("base_url", null) + newsfeed.getAvatar())
-//                .apply(new RequestOptions().signature(new ObjectKey("signature string")))
-                        .apply(new RequestOptions().signature(new ObjectKey(System.currentTimeMillis())))
+                        .avatar()
                         .into(holder.avatarView);
             }
         }
@@ -93,65 +82,90 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.newsFe
         if (newsfeed.getType().contains("page")) {
             holder.imageView.setVisibility(View.VISIBLE);
             holder.videoView.setVisibility(View.GONE);
-            holder.mDemoSlider.setVisibility(View.GONE);
+            holder.slider.setVisibility(View.GONE);
 
-            requestOptions = new RequestOptions();
-            //loading the image
-            Glide.with(mCtx)
-                    .setDefaultRequestOptions(requestOptions)
+            GlideApp.with(mCtx)
                     .load(convertImageURLBasedonFidelity(prefs.getString("base_url", null) + newsfeed.getImage(), fidelity))
-//                    .apply(new RequestOptions().signature(new ObjectKey("signature string")))
-                    .apply(new RequestOptions().signature(new ObjectKey(System.currentTimeMillis())))
+                    .priority(Priority.LOW)
+                    .content()
+//                    .transition(withCrossFade())
                     .into(holder.imageView);
         }
         else if (newsfeed.getType().equals("video")) {
             holder.videoView.setVisibility(View.VISIBLE);
             holder.imageView.setVisibility(View.GONE);
-            holder.mDemoSlider.setVisibility(View.GONE);
+            holder.slider.setVisibility(View.GONE);
 
-            Glide.with(mCtx)
+            GlideApp.with(mCtx)
                     .load(convertImageURLBasedonFidelity(prefs.getString("base_url", null) + newsfeed.getImage(), fidelity))
-                    .apply(new RequestOptions().signature(new ObjectKey(System.currentTimeMillis())))
+                    .priority(Priority.LOW)
+                    .content()
                     .into(holder.videoView.thumbImageView);
+
             holder.videoView.setUp(prefs.getString("base_url", null) + newsfeed.getUrl(), "", Jzvd.SCREEN_WINDOW_NORMAL);
         }
         else if (newsfeed.getType().equals("image")) {
             holder.videoView.setVisibility(View.GONE);
             holder.imageView.setVisibility(View.GONE);
-            holder.mDemoSlider.setVisibility(View.VISIBLE);
+            holder.slider.setVisibility(View.VISIBLE);
             holder.setIsRecyclable(false);
 
-            HashMap<String,String> url_maps = new HashMap<String, String>();
+//            HashMap<String,String> url_maps = new HashMap<String, String>();
             holder.multiImageViewBitmaps = newsfeed.getImagesGallery();
-            for (int i=0; i<holder.multiImageViewBitmaps.size(); i++) {
-                url_maps.put(i+"", holder.multiImageViewBitmaps.get(i));
-            }
+            holder.slider.setAdapter(new SliderAdapter() {
+                @Override
+                public int getItemCount() {
+                    return holder.multiImageViewBitmaps.size();
+                }
 
-            for(String name : url_maps.keySet()){
-                final TextSliderView textSliderView = new TextSliderView(mCtx);
-                // initialize a SliderLayout
-                textSliderView
-//                        .description(name)
-                        .image(url_maps.get(name))
-                        .setScaleType(BaseSliderView.ScaleType.CenterCrop)
-                        .setOnSliderClickListener(new BaseSliderView.OnSliderClickListener() {
-                            @Override public void onSliderClick(BaseSliderView slider) {
-                                Bundle bundle = new Bundle();
-                                Intent i = new Intent(mCtx, AlbumViewActivity.class);
-                                bundle.putStringArrayList("imagesURLs", holder.multiImageViewBitmaps);
-                                i.putExtras(bundle);
-                                mCtx.startActivity(i);
+                @Override
+                public void onBindImageSlide(int position, ImageSlideViewHolder imageSlideViewHolder) {
+                    imageSlideViewHolder.bindImageSlide(holder.multiImageViewBitmaps.get(position));
+                }
+            });
 
-//                                 Intent target = new Intent(Intent.ACTION_VIEW);
-//                                 target.setDataAndType(Uri.parse(slider.getUrl()), "image/*");
-//                                 target.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
-//                                 mCtx.startActivity(target);
-                                Log.d("Thomas", "hello hello");
-                            }
-                        });
+            holder.slider.setSelectedSlide(0);
+            holder.slider.setInterval(2000);
+            holder.slider.setOnSlideClickListener(new OnSlideClickListener() {
+                @Override
+                public void onSlideClick(int position) {
+                    Bundle bundle = new Bundle();
+                    Intent i = new Intent(mCtx, AlbumViewActivity.class);
+                    bundle.putStringArrayList("imagesURLs", holder.multiImageViewBitmaps);
+                    i.putExtras(bundle);
+                    mCtx.startActivity(i);
+                }
+            });
 
-                holder.mDemoSlider.addSlider(textSliderView);
-            }
+//            for (int i=0; i<holder.multiImageViewBitmaps.size(); i++) {
+//                url_maps.put(i+"", holder.multiImageViewBitmaps.get(i));
+//            }
+//
+//            for(String name : url_maps.keySet()){
+//                final TextSliderView textSliderView = new TextSliderView(mCtx);
+//                // initialize a SliderLayout
+//                textSliderView
+////                        .description(name)
+//                        .image(url_maps.get(name))
+//                        .setScaleType(BaseSliderView.ScaleType.CenterCrop)
+//                        .setOnSliderClickListener(new BaseSliderView.OnSliderClickListener() {
+//                            @Override public void onSliderClick(BaseSliderView slider) {
+//                                Bundle bundle = new Bundle();
+//                                Intent i = new Intent(mCtx, AlbumViewActivity.class);
+//                                bundle.putStringArrayList("imagesURLs", holder.multiImageViewBitmaps);
+//                                i.putExtras(bundle);
+//                                mCtx.startActivity(i);
+//
+////                                 Intent target = new Intent(Intent.ACTION_VIEW);
+////                                 target.setDataAndType(Uri.parse(slider.getUrl()), "image/*");
+////                                 target.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+////                                 mCtx.startActivity(target);
+//                                Log.d("Thomas", "hello hello");
+//                            }
+//                        });
+//
+//                holder.mDemoSlider.addSlider(textSliderView);
+//            }
         }
 
         holder.textViewName.setText(newsfeed.getName());
@@ -184,8 +198,6 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.newsFe
             });
         }
         else if (newsfeed.getType().contains("video")) {
-            // video sharing
-
             holder.shareButton.setTag(position);
             holder.shareButton.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -195,8 +207,6 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.newsFe
             });
         }
         else if (newsfeed.getType().contains("image")) {
-            // video sharing
-
             holder.shareButton.setTag(position);
             holder.shareButton.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -282,7 +292,8 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.newsFe
         TextView textViewName, textViewUpdateTime, textViewTitle, textViewDescription;
         ImageView avatarView, imageView, likeButton, shareButton;
         JzvdStd videoView;
-        SliderLayout mDemoSlider;
+//        SliderLayout mDemoSlider;
+        Slider slider;
         ArrayList<String> multiImageViewBitmaps;
 
 
@@ -294,7 +305,8 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.newsFe
             avatarView = itemView.findViewById(R.id.avatarView);
             imageView = itemView.findViewById(R.id.imageView);
             videoView = itemView.findViewById(R.id.videoView);
-            mDemoSlider = itemView.findViewById(R.id.slider);
+//            mDemoSlider = itemView.findViewById(R.id.slider);
+            slider = itemView.findViewById(R.id.slider);
             textViewTitle = itemView.findViewById(R.id.textViewTitle);
             textViewDescription = itemView.findViewById(R.id.textViewDescription);
             newsFeedCard =  itemView.findViewById(R.id.imageViewCardView);

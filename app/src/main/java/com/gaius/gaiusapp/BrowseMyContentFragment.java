@@ -21,7 +21,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.gaius.gaiusapp.adapters.ContentAdapter;
+import com.gaius.gaiusapp.adapters.BrowseMyContentAdapter;
 import com.gaius.gaiusapp.classes.Content;
 
 import org.json.JSONArray;
@@ -32,7 +32,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class MyContentFragment extends Fragment {
+public class BrowseMyContentFragment extends Fragment {
     private static String URL = "";
     List<Content> myContentList;
     List<Content> managedContentList;
@@ -76,10 +76,10 @@ public class MyContentFragment extends Fragment {
                 @Override
                 public void onCheckedChanged(CompoundButton compoundButton, boolean bChecked) {
                     if (bChecked) {
-                        ContentAdapter adapter = new ContentAdapter(getContext(), myContentList);
+                        BrowseMyContentAdapter adapter = new BrowseMyContentAdapter(getContext(), myContentList);
                         recyclerView.setAdapter(adapter);
                     } else {
-                        ContentAdapter adapter = new ContentAdapter(getContext(), managedContentList);
+                        BrowseMyContentAdapter adapter = new BrowseMyContentAdapter(getContext(), managedContentList);
                         recyclerView.setAdapter(adapter);
                     }
                 }
@@ -155,7 +155,7 @@ public class MyContentFragment extends Fragment {
                             }
 
                             //creating adapter object and setting it to recyclerview
-                            ContentAdapter adapter = new ContentAdapter(getContext(), myContentList);
+                            BrowseMyContentAdapter adapter = new BrowseMyContentAdapter(getContext(), myContentList);
                             recyclerView.setAdapter(adapter);
                         } catch (JSONException e) {
                             e.printStackTrace();

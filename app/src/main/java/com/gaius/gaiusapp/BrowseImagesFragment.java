@@ -17,7 +17,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.gaius.gaiusapp.adapters.ImageAdapter;
+import com.gaius.gaiusapp.adapters.BrowseImagesAdapter;
 import com.gaius.gaiusapp.classes.Image;
 
 import org.json.JSONArray;
@@ -29,7 +29,7 @@ import java.util.List;
 
 import static com.gaius.gaiusapp.utils.ResourceHelper.convertImageURLBasedonFidelity;
 
-public class PhotosFragment extends Fragment {
+public class BrowseImagesFragment extends Fragment {
     private static String URL;
     List<Image> imageList;
     RecyclerView recyclerView;
@@ -103,7 +103,7 @@ public class PhotosFragment extends Fragment {
                             }
 
                             //creating adapter object and setting it to recyclerview
-                            ImageAdapter adapter = new ImageAdapter(getContext(), imageList);
+                            BrowseImagesAdapter adapter = new BrowseImagesAdapter(getContext(), imageList);
                             recyclerView.setAdapter(adapter);
                         } catch (JSONException e) {
                             e.printStackTrace();

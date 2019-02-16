@@ -11,11 +11,9 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.RequestOptions;
-import com.bumptech.glide.signature.ObjectKey;
 import com.gaius.gaiusapp.R;
 import com.gaius.gaiusapp.classes.Video;
+import com.gaius.gaiusapp.networking.GlideApp;
 
 import java.util.List;
 
@@ -24,12 +22,12 @@ import cn.jzvd.JzvdStd;
 
 import static com.gaius.gaiusapp.utils.ResourceHelper.convertImageURLBasedonFidelity;
 
-public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHolder> {
+public class BrowseVideoAdapter extends RecyclerView.Adapter<BrowseVideoAdapter.VideoViewHolder> {
     private Context mCtx;
     private List<Video> videosList;
     private SharedPreferences prefs;
 
-    public VideoAdapter(Context mCtx, List<Video> videosList) {
+    public BrowseVideoAdapter(Context mCtx, List<Video> videosList) {
         this.mCtx = mCtx;
         this.videosList = videosList;
     }
@@ -48,29 +46,21 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHol
     public void onBindViewHolder(VideoViewHolder holder, int position) {
         Video video = videosList.get(position);
 
-        RequestOptions requestOptions = new RequestOptions();
-        requestOptions.error(R.drawable.ic_avatar);
-
         if (video.getAvatar().contains("None")) {
-            //loading the image
-            Glide.with(mCtx)
-                    .load(R.drawable.ic_avatar)
-                    .into(holder.avatarView);
+            holder.avatarView.setImageDrawable(mCtx.getResources().getDrawable(R.drawable.ic_avatar));
         }
         else{
-            //loading the image
-            Glide.with(mCtx)
-                    .setDefaultRequestOptions(requestOptions)
+            GlideApp.with(mCtx)
                     .load(prefs.getString("base_url", null) + video.getAvatar())
-                    .apply(new RequestOptions().signature(new ObjectKey(System.currentTimeMillis())))
+                    .avatar()
                     .into(holder.avatarView);
         }
 
         String fidelity = prefs.getString("fidelity_level", "high");
 
-        Glide.with(mCtx)
+        GlideApp.with(mCtx)
                 .load(convertImageURLBasedonFidelity(prefs.getString("base_url", null) + video.getThumbnail(), fidelity))
-                .apply(new RequestOptions().signature(new ObjectKey(System.currentTimeMillis())))
+                .content()
                 .into(holder.videoView.thumbImageView);
         holder.videoView.setUp(prefs.getString("base_url", null) + video.getUrl(), "", Jzvd.SCREEN_WINDOW_NORMAL);
 

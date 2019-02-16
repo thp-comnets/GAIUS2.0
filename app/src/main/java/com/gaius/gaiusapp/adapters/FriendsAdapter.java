@@ -21,11 +21,10 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.RequestOptions;
-import com.gaius.gaiusapp.classes.Friend;
 import com.gaius.gaiusapp.R;
-import com.gaius.gaiusapp.userFragment;
+import com.gaius.gaiusapp.UserPageFragment;
+import com.gaius.gaiusapp.classes.Friend;
+import com.gaius.gaiusapp.networking.GlideApp;
 
 import java.util.List;
 
@@ -54,20 +53,13 @@ public class FriendsAdapter extends RecyclerView.Adapter<FriendsAdapter.FriendVi
     public void onBindViewHolder(FriendViewHolder holder, int position) {
         final Friend friend = friendsList.get(position);
 
-        RequestOptions requestOptions = new RequestOptions();
-        requestOptions.error(R.drawable.ic_avatar);
-
         if (friend.getImage().contains("None")) {
-            //loading the image
-            Glide.with(mCtx)
-                    .load(R.drawable.ic_avatar)
-                    .into(holder.imageView);
+            holder.imageView.setImageDrawable(mCtx.getResources().getDrawable(R.drawable.ic_avatar));
         }
         else {
-            //loading the image
-            Glide.with(mCtx)
-                    .setDefaultRequestOptions(requestOptions)
+            GlideApp.with(mCtx)
                     .load(prefs.getString("base_url", null) + friend.getImage())
+                    .avatar()
                     .into(holder.imageView);
         }
 
@@ -83,7 +75,7 @@ public class FriendsAdapter extends RecyclerView.Adapter<FriendsAdapter.FriendVi
                     Bundle bundle = new Bundle();
 
                     Friend f = friendsList.get((Integer) v.getTag());
-                    Fragment fragment = new userFragment();
+                    Fragment fragment = new UserPageFragment();
                     bundle.putString("userID", f.getUserID());
                     bundle.putString("name", f.getName());
                     bundle.putString("avatar", prefs.getString("base_url", null) + f.getImage());
@@ -100,6 +92,7 @@ public class FriendsAdapter extends RecyclerView.Adapter<FriendsAdapter.FriendVi
             case "Remove":
                 break;
             case "connect":
+                // FIXME
                 holder.mButton.setBackgroundTintList(mCtx.getResources().getColorStateList(R.color.amber_600));
                 holder.mButton.setText("Connect");
                 break;

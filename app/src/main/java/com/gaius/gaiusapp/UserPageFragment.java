@@ -21,10 +21,9 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.RequestOptions;
 import com.gaius.gaiusapp.adapters.NewsFeedAdapter;
 import com.gaius.gaiusapp.classes.NewsFeed;
+import com.gaius.gaiusapp.networking.GlideApp;
 import com.gaius.gaiusapp.utils.LogOut;
 
 import org.json.JSONArray;
@@ -36,7 +35,7 @@ import java.util.List;
 
 import static com.gaius.gaiusapp.utils.ResourceHelper.convertImageURLBasedonFidelity;
 
-public class userFragment extends Fragment {
+public class UserPageFragment extends Fragment {
     private static String URL = "";
     List<NewsFeed> pagesList;
     RecyclerView recyclerView;
@@ -59,7 +58,7 @@ public class userFragment extends Fragment {
         URL = base_url + "listUserPages.py";
         noPages = view.findViewById(R.id.noPages);
 
-        recyclerView =  getView().findViewById(R.id.recylcerView);
+        recyclerView = getView().findViewById(R.id.recylcerView);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
@@ -79,7 +78,7 @@ public class userFragment extends Fragment {
             bundle.clear();
         }
         else{
-            Log.d("yasir","something went wrong no userID in userFragment bundle");
+            Log.d("yasir","something went wrong no userID in UserPageFragment bundle");
             getActivity().finish();
         }
 
@@ -88,20 +87,13 @@ public class userFragment extends Fragment {
 
         ImageView imageViewAvatar = getView().findViewById(R.id.avatarView);
 
-        RequestOptions requestOptions = new RequestOptions();
-        requestOptions.error(R.drawable.ic_avatar);
-
         if (avatar.contains("None")) {
-            //loading the image
-            Glide.with(getContext())
-                    .load(R.drawable.ic_avatar)
-                    .into(imageViewAvatar);
+           imageViewAvatar.setImageDrawable(getContext().getResources().getDrawable(R.drawable.ic_avatar));
         }
         else {
-            //loading the image
-            Glide.with(getContext())
-                    .setDefaultRequestOptions(requestOptions)
+            GlideApp.with(getContext())
                     .load(avatar)
+                    .avatar()
                     .into(imageViewAvatar);
         }
 

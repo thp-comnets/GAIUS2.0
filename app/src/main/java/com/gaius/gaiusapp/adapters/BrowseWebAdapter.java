@@ -15,21 +15,20 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.RequestOptions;
+import com.gaius.gaiusapp.BrowseWebFragment;
 import com.gaius.gaiusapp.R;
 import com.gaius.gaiusapp.RenderMAML;
 import com.gaius.gaiusapp.classes.Web;
-import com.gaius.gaiusapp.WebFragment;
+import com.gaius.gaiusapp.networking.GlideApp;
 
 import java.util.List;
 
-public class WebAdapter extends RecyclerView.Adapter<WebAdapter.ChannelViewHolder> {
+public class BrowseWebAdapter extends RecyclerView.Adapter<BrowseWebAdapter.ChannelViewHolder> {
     private Context mCtx;
     private List<Web> channelsList;
     private SharedPreferences prefs;
 
-    public WebAdapter(Context mCtx, List<Web> channelsList) {
+    public BrowseWebAdapter(Context mCtx, List<Web> channelsList) {
         this.mCtx = mCtx;
         this.channelsList = channelsList;
     }
@@ -48,20 +47,13 @@ public class WebAdapter extends RecyclerView.Adapter<WebAdapter.ChannelViewHolde
     public void onBindViewHolder(ChannelViewHolder holder, int position) {
         Web web = channelsList.get(position);
 
-        RequestOptions requestOptions = new RequestOptions();
-        requestOptions.error(R.drawable.ic_avatar);
-
         if (web.getImage().contains("None")) {
-            //loading the image
-            Glide.with(mCtx)
-                    .load(R.drawable.ic_avatar)
-                    .into(holder.imageView);
+            holder.imageView.setImageDrawable(mCtx.getResources().getDrawable(R.drawable.ic_gaius_round));
         }
         else {
-            //loading the image
-            Glide.with(mCtx)
-                    .setDefaultRequestOptions(requestOptions)
+            GlideApp.with(mCtx)
                     .load(prefs.getString("base_url", null) + web.getImage())
+                    .avatar()
                     .into(holder.imageView);
         }
 
@@ -76,7 +68,7 @@ public class WebAdapter extends RecyclerView.Adapter<WebAdapter.ChannelViewHolde
                 Bundle bundle = new Bundle();
 
                 if (!c.getUserID().contains("null")) {
-                    Fragment fragment = new WebFragment();
+                    Fragment fragment = new BrowseWebFragment();
                     bundle.putString("userID", c.getUserID());
                     fragment.setArguments(bundle);
 

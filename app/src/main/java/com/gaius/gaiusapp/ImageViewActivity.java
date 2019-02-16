@@ -14,10 +14,9 @@ import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.transition.Transition;
-
+import com.gaius.gaiusapp.networking.GlideApp;
 import com.gaius.gaiusapp.utils.ResourceHelper;
 
 public class ImageViewActivity extends AppCompatActivity {
@@ -36,9 +35,10 @@ public class ImageViewActivity extends AppCompatActivity {
         Bundle bundle = getIntent().getExtras();
         final String url = bundle.getString("URL");
         if (url != null) {
-            Glide.with(this)
+            GlideApp.with(this)
                     .asBitmap()
                     .load(url)
+                    .content()
                     .into(new SimpleTarget<Bitmap>() {
                         @Override
                         public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {

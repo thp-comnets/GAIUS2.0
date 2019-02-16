@@ -9,8 +9,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.gaius.gaiusapp.classes.ContentCategory;
 import com.gaius.gaiusapp.R;
+import com.gaius.gaiusapp.classes.ContentCategory;
 
 import java.util.List;
 
@@ -50,14 +50,14 @@ public class ContentsCategoryAdapter extends RecyclerView.Adapter<ContentsCatego
 //
 //
 //                if (c.getTitle().contains("Browse Web")) {
-//                    Fragment fragment = new WebFragment();
+//                    Fragment fragment = new BrowseWebFragment();
 //
 //                    ((AppCompatActivity) mCtx).getSupportFragmentManager().beginTransaction()
 //                            .replace(R.id.fragment_container, fragment)
 //                            .commit();
 //                }
 //                else if (c.getTitle().contains("Browse Videos")) {
-//                    Fragment fragment = new VideosFragment();
+//                    Fragment fragment = new BrowseVideosFragment();
 //
 //                    ((AppCompatActivity) mCtx).getSupportFragmentManager().beginTransaction()
 //                            .replace(R.id.fragment_container, fragment)

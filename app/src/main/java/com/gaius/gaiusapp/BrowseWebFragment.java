@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -17,8 +18,8 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.gaius.gaiusapp.adapters.VideoAdapter;
-import com.gaius.gaiusapp.classes.Video;
+import com.gaius.gaiusapp.adapters.BrowseWebAdapter;
+import com.gaius.gaiusapp.classes.Web;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -27,19 +28,17 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-public class VideosFragment extends Fragment {
-    private static String URL;
-    List<Video> videoList;
+public class BrowseWebFragment extends Fragment {
+    private static String URL = "";
+    List<Web> webList;
     RecyclerView recyclerView;
     SharedPreferences prefs;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
-        URL = prefs.getString("base_url", null) + "listVideos2.py";
 
-        return inflater.inflate(R.layout.fragment_videos, null);
+        return inflater.inflate(R.layout.fragment_web, null);
     }
 
     @Override
@@ -47,13 +46,32 @@ public class VideosFragment extends Fragment {
         recyclerView =  getView().findViewById(R.id.recylcerView);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        recyclerView.setTag("MainVideo");
+        recyclerView.addItemDecoration(new DividerItemDecoration(getContext(),
+                DividerItemDecoration.VERTICAL));
 
-        videoList = new ArrayList<>();
+        prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
 
-        loadVideos();
+        webList = new ArrayList<>();
+        URL = prefs.getString("base_url", "null")+"listChannels.py";
+
+        // reading if there is a bundle, used to request and display a channel sub-pages
+        Bundle bundle = this.getArguments();
+        if (bundle != null) {
+            String userID = bundle.getString("userID", null);
+            if (userID != null) {
+                URL += "?userID="+userID;
+                recyclerView.setTag("SubWeb");
+            }
+            bundle.clear();
+        }
+        else{
+            recyclerView.setTag("MainWeb");
+        }
+
+        loadChannels();
     }
-    private void loadVideos() {
+
+    private void loadChannels() {
         /*
          * Creating a String Request
          * The request type is GET defined by first parameter
@@ -73,24 +91,20 @@ public class VideosFragment extends Fragment {
                             for (int i = 0; i < array.length(); i++) {
 
                                 //getting product object from json array
-                                JSONObject video = array.getJSONObject(i);
+                                JSONObject channel = array.getJSONObject(i);
 
-                                    //adding the product to product list
-                                videoList.add(new Video(
-                                        video.getInt("id"),
-                                        video.getString("title"),
-                                        video.getString("description"),
-                                        video.getString("url"),
-                                        video.getString("avatar"),
-                                        video.getString("thumbnail"),
-                                        video.getString("userID"),
-                                        video.getString("uploadedSince"),
-                                        video.getInt("views")
+                                //adding the product to product list
+                                webList.add(new Web(
+                                        channel.getInt("id"),
+                                        channel.getString("title"),
+                                        channel.getString("url"),
+                                        channel.getString("userID"),
+                                        channel.getString("avatar")
                                 ));
                             }
 
                             //creating adapter object and setting it to recyclerview
-                            VideoAdapter adapter = new VideoAdapter(getContext(), videoList);
+                            BrowseWebAdapter adapter = new BrowseWebAdapter(getContext(), webList);
                             recyclerView.setAdapter(adapter);
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -111,4 +125,3 @@ public class VideosFragment extends Fragment {
         Volley.newRequestQueue(getContext()).add(stringRequest);
     }
 }
-

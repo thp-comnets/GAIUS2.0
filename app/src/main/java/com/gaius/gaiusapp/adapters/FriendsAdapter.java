@@ -21,12 +21,17 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.gaius.gaiusapp.FriendsFragment;
+import com.gaius.gaiusapp.MainActivity;
+import com.gaius.gaiusapp.MyFriendsRequestsFragment;
 import com.gaius.gaiusapp.R;
 import com.gaius.gaiusapp.UserPageFragment;
 import com.gaius.gaiusapp.classes.Friend;
 import com.gaius.gaiusapp.networking.GlideApp;
 
 import java.util.List;
+
+import me.leolin.shortcutbadger.ShortcutBadger;
 
 public class FriendsAdapter extends RecyclerView.Adapter<FriendsAdapter.FriendViewHolder> {
 
@@ -122,6 +127,19 @@ public class FriendsAdapter extends RecyclerView.Adapter<FriendsAdapter.FriendVi
                                     Log.d("yasir", "removing friend");
                                     friendsList.remove(friend);
                                     notifyDataSetChanged();
+
+                                    if (friend.getButtonType().equals("accept")) {
+                                        if (FriendsFragment.qBadge.getBadgeNumber() > 1) {
+                                            FriendsFragment.qBadge.setBadgeNumber(FriendsFragment.qBadge.getBadgeNumber()-1);
+                                            MainActivity.qBadge.setBadgeNumber(MainActivity.qBadge.getBadgeNumber()-1);
+                                            ShortcutBadger.applyCount(mCtx, MainActivity.qBadge.getBadgeNumber());
+                                        }
+                                        else {
+                                            FriendsFragment.qBadge.hide(true);
+                                            MainActivity.qBadge.hide(true);
+                                            ShortcutBadger.removeCount(mCtx);
+                                        }
+                                    }
                                 }
                             }
                         },

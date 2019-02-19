@@ -15,6 +15,7 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.support.design.widget.TextInputLayout;
@@ -81,17 +82,13 @@ public class SimpleWebCreation extends AppCompatActivity implements OnStartDragL
     AlertDialog alertD;
     ArrayList<String> imagePaths, videoPaths;
     String mamlFilePath;
+    private boolean doubleBackToExitPressedOnce = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.simple_content_creation);
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
-
-//        UploadService.NAMESPACE = BuildConfig.APPLICATION_ID;
-//        UploadService.NAMESPACE = "com.gaius.contentupload";
-//
-//        BASE_URL = prefs.getString("base_url", null);
 
         recyclerView = findViewById(R.id.simple_recylcerView);
         recyclerView.setHasFixedSize(false);
@@ -133,8 +130,12 @@ public class SimpleWebCreation extends AppCompatActivity implements OnStartDragL
         imageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent galleryIntent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                startActivityForResult(galleryIntent, PICK_IMAGE_REQUEST);
+//                Intent galleryIntent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+//                startActivityForResult(galleryIntent, PICK_IMAGE_REQUEST);
+                Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+                intent.setType("image/*");
+                intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+                startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_REQUEST);
             }
         });
 
@@ -168,23 +169,65 @@ public class SimpleWebCreation extends AppCompatActivity implements OnStartDragL
 
         if (resultCode == RESULT_OK) {
             if (requestCode == PICK_IMAGE_REQUEST) {
-                Uri imageUri = data.getData();
+//                Uri imageUri = data.getData();
+//
+//                Bitmap bitmap = null;
+//                try {
+//                    bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), imageUri);
+//                    bitmap = getResizedBitmap(bitmap, 800);
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
+//
+//                String imagePath = ResourceHelper.saveBitmapCompressed(getApplicationContext(), imageUri, bitmap);
+//
+//                itemList.add(itemList.size(), new Item(itemsCnt, "image", null, imagePath, null));
+//                itemsCnt++;
+//                adapter.notifyItemInserted(itemList.size() - 1);
+//                recyclerView.scrollToPosition(itemList.size() - 1);
+//                recyclerView.invalidate();
 
-                Bitmap bitmap = null;
-                try {
-                    bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), imageUri);
-                    bitmap = getResizedBitmap(bitmap, 800);
-                } catch (IOException e) {
-                    e.printStackTrace();
+                if(data.getClipData() != null) {
+                    int count = data.getClipData().getItemCount(); //evaluate the count before the for loop --- otherwise, the count is evaluated every loop.
+
+                    for(int i = 0; i < count; i++) {
+                        Uri imageUri = data.getClipData().getItemAt(i).getUri();
+
+                        Bitmap bitmap = null;
+                        try {
+                            bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), imageUri);
+                            bitmap = getResizedBitmap(bitmap,800);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+
+                        String imagePath = ResourceHelper.saveBitmapCompressed(getApplicationContext(), imageUri, bitmap);
+
+                        itemList.add(itemList.size(), new Item(itemsCnt, "image", null, imagePath, null));
+                        itemsCnt++;
+                        adapter.notifyItemInserted(itemList.size() - 1);
+                        recyclerView.scrollToPosition(itemList.size() - 1);
+                        recyclerView.invalidate();
+                    }
                 }
+                else if(data.getData() != null) {
+                    Uri imageUri = data.getData();
+                    Bitmap bitmap = null;
+                    try {
+                        bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), imageUri);
+                        bitmap = getResizedBitmap(bitmap,800);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
 
-                String imagePath = ResourceHelper.saveBitmapCompressed(getApplicationContext(), imageUri, bitmap);
+                    String imagePath = ResourceHelper.saveBitmapCompressed(getApplicationContext(), imageUri, bitmap);
 
-                itemList.add(itemList.size(), new Item(itemsCnt, "image", null, imagePath, null));
-                itemsCnt++;
-                adapter.notifyItemInserted(itemList.size() - 1);
-                recyclerView.scrollToPosition(itemList.size() - 1);
-                recyclerView.invalidate();
+                    itemList.add(itemList.size(), new Item(itemsCnt, "image", null, imagePath, null));
+                    itemsCnt++;
+                    adapter.notifyItemInserted(itemList.size() - 1);
+                    recyclerView.scrollToPosition(itemList.size() - 1);
+                    recyclerView.invalidate();
+                }
 
             } else if (requestCode == PICK_VIDEO_REQUEST) {
                 Uri fileUri = data.getData();
@@ -506,6 +549,25 @@ public class SimpleWebCreation extends AppCompatActivity implements OnStartDragL
                 });
         alertDialog.show();
         ResourceHelper.cleanupFiles();
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (doubleBackToExitPressedOnce) {
+            super.onBackPressed();
+            return;
+        }
+
+        this.doubleBackToExitPressedOnce = true;
+        Toast.makeText(this, R.string.toast_back, Toast.LENGTH_SHORT).show();
+
+        new Handler().postDelayed(new Runnable() {
+
+            @Override
+            public void run() {
+                doubleBackToExitPressedOnce=false;
+            }
+        }, 2000);
     }
 }
 

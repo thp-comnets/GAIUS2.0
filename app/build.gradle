@@ -8,7 +8,7 @@ android {
         applicationId "com.gaius.gaiusapp"
         minSdkVersion 17
         targetSdkVersion 28
-        versionCode 83
+        versionCode 84
         versionName "2.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary=true
@@ -57,8 +57,10 @@ dependencies {
     implementation 'com.alexvasilkov:gesture-views:2.5.2'
 
     implementation 'com.ss.bannerslider:bannerslider:2.0.0'
+    implementation 'q.rorbin:badgeview:1.1.3'
 
-//    implementation 'q.rorbin:badgeview:1.1.3'
+    implementation 'me.leolin:ShortcutBadger:1.1.22'
+
 //    implementation 'com.github.chrisbanes:PhotoView:2.1.3'
 //    implementation 'com.nostra13.universalimageloader:universal-image-loader:1.9.5'
 //    implementation 'ly.kite:instagram-photo-picker:1.+'

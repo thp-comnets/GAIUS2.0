@@ -147,7 +147,7 @@ public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ItemViewHold
     @Override
     public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
         for (Item it: contentsList) {
-            if (it.getView().equals(v)) {
+            if (it.getView() != null && it.getView().equals(v)) {
                 it.setH(v.getHeight());
                 it.setW(v.getWidth());
                 it.setX(left);

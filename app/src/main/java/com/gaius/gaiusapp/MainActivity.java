@@ -9,7 +9,9 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
+import android.support.design.internal.BottomNavigationMenuView;
 import android.support.design.widget.BottomNavigationView;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
@@ -19,16 +21,29 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.androidnetworking.AndroidNetworking;
 import com.gaius.gaiusapp.networking.GlideApp;
 import com.gaius.gaiusapp.networking.GlideImageLoadingService;
 import com.gaius.gaiusapp.utils.LogOut;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import cn.jzvd.Jzvd;
+import me.leolin.shortcutbadger.ShortcutBadger;
+import q.rorbin.badgeview.Badge;
+import q.rorbin.badgeview.QBadgeView;
 import ss.com.bannerslider.Slider;
 
 import static com.gaius.gaiusapp.utils.Constants.MULTIPLE_PERMISSIONS;
@@ -45,6 +60,8 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 //            Manifest.permission.ACCESS_FINE_LOCATION,
             Manifest.permission.READ_CONTACTS,
             Manifest.permission.VIBRATE};
+
+    public static Badge qBadge;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,8 +96,77 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
         BottomNavigationView navigation = findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(this);
-//        navigation.setItemIconTintList(null);
+
+        BottomNavigationMenuView bottomNavigationMenuView =
+                (BottomNavigationMenuView) navigation.getChildAt(0);
+        View v = bottomNavigationMenuView.getChildAt(1); // number of menu from left
+        qBadge = new QBadgeView(this).bindTarget(v).setBadgeNumber(2); //.setBadgeGravity(Gravity.CENTER);
+        qBadge.hide(true);
+        updateNotificationBadge();
     }
+
+    void updateNotificationBadge() {
+        String token, base_url, URL;
+        SharedPreferences prefs;
+
+        prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        token = prefs.getString("token", "null");
+        base_url = prefs.getString("base_url", null);
+        URL = base_url+"listPendingAccepts.py?token=" + token;
+
+        final StringRequest stringRequest = new StringRequest(Request.Method.GET, URL,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        try {
+                            int pendingRequests = 0;
+
+                            //converting the string to json array object
+                            JSONArray array = new JSONArray(response);
+
+                            //traversing through all the object
+                            for (int i = 0; i < array.length(); i++) {
+
+                                //getting product object from json array
+                                JSONObject friend = array.getJSONObject(i);
+                                pendingRequests += 1;
+                            }
+                            if (pendingRequests > 0) {
+                                qBadge.setBadgeNumber(pendingRequests);
+                                ShortcutBadger.applyCount(getApplicationContext(), pendingRequests);
+                            }
+                            else {
+                                if (qBadge != null) {
+                                    qBadge.hide(true);
+                                    ShortcutBadger.removeCount(getApplicationContext());
+                                }
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                            Log.d("Yasir","Json error "+e);
+
+                            if (response.contains("invalid token")) {
+                                LogOut.logout(getApplicationContext());
+                                Toast.makeText(getApplicationContext(), "You have logged in from another device. Please login again.",
+                                        Toast.LENGTH_LONG).show();
+                                Intent i = new Intent(getApplicationContext(), LoginActivity.class);
+                                startActivity(i);
+                                finish();
+                            }
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.d("Yasir","Error "+error);
+                    }
+                });
+
+        //adding our stringrequest to queue
+        Volley.newRequestQueue(getApplicationContext()).add(stringRequest);
+    }
+
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -110,6 +196,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 //                break;
         }
 
+        updateNotificationBadge();
         return loadFragment(fragment);
     }
 

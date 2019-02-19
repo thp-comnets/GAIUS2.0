@@ -43,6 +43,7 @@ import org.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import cn.jzvd.JzvdStd;
 
@@ -54,8 +55,9 @@ public class RenderMAML extends AppCompatActivity {
     String token;
     private RequestQueue mRequestQueue;
     private String response_var = "";
-    private boolean EDIT_MODE = false;
     private GestureView gestureView;
+    private int pageSize = 0;
+    private AtomicInteger requestsCounter = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,9 +66,6 @@ public class RenderMAML extends AppCompatActivity {
         String mPageUrl=null;
         String mNoAds=null;
         String campaign=null;
-        String hostIP;
-        String hostPort;
-        String hostPath;
 
         setContentView(R.layout.maml_page);
 
@@ -88,6 +87,9 @@ public class RenderMAML extends AppCompatActivity {
                 .setGravity(Gravity.CENTER);
 
         mRequestQueue = Volley.newRequestQueue(getApplicationContext());
+
+        // yasir: adding a counter to know when all request are finished, to record page load time
+        requestsCounter = new AtomicInteger(0);
 
         prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
         fidelity = prefs.getString("fidelity_level", "high");
@@ -127,6 +129,9 @@ public class RenderMAML extends AppCompatActivity {
 
     private void requestPage(final String mUrl, final String adUrl, final String mPageUrl, final String mNoAds, final FrameLayout root, final String campaign) {
         String tmpUrl = createURL(mUrl, mPageUrl, mNoAds, campaign);
+
+        final Long startTime = System.currentTimeMillis();
+        pageSize=0;
 
         downloadMaml(tmpUrl, adUrl, new RenderMAML.VolleyCallback() {
             @Override
@@ -264,6 +269,7 @@ public class RenderMAML extends AppCompatActivity {
                                             error.printStackTrace();
                                         }
                                     }, null);
+                                    requestsCounter.incrementAndGet(); // yasir
                                     request.setShouldCache(false);
                                     mRequestQueue.add(request);
                                 }
@@ -275,6 +281,50 @@ public class RenderMAML extends AppCompatActivity {
                             Log.d("MAML", "MamlPageActivity: Can't identify this type " + type);
                         }
                     }
+
+                    mRequestQueue.addRequestFinishedListener(new RequestQueue.RequestFinishedListener<Object>() {
+                        @Override
+                        public void onRequestFinished(Request<Object> request) {
+                            requestsCounter.decrementAndGet();
+
+                            if (requestsCounter.get() == 0) {
+                                Long endTime = System.currentTimeMillis();
+                                String mUrl="http://91.230.41.34:8080/test/stats.py?PLT="+(endTime-startTime)+"&page="+mPageUrl;
+                                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+
+                                String f = prefs.getString("fidelity_level", "high");
+                                mUrl+="&fidelity="+f;
+                                mUrl+="&size="+pageSize;
+
+                                InputStreamVolleyRequest statReq = new InputStreamVolleyRequest(Request.Method.GET, mUrl,
+                                        new Response.Listener<byte[]>() {
+                                            @Override
+                                            public void onResponse(byte[] response) {
+                                                try {
+
+                                                    if (response!=null) {
+                                                        response_var = new String(response);
+                                                        Log.d("maml", "finished loading page " + response_var);
+                                                    }
+                                                } catch (Exception e) {
+                                                    e.printStackTrace();
+                                                }
+                                            }
+                                        },new Response.ErrorListener() {
+                                    @Override
+                                    public void onErrorResponse(VolleyError error) {
+                                        Log.d("MAML", "MamlPageActivity: onErrorResponse");
+                                        Toast.makeText(getApplicationContext(), "Error Response: " + error, Toast.LENGTH_LONG).show();
+                                        error.printStackTrace();
+                                    }
+                                }, null);
+                                request.setShouldCache(false);
+                                mRequestQueue.add(statReq);
+                            }
+                        }
+                    });
+
+
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -322,6 +372,7 @@ public class RenderMAML extends AppCompatActivity {
                         try {
 
                             if (response!=null) {
+                                pageSize += response.length;
                                 response_var = new String(response);
                                 callback.onSuccess(response_var);
                             }
@@ -339,6 +390,7 @@ public class RenderMAML extends AppCompatActivity {
             }
         }, null);
 
+        requestsCounter.incrementAndGet(); // yasir
         request.setShouldCache(false);
         mRequestQueue.add(request);
     }
@@ -463,6 +515,7 @@ public class RenderMAML extends AppCompatActivity {
 
                         try {
                             if (response != null) {
+                                pageSize += response.length;
                                 Bitmap bmp = BitmapFactory.decodeByteArray(response, 0, response.length);
 
                                 drawImage(jsonstring, bmp, root, mUrl);
@@ -481,6 +534,7 @@ public class RenderMAML extends AppCompatActivity {
             }
         }, null);
 
+        requestsCounter.incrementAndGet(); // yasir
         request.setShouldCache(true);
         mRequestQueue.add(request);
     }
@@ -501,6 +555,7 @@ public class RenderMAML extends AppCompatActivity {
 
                             try {
                                 if (response != null) {
+                                    pageSize += response.length;
                                     Bitmap bmp = BitmapFactory.decodeByteArray(response, 0, response.length);
 
                                     JzvdStd jzVideoPlayerStandard = new JzvdStd (RenderMAML.this);
@@ -526,6 +581,7 @@ public class RenderMAML extends AppCompatActivity {
                 }
             }, null);
 
+            requestsCounter.incrementAndGet(); // yasir
             request.setShouldCache(true);
             mRequestQueue.add(request);
 

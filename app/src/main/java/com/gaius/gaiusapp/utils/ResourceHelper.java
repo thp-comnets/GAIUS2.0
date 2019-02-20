@@ -2,6 +2,8 @@ package com.gaius.gaiusapp.utils;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -9,6 +11,7 @@ import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Point;
+import android.preference.PreferenceManager;
 import android.support.media.ExifInterface;
 import android.net.Uri;
 import android.os.Environment;
@@ -16,6 +19,20 @@ import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Display;
+import android.widget.Toast;
+
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
+import com.gaius.gaiusapp.FriendsFragment;
+import com.gaius.gaiusapp.LoginActivity;
+import com.gaius.gaiusapp.MainActivity;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -24,6 +41,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Random;
 import java.util.UUID;
+
+import me.leolin.shortcutbadger.ShortcutBadger;
 
 public class ResourceHelper {
 

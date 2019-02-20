@@ -33,6 +33,8 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
+import me.leolin.shortcutbadger.ShortcutBadger;
+
 public class MyFriendsFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener, FragmentVisibleInterface {
     private static String URL = "";
     List<Friend> friendList;
@@ -108,6 +110,40 @@ public class MyFriendsFragment extends Fragment implements SwipeRefreshLayout.On
 
                                 //getting product object from json array
                                 JSONObject friend = array.getJSONObject(i);
+
+                                if (friend.has("pending-requests")) {
+                                    int number = friend.getInt("pending-requests");
+
+                                    // save the pending requests to the sharedprefs
+                                    SharedPreferences.Editor editor = prefs.edit();
+                                    editor.putInt("pending-requests", number);
+                                    editor.apply();
+
+                                    if (number > 0) {
+                                        ShortcutBadger.applyCount(getContext(), number);
+
+                                        if (MainActivity.qBadge != null ) {
+                                            MainActivity.qBadge.setBadgeNumber(number);
+                                        }
+
+                                        if (FriendsFragment.qBadge != null ) {
+                                            FriendsFragment.qBadge.setBadgeNumber(number);
+                                        }
+
+                                    }
+                                    else {
+                                        ShortcutBadger.removeCount(getContext());
+
+                                        if (MainActivity.qBadge != null) {
+                                            MainActivity.qBadge.hide(true);
+                                        }
+
+                                        if (FriendsFragment.qBadge != null ) {
+                                            FriendsFragment.qBadge.hide(true);
+                                        }
+                                    }
+                                }
+
 
                                 //adding the product to product list
                                 friendList.add(new Friend(

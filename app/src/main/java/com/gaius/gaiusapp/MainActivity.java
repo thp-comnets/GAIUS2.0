@@ -102,71 +102,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         View v = bottomNavigationMenuView.getChildAt(1); // number of menu from left
         qBadge = new QBadgeView(this).bindTarget(v).setBadgeNumber(2); //.setBadgeGravity(Gravity.CENTER);
         qBadge.hide(true);
-        updateNotificationBadge();
     }
-
-    void updateNotificationBadge() {
-        String token, base_url, URL;
-        SharedPreferences prefs;
-
-        prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        token = prefs.getString("token", "null");
-        base_url = prefs.getString("base_url", null);
-        URL = base_url+"listPendingAccepts.py?token=" + token;
-
-        final StringRequest stringRequest = new StringRequest(Request.Method.GET, URL,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        try {
-                            int pendingRequests = 0;
-
-                            //converting the string to json array object
-                            JSONArray array = new JSONArray(response);
-
-                            //traversing through all the object
-                            for (int i = 0; i < array.length(); i++) {
-
-                                //getting product object from json array
-                                JSONObject friend = array.getJSONObject(i);
-                                pendingRequests += 1;
-                            }
-                            if (pendingRequests > 0) {
-                                qBadge.setBadgeNumber(pendingRequests);
-                                ShortcutBadger.applyCount(getApplicationContext(), pendingRequests);
-                            }
-                            else {
-                                if (qBadge != null) {
-                                    qBadge.hide(true);
-                                    ShortcutBadger.removeCount(getApplicationContext());
-                                }
-                            }
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                            Log.d("Yasir","Json error "+e);
-
-                            if (response.contains("invalid token")) {
-                                LogOut.logout(getApplicationContext());
-                                Toast.makeText(getApplicationContext(), "You have logged in from another device. Please login again.",
-                                        Toast.LENGTH_LONG).show();
-                                Intent i = new Intent(getApplicationContext(), LoginActivity.class);
-                                startActivity(i);
-                                finish();
-                            }
-                        }
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        Log.d("Yasir","Error "+error);
-                    }
-                });
-
-        //adding our stringrequest to queue
-        Volley.newRequestQueue(getApplicationContext()).add(stringRequest);
-    }
-
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -196,7 +132,6 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 //                break;
         }
 
-        updateNotificationBadge();
         return loadFragment(fragment);
     }
 

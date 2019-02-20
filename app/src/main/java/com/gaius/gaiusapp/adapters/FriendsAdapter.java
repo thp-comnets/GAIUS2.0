@@ -113,7 +113,7 @@ public class FriendsAdapter extends RecyclerView.Adapter<FriendsAdapter.FriendVi
 
         holder.mButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mCtx);
+                final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mCtx);
                 String token = prefs.getString("token", "null");
                 String URL = prefs.getString("base_url", null) + "modifyFriend.py?token=" + token + "&" + friend.getButtonType() + "=" + friend.getUserID();
 
@@ -129,16 +129,26 @@ public class FriendsAdapter extends RecyclerView.Adapter<FriendsAdapter.FriendVi
                                     notifyDataSetChanged();
 
                                     if (friend.getButtonType().equals("accept")) {
-                                        if (FriendsFragment.qBadge.getBadgeNumber() > 1) {
-                                            FriendsFragment.qBadge.setBadgeNumber(FriendsFragment.qBadge.getBadgeNumber()-1);
-                                            MainActivity.qBadge.setBadgeNumber(MainActivity.qBadge.getBadgeNumber()-1);
-                                            ShortcutBadger.applyCount(mCtx, MainActivity.qBadge.getBadgeNumber());
+
+                                        int number = prefs.getInt("pending-requests", 0);
+
+                                        if (number > 1) {
+                                            number -= 1;
+                                            FriendsFragment.qBadge.setBadgeNumber(number);
+                                            MainActivity.qBadge.setBadgeNumber(number);
+                                            ShortcutBadger.applyCount(mCtx, number);
                                         }
                                         else {
+                                            number = 0;
                                             FriendsFragment.qBadge.hide(true);
                                             MainActivity.qBadge.hide(true);
                                             ShortcutBadger.removeCount(mCtx);
                                         }
+
+                                        // save the pending requests to the sharedprefs
+                                        SharedPreferences.Editor editor = prefs.edit();
+                                        editor.putInt("pending-requests", number);
+                                        editor.apply();
                                     }
                                 }
                             }

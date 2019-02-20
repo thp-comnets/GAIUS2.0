@@ -33,6 +33,8 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
+import me.leolin.shortcutbadger.ShortcutBadger;
+
 import static com.gaius.gaiusapp.utils.ResourceHelper.convertImageURLBasedonFidelity;
 
 public class NewsFeedFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
@@ -145,6 +147,31 @@ public class NewsFeedFragment extends Fragment implements SwipeRefreshLayout.OnR
                                 //getting product object from json array
                                 newsFeed = response.getJSONObject(i);
 
+                                if (newsFeed.has("pending-requests")) {
+                                    int number = newsFeed.getInt("pending-requests");
+
+                                    // save the pending requests to the sharedprefs
+                                    SharedPreferences.Editor editor = prefs.edit();
+                                    editor.putInt("pending-requests", number);
+                                    editor.apply();
+
+                                    if (number > 0) {
+                                        ShortcutBadger.applyCount(getContext(), number);
+
+                                        if (MainActivity.qBadge != null ) {
+                                            MainActivity.qBadge.setBadgeNumber(number);
+                                        }
+
+                                    }
+                                    else {
+                                        ShortcutBadger.removeCount(getContext());
+
+                                        if (MainActivity.qBadge != null) {
+                                            MainActivity.qBadge.hide(true);
+                                        }
+                                    }
+                                }
+
                                 ArrayList<String> imagesList = new ArrayList<String>();
                                 String [] images = newsFeed.getString("images").split(";");
                                 for (int j=0; j<images.length; j++) {
@@ -209,92 +236,6 @@ public class NewsFeedFragment extends Fragment implements SwipeRefreshLayout.OnR
                     }
                 });
     }
-//    private void loadPagesOld() {
-//        /*
-//         * Creating a String Request
-//         * The request type is GET defined by first parameter
-//         * The URL is defined in the second parameter
-//         * Then we have a Response Listener and a Error Listener
-//         * In response listener we will get the JSON response as a String
-//         * */
-//        StringRequest stringRequest = new StringRequest(Request.Method.GET, URL,
-//                new Response.Listener<String>() {
-//                    @Override
-//                    public void onResponse(String response) {
-//                        try {
-//                            //converting the string to json array object
-//                            JSONArray array = new JSONArray(response);
-//
-//                            noFriends.setVisibility(View.GONE);
-//
-//                            if (array.length() == 0 ) {
-//                                noFriends.setVisibility(View.VISIBLE);
-//                            }
-//
-//                            String fidelity = prefs.getString("fidelity_level", "high");
-//
-//                            //traversing through all the object
-//                            for (int i = 0; i < array.length(); i++) {
-//
-//                                //getting product object from json array
-//                                JSONObject newsFeed = array.getJSONObject(i);
-//
-//                                ArrayList<String> imagesList = new ArrayList<String>();
-//                                String [] tmp = newsFeed.getString("images").split(";");
-//                                for (int j=0; j<tmp.length; j++) {
-//                                    imagesList.add(convertImageURLBasedonFidelity(base_URL+newsFeed.getString("url")+tmp[j], fidelity));
-//                                }
-//
-//                                newsFeedList.add(new NewsFeed(
-//                                        newsFeed.getInt("id"),
-//                                        newsFeed.getString("name"),
-//                                        newsFeed.getString("uploadTime"),
-//                                        newsFeed.getString("avatar"),
-//                                        newsFeed.getString("thumbnail"),
-//                                        newsFeed.getString("title"),
-//                                        newsFeed.getString("description"),
-//                                        newsFeed.getString("url"),
-//                                        newsFeed.getString("type"),
-//                                        newsFeed.getString("liked"),
-//                                        true,
-//                                        imagesList
-//
-//                                ));
-//                            }
-//
-//                            adapter = new NewsFeedAdapter(getContext(), newsFeedList);
-//                            recyclerView.setAdapter(adapter);
-//                            noInternet.setVisibility(View.GONE);
-//                            recyclerView.setVisibility(View.VISIBLE);
-//                        } catch (JSONException e) {
-//                            e.printStackTrace();
-//                            Log.d("Yasir","Json error "+e);
-//
-//                            if (response.contains("invalid token")) {
-//                                LogOut.logout(getActivity());
-//                                Toast.makeText(getContext(), "You have logged in from another device. Please login again.",
-//                                        Toast.LENGTH_LONG).show();
-//                                Intent i = new Intent(getContext(), LoginActivity.class);
-//                                startActivity(i);
-//                                getActivity().finish();
-//                            }
-//                        }
-//                    }
-//                },
-//                new Response.ErrorListener() {
-//                    @Override
-//                    public void onErrorResponse(VolleyError error) {
-//                        noInternet.setVisibility(View.VISIBLE);
-//                        recyclerView.setVisibility(View.GONE);
-//                        Log.d("Yasir","Error "+error);
-//                    }
-//                });
-//
-//        Log.d("Yasir","added request "+stringRequest);
-//
-//        //adding our stringrequest to queue
-//        Volley.newRequestQueue(getContext()).add(stringRequest);
-//    }
 
     @Override
     public void onRefresh() {

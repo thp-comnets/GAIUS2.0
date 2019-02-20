@@ -33,6 +33,8 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
+import me.leolin.shortcutbadger.ShortcutBadger;
+
 public class MyFriendsRequestsFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener, FragmentVisibleInterface {
     private static String URL = "";
     List<Friend> friendList;
@@ -99,6 +101,8 @@ public class MyFriendsRequestsFragment extends Fragment implements SwipeRefreshL
                                 noFriends.setVisibility(View.VISIBLE);
                             }
 
+                            int number = 0;
+
                             //traversing through all the object
                             for (int i = 0; i < array.length(); i++) {
 
@@ -115,7 +119,41 @@ public class MyFriendsRequestsFragment extends Fragment implements SwipeRefreshL
                                         friend.getString("type"),
                                         false
                                 ));
+
+                                if (friend.getString("type").equals("accept")) {
+                                    number += 1;
+                                }
                             }
+
+                            // save the pending requests to the sharedprefs
+                            SharedPreferences.Editor editor = prefs.edit();
+                            editor.putInt("pending-requests", number);
+                            editor.apply();
+
+                            if (number > 0) {
+                                ShortcutBadger.applyCount(getContext(), number);
+
+                                if (MainActivity.qBadge != null ) {
+                                    MainActivity.qBadge.setBadgeNumber(number);
+                                }
+
+                                if (FriendsFragment.qBadge != null ) {
+                                    FriendsFragment.qBadge.setBadgeNumber(number);
+                                }
+
+                            }
+                            else {
+                                ShortcutBadger.removeCount(getContext());
+
+                                if (MainActivity.qBadge != null) {
+                                    MainActivity.qBadge.hide(true);
+                                }
+
+                                if (FriendsFragment.qBadge != null ) {
+                                    FriendsFragment.qBadge.hide(true);
+                                }
+                            }
+
 
                             //creating adapter object and setting it to recyclerview
                             adapter = new FriendsAdapter(getContext(), friendList);

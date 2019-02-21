@@ -84,8 +84,6 @@ public class ContentFragment extends Fragment implements View.OnClickListener {
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-//        UploadService.NAMESPACE = BuildConfig.APPLICATION_ID;
-//        UploadService.NAMESPACE = "com.gaius.contentupload";
 
         recyclerView = getView().findViewById(R.id.recylcerView);
         recyclerView.setHasFixedSize(true);

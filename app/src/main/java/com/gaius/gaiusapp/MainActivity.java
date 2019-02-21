@@ -45,7 +45,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
             Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.WRITE_EXTERNAL_STORAGE,
 //            Manifest.permission.ACCESS_COARSE_LOCATION,
-//            Manifest.permission.ACCESS_NETWORK_STATE,
+            Manifest.permission.ACCESS_NETWORK_STATE,
             Manifest.permission.CAMERA,
 //            Manifest.permission.ACCESS_FINE_LOCATION,
             Manifest.permission.READ_CONTACTS,

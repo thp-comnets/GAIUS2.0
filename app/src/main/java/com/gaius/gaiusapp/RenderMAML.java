@@ -1,5 +1,6 @@
 package com.gaius.gaiusapp;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
@@ -8,11 +9,14 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
+import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -37,11 +41,14 @@ import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.Volley;
 import com.gaius.gaiusapp.utils.FontProvider;
 import com.gaius.gaiusapp.utils.ResourceHelper;
+import com.jaredrummler.android.device.DeviceName;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -296,6 +303,12 @@ public class RenderMAML extends AppCompatActivity {
                                 mUrl+="&fidelity="+f;
                                 mUrl+="&size="+pageSize;
 
+                                List<String> stats = getPhoneStats();
+                                mUrl+="&networkType="+stats.get(0);
+                                mUrl+="&manufacturer="+stats.get(1);
+                                mUrl+="&deviceName="+stats.get(4).replace(" ","_");
+                                mUrl+="&model="+stats.get(3).replace(" ","_");
+
                                 InputStreamVolleyRequest statReq = new InputStreamVolleyRequest(Request.Method.GET, mUrl,
                                         new Response.Listener<byte[]>() {
                                             @Override
@@ -330,6 +343,85 @@ public class RenderMAML extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    private List<String> getPhoneStats () {
+        ConnectivityManager mConnectivity = (ConnectivityManager) getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);;
+        NetworkInfo info = mConnectivity.getActiveNetworkInfo();
+        String networkType = "";
+
+        if (info != null) {
+            if (info.getType() == ConnectivityManager.TYPE_WIFI) {
+                networkType = "Wifi";
+            }
+            else if (info.getType() == ConnectivityManager.TYPE_MOBILE) {
+                int tmp = info.getSubtype();
+                switch (tmp) {
+                    case TelephonyManager.NETWORK_TYPE_GPRS:
+                        networkType = "2G,GPRS";
+                        break;
+                    case TelephonyManager.NETWORK_TYPE_EDGE:
+                        networkType = "2G,GPRS";
+                        break;
+                    case TelephonyManager.NETWORK_TYPE_CDMA:
+                        networkType = "2G,CDMA";
+                        break;
+                    case TelephonyManager.NETWORK_TYPE_1xRTT:
+                        networkType = "2G,1xRTT";
+                        break;
+                    case TelephonyManager.NETWORK_TYPE_IDEN:
+                        networkType = "2G,IDEN";
+                        break;
+                    case TelephonyManager.NETWORK_TYPE_UMTS:
+                        networkType = "3G,UMTS";
+                        break;
+                    case TelephonyManager.NETWORK_TYPE_EVDO_0:
+                        networkType = "3G,EVDO_0";
+                        break;
+                    case TelephonyManager.NETWORK_TYPE_EVDO_A:
+                        networkType = "3G,EVDO_A";
+                        break;
+                    case TelephonyManager.NETWORK_TYPE_HSDPA:
+                        networkType = "3G,HSDPA";
+                        break;
+                    case TelephonyManager.NETWORK_TYPE_HSUPA:
+                        networkType = "3G,HSUPA";
+                        break;
+                    case TelephonyManager.NETWORK_TYPE_HSPA:
+                        networkType = "3G,HSPA";
+                        break;
+                    case TelephonyManager.NETWORK_TYPE_EVDO_B:
+                        networkType = "3G,EVDO_B";
+                        break;
+                    case TelephonyManager.NETWORK_TYPE_EHRPD:
+                        networkType = "3G,EHRPD";
+                        break;
+                    case TelephonyManager.NETWORK_TYPE_HSPAP:
+                        networkType = "3G,HSPAP";
+                        break;
+                    case TelephonyManager.NETWORK_TYPE_TD_SCDMA:
+                        networkType = "3G,TD_SCDMA";
+                        break;
+                    case TelephonyManager.NETWORK_TYPE_LTE:
+                        networkType = "4G,LTE";
+                        break;
+                    case TelephonyManager.NETWORK_TYPE_IWLAN:
+                        networkType = "4G,IWLAN";
+                        break;
+                    default:
+                        networkType = "Unknown subtype: "+tmp;
+                }
+            }
+        }
+
+        DeviceName.DeviceInfo deviceInfo = DeviceName.getDeviceInfo(getApplicationContext());
+        String manufacturer = deviceInfo.manufacturer;  // "Samsung"
+        String name = deviceInfo.marketName;            // "Galaxy S8+"
+        String model = deviceInfo.model;                // "SM-G955W"
+        String codename = deviceInfo.codename;          // "dream2qltecan"
+        String deviceName = deviceInfo.getName();       // "Galaxy S8+"
+
+        return Arrays.asList(networkType, manufacturer, name, model, deviceName);
     }
 
     private String createURL(final String mUrl, final String mPageUrl, final String mNoAds, final String campaign) {

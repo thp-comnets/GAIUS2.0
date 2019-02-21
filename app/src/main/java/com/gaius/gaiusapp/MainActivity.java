@@ -9,41 +9,31 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
+import android.support.design.internal.BottomNavigationItemView;
 import android.support.design.internal.BottomNavigationMenuView;
 import android.support.design.widget.BottomNavigationView;
-import android.support.design.widget.TabLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Toast;
+import android.widget.TextView;
 
-import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
 import com.androidnetworking.AndroidNetworking;
 import com.gaius.gaiusapp.networking.GlideApp;
 import com.gaius.gaiusapp.networking.GlideImageLoadingService;
 import com.gaius.gaiusapp.utils.LogOut;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import cn.jzvd.Jzvd;
 import me.leolin.shortcutbadger.ShortcutBadger;
-import q.rorbin.badgeview.Badge;
-import q.rorbin.badgeview.QBadgeView;
 import ss.com.bannerslider.Slider;
 
 import static com.gaius.gaiusapp.utils.Constants.MULTIPLE_PERMISSIONS;
@@ -61,7 +51,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
             Manifest.permission.READ_CONTACTS,
             Manifest.permission.VIBRATE};
 
-    public static Badge qBadge;
+    static TextView badgeTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -94,14 +84,36 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         //loading the default fragment
         loadFragment(new NewsFeedFragment());
 
-        BottomNavigationView navigation = findViewById(R.id.navigation);
-        navigation.setOnNavigationItemSelectedListener(this);
+        BottomNavigationView mBottomNavigationView = findViewById(R.id.navigation);
+        mBottomNavigationView.setOnNavigationItemSelectedListener(this);
 
-        BottomNavigationMenuView bottomNavigationMenuView =
-                (BottomNavigationMenuView) navigation.getChildAt(0);
-        View v = bottomNavigationMenuView.getChildAt(1); // number of menu from left
-        qBadge = new QBadgeView(this).bindTarget(v).setBadgeNumber(2); //.setBadgeGravity(Gravity.CENTER);
-        qBadge.hide(true);
+        BottomNavigationMenuView mBottomNavigationMenuView =
+                (BottomNavigationMenuView) mBottomNavigationView.getChildAt(0);
+
+        BottomNavigationItemView itemView = (BottomNavigationItemView) mBottomNavigationMenuView.getChildAt(1);
+
+        View friendBadgeView = LayoutInflater.from(this)
+                .inflate(R.layout.badge_layout, mBottomNavigationMenuView, false);
+
+        itemView.addView(friendBadgeView);
+
+        badgeTextView = friendBadgeView.findViewById(R.id.badge);
+    }
+
+    public static void setBadge(Context ctx, int num) {
+
+        if (badgeTextView == null) {
+            Log.e("Gaius", "badgeView is null");
+        }
+        if (num <= 0) {
+            badgeTextView.setVisibility(View.GONE);
+            ShortcutBadger.removeCount(ctx);
+        } else {
+            badgeTextView.setVisibility(View.VISIBLE);
+            badgeTextView.setText(""+num);
+            ShortcutBadger.applyCount(ctx, num);
+        }
+
     }
 
     @Override

@@ -33,8 +33,6 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-import me.leolin.shortcutbadger.ShortcutBadger;
-
 import static com.gaius.gaiusapp.utils.ResourceHelper.convertImageURLBasedonFidelity;
 
 public class NewsFeedFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
@@ -155,21 +153,8 @@ public class NewsFeedFragment extends Fragment implements SwipeRefreshLayout.OnR
                                     editor.putInt("pending-requests", number);
                                     editor.apply();
 
-                                    if (number > 0) {
-                                        ShortcutBadger.applyCount(getContext(), number);
+                                    MainActivity.setBadge(getContext(), number);
 
-                                        if (MainActivity.qBadge != null ) {
-                                            MainActivity.qBadge.setBadgeNumber(number);
-                                        }
-
-                                    }
-                                    else {
-                                        ShortcutBadger.removeCount(getContext());
-
-                                        if (MainActivity.qBadge != null) {
-                                            MainActivity.qBadge.hide(true);
-                                        }
-                                    }
                                 }
 
                                 ArrayList<String> imagesList = new ArrayList<String>();

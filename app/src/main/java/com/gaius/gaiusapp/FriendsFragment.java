@@ -1,5 +1,6 @@
 package com.gaius.gaiusapp;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -11,16 +12,14 @@ import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.gaius.gaiusapp.interfaces.FragmentVisibleInterface;
 
-import q.rorbin.badgeview.Badge;
-import q.rorbin.badgeview.QBadgeView;
-
 public class FriendsFragment extends Fragment {
     String[] tabArray;
-    public static Badge qBadge;
-    TabLayout tabLayout;
+    static TabLayout tabLayout;
+    static Context mCtx;
 
     @Nullable
     @Override
@@ -33,6 +32,7 @@ public class FriendsFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         tabArray = getResources().getStringArray(R.array.tabTitles);
+        mCtx = getContext();
 
         final FragmentPagerAdapter mFragmentPagerAdapter = new FragmentPagerAdapter(getChildFragmentManager()) {
             @Override
@@ -94,25 +94,39 @@ public class FriendsFragment extends Fragment {
         tabLayout = (TabLayout) view.findViewById(R.id.sliding_tabs);
         tabLayout.setupWithViewPager(viewPager);
 
-        View v = ((ViewGroup) tabLayout.getChildAt(0)).getChildAt(2);
-        qBadge = new QBadgeView(getActivity().getApplicationContext()).bindTarget(v);
+        // add tab views
+        for (int i = 0; i < tabLayout.getTabCount(); i++) {
+            tabLayout.getTabAt(i).setCustomView(prepareTabView(i));
+        }
         updateNotificationBadge();
     }
 
-    void updateNotificationBadge() {
-        SharedPreferences prefs;
+    private View prepareTabView(int pos) {
+        ViewGroup view = (ViewGroup) getLayoutInflater().inflate(R.layout.tab_layout, null);
+        TextView tabTitle = (TextView) view.findViewById(R.id.tab_title);
+        tabTitle.setText(tabArray[pos]);
 
-        prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+        if (pos == 2) {
+            View friendBadgeView = getLayoutInflater().inflate(R.layout.badge_layout_tab, view, false);
+            view.addView(friendBadgeView);
+        }
+        return view;
+    }
+
+    static public void updateNotificationBadge() {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mCtx);
         int number = prefs.getInt("pending-requests", 0);
 
-        if (number > 0) {
-            qBadge.setBadgeNumber(number);
+        View v = ((ViewGroup) tabLayout.getChildAt(0)).getChildAt(2);
+        TextView badgeView = (TextView)v.findViewById(R.id.badge);
+
+        if (number <= 0) {
+            badgeView.setVisibility(View.GONE);
+        } else {
+            badgeView.setVisibility(View.VISIBLE);
+            badgeView.setText(""+number);
         }
-        else {
-            if (qBadge != null) {
-                qBadge.hide(true);
-            }
-        }
+        MainActivity.setBadge(mCtx, number);
     }
 }
 

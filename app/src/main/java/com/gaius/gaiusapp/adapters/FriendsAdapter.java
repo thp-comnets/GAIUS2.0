@@ -23,15 +23,12 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.gaius.gaiusapp.FriendsFragment;
 import com.gaius.gaiusapp.MainActivity;
-import com.gaius.gaiusapp.MyFriendsRequestsFragment;
 import com.gaius.gaiusapp.R;
 import com.gaius.gaiusapp.UserPageFragment;
 import com.gaius.gaiusapp.classes.Friend;
 import com.gaius.gaiusapp.networking.GlideApp;
 
 import java.util.List;
-
-import me.leolin.shortcutbadger.ShortcutBadger;
 
 public class FriendsAdapter extends RecyclerView.Adapter<FriendsAdapter.FriendViewHolder> {
 
@@ -134,21 +131,18 @@ public class FriendsAdapter extends RecyclerView.Adapter<FriendsAdapter.FriendVi
 
                                         if (number > 1) {
                                             number -= 1;
-                                            FriendsFragment.qBadge.setBadgeNumber(number);
-                                            MainActivity.qBadge.setBadgeNumber(number);
-                                            ShortcutBadger.applyCount(mCtx, number);
                                         }
                                         else {
                                             number = 0;
-                                            FriendsFragment.qBadge.hide(true);
-                                            MainActivity.qBadge.hide(true);
-                                            ShortcutBadger.removeCount(mCtx);
                                         }
 
                                         // save the pending requests to the sharedprefs
                                         SharedPreferences.Editor editor = prefs.edit();
                                         editor.putInt("pending-requests", number);
                                         editor.apply();
+
+                                        FriendsFragment.updateNotificationBadge();
+                                        MainActivity.setBadge(mCtx, number);
                                     }
                                 }
                             }

@@ -52,6 +52,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
             Manifest.permission.VIBRATE};
 
     static TextView badgeTextView;
+    static Context mCtx;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,20 +99,35 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         itemView.addView(friendBadgeView);
 
         badgeTextView = friendBadgeView.findViewById(R.id.badge);
+        mCtx = this;
+
+        if (getIntent().getBooleanExtra("notification", false)) {
+            mBottomNavigationView.setSelectedItemId(R.id.navigation_friends);
+        } else {
+            mBottomNavigationView.setSelectedItemId(R.id.navigation_home);
+        }
     }
 
-    public static void setBadge(Context ctx, int num) {
+    public static void setBadge(int num) {
 
         if (badgeTextView == null) {
             Log.e("Gaius", "badgeView is null");
+            return;
         }
+
+        if (mCtx == null) {
+            Log.e("Gaius", "context is null");
+            return;
+        }
+
         if (num <= 0) {
             badgeTextView.setVisibility(View.GONE);
-            ShortcutBadger.removeCount(ctx);
+            ShortcutBadger.removeCount(mCtx);
+
         } else {
             badgeTextView.setVisibility(View.VISIBLE);
             badgeTextView.setText(""+num);
-            ShortcutBadger.applyCount(ctx, num);
+            ShortcutBadger.applyCount(mCtx, num);
         }
 
     }
@@ -237,7 +253,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
         switch (navigation.getSelectedItemId()) {
             case R.id.navigation_home:
-                moveTaskToBack(false);
+                moveTaskToBack(true);
                 break;
 
             case R.id.navigation_friends:
@@ -271,7 +287,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
     @Override
     protected void onPause() {
         super.onPause();
-        Jzvd.releaseAllVideos();
+        Jzvd.releaseAllVideos(); // thp: I think this should go to onStop()
     }
 
     static void clearGlideCache(final Context ctx)

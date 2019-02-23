@@ -142,7 +142,7 @@ public class FriendsAdapter extends RecyclerView.Adapter<FriendsAdapter.FriendVi
                                         editor.apply();
 
                                         FriendsFragment.updateNotificationBadge();
-                                        MainActivity.setBadge(mCtx, number);
+                                        MainActivity.setBadge(number);
                                     }
                                 }
                             }

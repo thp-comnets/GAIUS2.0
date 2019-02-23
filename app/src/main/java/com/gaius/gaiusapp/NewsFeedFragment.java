@@ -153,7 +153,7 @@ public class NewsFeedFragment extends Fragment implements SwipeRefreshLayout.OnR
                                     editor.putInt("pending-requests", number);
                                     editor.apply();
 
-                                    MainActivity.setBadge(getContext(), number);
+                                    MainActivity.setBadge(number);
 
                                 }
 

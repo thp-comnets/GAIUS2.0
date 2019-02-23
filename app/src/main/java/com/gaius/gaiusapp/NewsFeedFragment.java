@@ -22,6 +22,7 @@ import com.androidnetworking.AndroidNetworking;
 import com.androidnetworking.common.Priority;
 import com.androidnetworking.error.ANError;
 import com.androidnetworking.interfaces.JSONArrayRequestListener;
+import com.facebook.shimmer.ShimmerFrameLayout;
 import com.gaius.gaiusapp.adapters.NewsFeedAdapter;
 import com.gaius.gaiusapp.classes.NewsFeed;
 import com.gaius.gaiusapp.utils.LogOut;
@@ -42,6 +43,7 @@ public class NewsFeedFragment extends Fragment implements SwipeRefreshLayout.OnR
     RecyclerView recyclerView;
     SharedPreferences prefs;
     RelativeLayout noFriends, noInternet, error500;
+    ShimmerFrameLayout mShimmerViewContainer;
     Button buttonReturnToTop;
     NewsFeedAdapter adapter;
     Context mCtx;
@@ -60,6 +62,8 @@ public class NewsFeedFragment extends Fragment implements SwipeRefreshLayout.OnR
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
 
         noFriends = view.findViewById(R.id.noFriends);
+        mShimmerViewContainer = view.findViewById(R.id.shimmer_view_container);
+        mShimmerViewContainer.startShimmer();
 
         prefs = PreferenceManager.getDefaultSharedPreferences(mCtx);
         base_URL = prefs.getString("base_url", null);
@@ -135,6 +139,8 @@ public class NewsFeedFragment extends Fragment implements SwipeRefreshLayout.OnR
 
                             if (response.length() == 0 ) {
                                 noFriends.setVisibility(View.VISIBLE);
+                                mShimmerViewContainer.stopShimmer();
+                                mShimmerViewContainer.setVisibility(View.GONE);
                             }
 
                             String fidelity = prefs.getString("fidelity_level", "high");
@@ -185,6 +191,8 @@ public class NewsFeedFragment extends Fragment implements SwipeRefreshLayout.OnR
                             noInternet.setVisibility(View.GONE);
                             error500.setVisibility(View.GONE);
                             recyclerView.setVisibility(View.VISIBLE);
+                            mShimmerViewContainer.stopShimmer();
+                            mShimmerViewContainer.setVisibility(View.GONE);
                         } catch (JSONException e) {
                             e.printStackTrace();
                             Log.d("Yasir","Json error "+e);
@@ -208,6 +216,8 @@ public class NewsFeedFragment extends Fragment implements SwipeRefreshLayout.OnR
                                 buttonReturnToTop.setVisibility(View.GONE);
                                 noInternet.setVisibility(View.GONE);
                                 recyclerView.setVisibility(View.GONE);
+                                mShimmerViewContainer.stopShimmer();
+                                mShimmerViewContainer.setVisibility(View.GONE);
                                 Log.d("Yasir","Error 500"+error);
                                 break;
                             default:
@@ -215,6 +225,8 @@ public class NewsFeedFragment extends Fragment implements SwipeRefreshLayout.OnR
                                 error500.setVisibility(View.GONE);
                                 buttonReturnToTop.setVisibility(View.GONE);
                                 recyclerView.setVisibility(View.GONE);
+                                mShimmerViewContainer.stopShimmer();
+                                mShimmerViewContainer.setVisibility(View.GONE);
                                 Log.d("Yasir","Error no Internet "+error);
 
                         }
@@ -224,6 +236,10 @@ public class NewsFeedFragment extends Fragment implements SwipeRefreshLayout.OnR
 
     @Override
     public void onRefresh() {
+        if (recyclerView.getVisibility() == View.GONE) {
+            mShimmerViewContainer.setVisibility(View.VISIBLE);
+            mShimmerViewContainer.startShimmer();
+        }
         newsFeedList = new ArrayList<>();
         loadPages();
         swipeLayout.setRefreshing(false);

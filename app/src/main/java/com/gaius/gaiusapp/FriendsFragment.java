@@ -126,7 +126,7 @@ public class FriendsFragment extends Fragment {
             badgeView.setVisibility(View.VISIBLE);
             badgeView.setText(""+number);
         }
-        MainActivity.setBadge(mCtx, number);
+        MainActivity.setBadge(number);
     }
 }
 

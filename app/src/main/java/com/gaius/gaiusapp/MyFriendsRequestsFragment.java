@@ -129,7 +129,7 @@ public class MyFriendsRequestsFragment extends Fragment implements SwipeRefreshL
                             editor.apply();
 
                             FriendsFragment.updateNotificationBadge();
-                            MainActivity.setBadge(getContext(), number);
+                            MainActivity.setBadge(number);
 
                             //creating adapter object and setting it to recyclerview
                             adapter = new FriendsAdapter(getContext(), friendList);

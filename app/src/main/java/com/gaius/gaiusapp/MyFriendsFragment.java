@@ -118,7 +118,7 @@ public class MyFriendsFragment extends Fragment implements SwipeRefreshLayout.On
                                     editor.apply();
 
                                     FriendsFragment.updateNotificationBadge();
-                                    MainActivity.setBadge(getContext(), number);
+                                    MainActivity.setBadge(number);
                                 }
 
                                 //adding the product to product list

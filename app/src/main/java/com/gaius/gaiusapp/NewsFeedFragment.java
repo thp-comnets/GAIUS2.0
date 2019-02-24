@@ -126,6 +126,7 @@ public class NewsFeedFragment extends Fragment implements SwipeRefreshLayout.OnR
     private void loadPages() {
         AndroidNetworking.get(base_URL+"listPages.py")
                 .addQueryParameter("token", prefs.getString("token", "null"))
+                .addQueryParameter("cm-token", prefs.getString("cm-token", "null"))
                 .setPriority(Priority.HIGH)
                 .build()
                 .getAsJSONArray(new JSONArrayRequestListener() {
@@ -159,7 +160,7 @@ public class NewsFeedFragment extends Fragment implements SwipeRefreshLayout.OnR
                                     editor.putInt("pending-requests", number);
                                     editor.apply();
 
-                                    MainActivity.setBadge(getContext(), number);
+                                    MainActivity.setBadge(number);
 
                                 }
 

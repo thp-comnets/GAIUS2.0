@@ -292,6 +292,20 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
     static void clearGlideCache(final Context ctx)
     {
+
+        // request a new firebase token
+//        new Thread(new Runnable() {
+//            @Override
+//            public void run() {
+//                try {
+//                    FirebaseInstanceId.getInstance().deleteInstanceId();
+//                    FirebaseInstanceId.getInstance().getToken();
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//        }).start();
+
         new AsyncTask<Void, Void, Void>() {
             protected Void doInBackground(Void... unused) {
                 // clearDiskCache() must be called from background thread

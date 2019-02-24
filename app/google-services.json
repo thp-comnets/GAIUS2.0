@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "565016564229",
+    "firebase_url": "https://gaius-dd7a5.firebaseio.com",
+    "project_id": "gaius-dd7a5",
+    "storage_bucket": "gaius-dd7a5.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:565016564229:android:77ac5a27a8b98cbc",
+        "android_client_info": {
+          "package_name": "com.gaius.gaiusapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "565016564229-vcb4jst5b6fv8jim691j5csum1s4luov.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.gaius.gaiusapp",
+            "certificate_hash": "fa6ff69f0c4c8f5b0f7e13cfc2830fe1b4aa9fb1"
+          }
+        },
+        {
+          "client_id": "565016564229-km97um7kc9kg7hu7ht939kqk49d8v2t2.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDXYMnFpD6P7InDgBTbSoTCqUNaHF2MMhA"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "565016564229-km97um7kc9kg7hu7ht939kqk49d8v2t2.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

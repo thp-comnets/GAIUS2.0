@@ -15,12 +15,17 @@ import android.support.annotation.RequiresApi;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
+import com.androidnetworking.AndroidNetworking;
+import com.androidnetworking.common.Priority;
+import com.androidnetworking.error.ANError;
+import com.androidnetworking.interfaces.OkHttpResponseListener;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
 import java.util.Random;
 
 import me.leolin.shortcutbadger.ShortcutBadger;
+import okhttp3.Response;
 
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
@@ -50,7 +55,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         editor.putInt("pending-requests", number);
         editor.apply();
         ShortcutBadger.applyCount(getApplicationContext(), number);
-
 
         Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
 
@@ -99,6 +103,29 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         Log.d("firebase", "Refreshed token: " + token);
 
         // save token for later
-        //TODO
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putString("cm-token", token);
+        editor.apply();
+
+        if (prefs.getString("token", null) != null) {
+            AndroidNetworking.get(prefs.getString("base_url", null)+"updateCmToken.py")
+                    .addQueryParameter("token", prefs.getString("token", "null"))
+                    .addQueryParameter("cm-token", prefs.getString("cm-token", "null"))
+                    .setPriority(Priority.HIGH)
+                    .build()
+                    .getAsOkHttpResponse(new OkHttpResponseListener() {
+                        @Override
+                        public void onResponse(Response response) {
+                            Log.d("firebase","Token updated ");
+                        }
+
+                        @Override
+                        public void onError(ANError anError) {
+                            Log.d("firebase","ANError "+anError);
+                        }
+                    });
+        }
+
     }
 }

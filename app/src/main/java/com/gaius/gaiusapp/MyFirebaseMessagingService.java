@@ -62,7 +62,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
         NotificationCompat.Builder notificationBuilder =
                 new NotificationCompat.Builder(this, CHANNEL_ID)
-                        .setSmallIcon(R.mipmap.ic_launcher)
+                        .setSmallIcon(R.drawable.ic_gaius_round)
                         .setContentTitle(remoteMessage.getData().get("title"))
 //                        .setStyle(new NotificationCompat.BigPictureStyle()
 //                                .setSummaryText(remoteMessage.getData().get("message"))
@@ -74,23 +74,22 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                         .setVibrate(new long[] {0, 200, 200, 200 })
                         .setContentIntent(pendingIntent);
 
-
         mNotificationManager.notify(notificationId, notificationBuilder.build());
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     private void setupChannels(){
         CharSequence channelName = "GaiusChannelName"; //FIXME
-        String channelDescription = "Gaiusdescription"; //FIXME
+//        String channelDescription = "GaiusDescription"; //FIXME
 
-        NotificationChannel adminChannel;
-        adminChannel = new NotificationChannel(CHANNEL_ID, channelName, NotificationManager.IMPORTANCE_LOW);
-        adminChannel.setDescription(channelDescription);
-        adminChannel.enableLights(true);
-        adminChannel.setLightColor(Color.GREEN);
-        adminChannel.enableVibration(true);
+        NotificationChannel channel;
+        channel = new NotificationChannel(CHANNEL_ID, channelName, NotificationManager.IMPORTANCE_DEFAULT);
+//        adminChannel.setDescription(channelDescription);
+        channel.enableLights(true);
+        channel.setLightColor(Color.GREEN);
+        channel.enableVibration(true);
         if (mNotificationManager != null) {
-            mNotificationManager.createNotificationChannel(adminChannel);
+            mNotificationManager.createNotificationChannel(channel);
         }
     }
 

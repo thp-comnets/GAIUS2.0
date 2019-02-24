@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,7 +15,6 @@ import com.gaius.gaiusapp.R;
 import com.gaius.gaiusapp.networking.GlideApp;
 
 import java.util.ArrayList;
-
 
 public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.albumViewHolder> {
 
@@ -31,7 +29,6 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.albumViewHol
     @NonNull
     @Override
     public AlbumAdapter.albumViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        Log.d("thomas", "on create");
 
         LayoutInflater inflater = LayoutInflater.from(mCtx);
         View view = inflater.inflate(R.layout.album_list, null);
@@ -40,9 +37,9 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.albumViewHol
     }
 
     @Override
-    public void onBindViewHolder(@NonNull AlbumAdapter.albumViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull AlbumAdapter.albumViewHolder holder, final int position) {
         final String imageURI = imagesList.get(position);
-//        holder.setIsRecyclable(false);
+        holder.setIsRecyclable(false);
 
         GlideApp.with(mCtx)
                 .load(imageURI)
@@ -55,6 +52,8 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.albumViewHol
                 Bundle bundle = new Bundle();
                 Intent target = new Intent(mCtx, ImageViewActivity.class);
                 bundle.putString("URL", imageURI);
+                bundle.putStringArrayList("URLs", imagesList);
+                bundle.putInt("position", position);
                 target.putExtras(bundle);
                 mCtx.startActivity(target);
             }

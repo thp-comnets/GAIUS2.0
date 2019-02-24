@@ -42,7 +42,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="20dp"
-                        android:text="John Doe"
+                        android:text=""
                         android:textStyle="bold"
                         android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
                         android:textColor="#000000" />
@@ -53,7 +53,7 @@
                         android:layout_height="wrap_content"
                         android:layout_below="@+id/textViewName"
                         android:layout_marginStart="20dp"
-                        android:text="10min ago"
+                        android:text=""
                         android:textAppearance="@style/Base.TextAppearance.AppCompat.Small"
                         android:paddingBottom="5dp"/>
 
@@ -98,11 +98,6 @@
                         android:layout_height="match_parent"
                         android:scaleType="centerCrop"/>
 
-                    <!--<com.daimajia.slider.library.SliderLayout-->
-                        <!--android:id="@+id/slider"-->
-                        <!--android:layout_width="wrap_content"-->
-                        <!--android:layout_height="wrap_content"-->
-                        <!--/>-->
                     <ss.com.bannerslider.Slider
                         android:id="@+id/slider"
                         android:layout_width="match_parent"
@@ -121,10 +116,11 @@
                     android:layout_marginBottom="0dp"
                     android:layout_marginStart="10dp"
                     android:layout_marginEnd="10dp"
-                    android:text="Page Title"
+                    android:text=""
                     android:textStyle="bold"
                     android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
-                    android:textColor="#000000" />
+                    android:textColor="#000000"
+                    android:maxLines="1"/>
 
                 <TextView
                     android:id="@+id/textViewDescription"
@@ -134,16 +130,10 @@
                     android:layout_marginStart="10dp"
                     android:layout_marginEnd="10dp"
                     android:layout_marginBottom="10dp"
-                    android:text="Page Description"
+                    android:text=""
                     android:textAppearance="@style/Base.TextAppearance.AppCompat.Small"
-                    android:textColor="#000000" />
-
-                <!--<pl.droidsonroids.gif.GifImageView-->
-                    <!--android:id="@+id/views"-->
-                    <!--android:layout_width="24dp"-->
-                    <!--android:layout_height="24dp"-->
-                    <!--android:src="@drawable/ic_views">-->
-                <!--</pl.droidsonroids.gif.GifImageView>-->
+                    android:textColor="#000000"
+                    android:maxLines="1"/>
 
             </LinearLayout>
 

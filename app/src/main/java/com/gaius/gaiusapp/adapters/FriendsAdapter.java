@@ -1,18 +1,20 @@
 package com.gaius.gaiusapp.adapters;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.AppCompatButton;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -51,9 +53,11 @@ public class FriendsAdapter extends RecyclerView.Adapter<FriendsAdapter.FriendVi
         return new FriendViewHolder(view);
     }
 
+    @SuppressLint("RestrictedApi")
     @Override
-    public void onBindViewHolder(FriendViewHolder holder, int position) {
+    public void onBindViewHolder(final FriendViewHolder holder, int position) {
         final Friend friend = friendsList.get(position);
+        holder.setIsRecyclable(false);
 
         if (friend.getImage().contains("None")) {
             holder.imageView.setImageDrawable(mCtx.getResources().getDrawable(R.drawable.ic_avatar));
@@ -94,16 +98,15 @@ public class FriendsAdapter extends RecyclerView.Adapter<FriendsAdapter.FriendVi
             case "Remove":
                 break;
             case "connect":
-                // FIXME
-                holder.mButton.setBackgroundTintList(mCtx.getResources().getColorStateList(R.color.amber_600));
+                holder.mButton.setSupportBackgroundTintList(mCtx.getResources().getColorStateList(R.color.amber_600));
                 holder.mButton.setText("Connect");
                 break;
             case "accept":
-                holder.mButton.setBackgroundTintList(mCtx.getResources().getColorStateList(R.color.green));
+                holder.mButton.setSupportBackgroundTintList(mCtx.getResources().getColorStateList(R.color.green));
                 holder.mButton.setText("Accept");
                 break;
             case "withdraw":
-                holder.mButton.setBackgroundTintList(mCtx.getResources().getColorStateList(R.color.blue_800));
+                holder.mButton.setSupportBackgroundTintList(mCtx.getResources().getColorStateList(R.color.blue_800));
                 holder.mButton.setText("Withdraw");
                 break;
         }
@@ -113,15 +116,17 @@ public class FriendsAdapter extends RecyclerView.Adapter<FriendsAdapter.FriendVi
                 final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mCtx);
                 String token = prefs.getString("token", "null");
                 String URL = prefs.getString("base_url", null) + "modifyFriend.py?token=" + token + "&" + friend.getButtonType() + "=" + friend.getUserID();
+                v.setVisibility(View.INVISIBLE);
+                holder.mProgressBar.setVisibility(View.VISIBLE);
 
                 StringRequest stringRequest = new StringRequest(Request.Method.GET, URL,
                         new Response.Listener<String>() {
                             @Override
                             public void onResponse(String response) {
-                                Log.d("yasir", response);
+                                holder.mProgressBar.setVisibility(View.INVISIBLE);
+                                holder.mButton.setVisibility(View.VISIBLE);
 
                                 if (response.contains("Success")) {
-                                    Log.d("yasir", "removing friend");
                                     friendsList.remove(friend);
                                     notifyDataSetChanged();
 
@@ -150,6 +155,8 @@ public class FriendsAdapter extends RecyclerView.Adapter<FriendsAdapter.FriendVi
                         new Response.ErrorListener() {
                             @Override
                             public void onErrorResponse(VolleyError error) {
+                                holder.mProgressBar.setVisibility(View.INVISIBLE);
+                                holder.mButton.setVisibility(View.VISIBLE);
                                 Log.d("Yasir","Error "+error);
                             }
                         });
@@ -171,7 +178,8 @@ public class FriendsAdapter extends RecyclerView.Adapter<FriendsAdapter.FriendVi
         TextView textViewName, textViewPhoneNumber;
         ImageView imageView;
         RelativeLayout layout;
-        Button mButton;
+        AppCompatButton mButton;
+        ProgressBar mProgressBar;
 
         public FriendViewHolder(View itemView) {
             super(itemView);
@@ -181,6 +189,7 @@ public class FriendsAdapter extends RecyclerView.Adapter<FriendsAdapter.FriendVi
             imageView = itemView.findViewById(R.id.imageView);
             layout = itemView.findViewById(R.id.friend_layout);
             mButton = itemView.findViewById(R.id.friend_button);
+            mProgressBar = itemView.findViewById(R.id.friend_progress_bar);
         }
     }
 }

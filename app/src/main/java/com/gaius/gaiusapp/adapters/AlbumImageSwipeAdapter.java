@@ -1,28 +1,23 @@
 package com.gaius.gaiusapp.adapters;
 
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Bitmap;
-import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
-import android.widget.Toast;
 
 import com.alexvasilkov.gestures.views.GestureFrameLayout;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.gaius.gaiusapp.R;
 import com.gaius.gaiusapp.networking.GlideApp;
-import com.gaius.gaiusapp.utils.ResourceHelper;
 
 import java.util.ArrayList;
 
@@ -73,43 +68,6 @@ public class AlbumImageSwipeAdapter extends PagerAdapter {
                     }
                 });
 
-        imageView.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View view) {
-
-                popupMenu = new PopupMenu(mCtx, view);
-                popupMenu.setOnDismissListener(new PopupMenu.OnDismissListener() {
-                    @Override
-                    public void onDismiss(PopupMenu menu) {
-                        popupMenu.dismiss();
-                    }
-                });
-
-                popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                    @Override
-                    public boolean onMenuItemClick(MenuItem item) {
-                        switch (item.toString()) {
-                            case "Save":
-                                MediaStore.Images.Media.insertImage(mCtx.getContentResolver(), bitmaps.get(position) ,imagesURLs.get(position).substring(imagesURLs.get(position).lastIndexOf('/')) , "");
-                                Toast.makeText(mCtx, "Image saved locally on device.", Toast.LENGTH_LONG).show();
-
-                            case "Share":
-                                Intent shareIntent = new Intent(android.content.Intent.ACTION_SEND);
-                                shareIntent.putExtra(Intent.EXTRA_STREAM, ResourceHelper.getImageUri(mCtx, bitmaps.get(position)));
-                                shareIntent.setType("image/jpeg");
-                                mCtx.startActivity(Intent.createChooser(shareIntent, "Share image with:"));
-                        }
-                        popupMenu.dismiss();
-
-                        return true;
-                    }
-                });
-                popupMenu.inflate(R.menu.save_image_popup_menu);
-                popupMenu.show();
-
-                return true;
-            }
-        });
         gestureFrameLayout.addView(imageView);
         ((ViewPager) container).addView(gestureFrameLayout, 0);
         return gestureFrameLayout;
@@ -120,4 +78,11 @@ public class AlbumImageSwipeAdapter extends PagerAdapter {
         ((ViewPager) container).removeView((GestureFrameLayout) object);
     }
 
+    public Bitmap getBitmapAtPosition(int position) {
+        return bitmaps.get(position);
+    }
+
+    public String getImageURLAtPosition(int position) {
+        return imagesURLs.get(position).substring(imagesURLs.get(position).lastIndexOf('/'));
+    }
 }

@@ -37,8 +37,6 @@ public class LoginActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        // try to login first with saved/cached email and password
-//        loginFromSaveData();
 
         setContentView(R.layout.login_activity);
         super.onCreate(savedInstanceState);

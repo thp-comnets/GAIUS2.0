@@ -3,10 +3,7 @@ package com.gaius.gaiusapp.adapters;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.v4.app.Fragment;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatButton;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -26,9 +23,9 @@ import com.android.volley.toolbox.Volley;
 import com.gaius.gaiusapp.FriendsFragment;
 import com.gaius.gaiusapp.MainActivity;
 import com.gaius.gaiusapp.R;
-import com.gaius.gaiusapp.UserPageFragment;
 import com.gaius.gaiusapp.classes.Friend;
 import com.gaius.gaiusapp.networking.GlideApp;
+import com.gaius.gaiusapp.utils.Constants;
 
 import java.util.List;
 
@@ -37,17 +34,23 @@ public class FriendsAdapter extends RecyclerView.Adapter<FriendsAdapter.FriendVi
     private Context mCtx;
     private List<Friend> friendsList;
     private SharedPreferences prefs;
+    View.OnClickListener friendOnClickListener;
 
     public FriendsAdapter(Context mCtx, List<Friend> friendsList) {
         this.mCtx = mCtx;
         this.friendsList = friendsList;
     }
 
+    public FriendsAdapter(Context mCtx, List<Friend> friendsList, View.OnClickListener onClickListener) {
+        this.mCtx = mCtx;
+        this.friendsList = friendsList;
+        friendOnClickListener = onClickListener;
+    }
+
     @Override
     public FriendViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(mCtx);
         View view = inflater.inflate(R.layout.friend_list, null);
-
         prefs = PreferenceManager.getDefaultSharedPreferences(mCtx);
 
         return new FriendViewHolder(view);
@@ -55,7 +58,7 @@ public class FriendsAdapter extends RecyclerView.Adapter<FriendsAdapter.FriendVi
 
     @SuppressLint("RestrictedApi")
     @Override
-    public void onBindViewHolder(final FriendViewHolder holder, int position) {
+    public void onBindViewHolder(final FriendViewHolder holder, final int position) {
         final Friend friend = friendsList.get(position);
         holder.setIsRecyclable(false);
 
@@ -71,41 +74,27 @@ public class FriendsAdapter extends RecyclerView.Adapter<FriendsAdapter.FriendVi
 
 
         holder.textViewName.setText(friend.getName());
-        holder.textViewPhoneNumber.setText(friend.getPhoneNumber());
+//        holder.textViewPhoneNumber.setText(friend.getPhoneNumber());
+        holder.textViewPhoneNumber.setText("I'm using Gaius");
 
         if (friend.getClickable()) {
             holder.layout.setTag(position);
-            holder.layout.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Bundle bundle = new Bundle();
-
-                    Friend f = friendsList.get((Integer) v.getTag());
-                    Fragment fragment = new UserPageFragment();
-                    bundle.putString("userID", f.getUserID());
-                    bundle.putString("name", f.getName());
-                    bundle.putString("avatar", prefs.getString("base_url", null) + f.getImage());
-                    fragment.setArguments(bundle);
-
-                    ((AppCompatActivity) mCtx).getSupportFragmentManager().beginTransaction()
-                            .replace(R.id.fragment_container, fragment)
-                            .commit();
-                }
-            });
+            holder.layout.setOnClickListener(friendOnClickListener);
         }
 
         switch (friend.getButtonType()) {
-            case "Remove":
-                break;
             case "connect":
+                holder.mButton.setVisibility(View.VISIBLE);
                 holder.mButton.setSupportBackgroundTintList(mCtx.getResources().getColorStateList(R.color.amber_600));
                 holder.mButton.setText("Connect");
                 break;
             case "accept":
+                holder.mButton.setVisibility(View.VISIBLE);
                 holder.mButton.setSupportBackgroundTintList(mCtx.getResources().getColorStateList(R.color.green));
                 holder.mButton.setText("Accept");
                 break;
             case "withdraw":
+                holder.mButton.setVisibility(View.VISIBLE);
                 holder.mButton.setSupportBackgroundTintList(mCtx.getResources().getColorStateList(R.color.blue_800));
                 holder.mButton.setText("Withdraw");
                 break;
@@ -168,10 +157,22 @@ public class FriendsAdapter extends RecyclerView.Adapter<FriendsAdapter.FriendVi
 
     }
 
+    public Friend getItemFromFriendsList(int position) {
+        return friendsList.get(position);
+    }
+
+    public void removeItemFromFriendsList(int position) {
+        if (position != Constants.INVALID_POSITION) {
+            friendsList.remove(position);
+            notifyDataSetChanged();
+        }
+    }
+
     @Override
     public int getItemCount() {
         return friendsList.size();
     }
+
 
     class FriendViewHolder extends RecyclerView.ViewHolder {
 

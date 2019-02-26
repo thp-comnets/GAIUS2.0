@@ -1,5 +1,6 @@
 package com.gaius.gaiusapp;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -24,6 +25,7 @@ import com.android.volley.toolbox.Volley;
 import com.gaius.gaiusapp.adapters.FriendsAdapter;
 import com.gaius.gaiusapp.classes.Friend;
 import com.gaius.gaiusapp.interfaces.FragmentVisibleInterface;
+import com.gaius.gaiusapp.utils.Constants;
 import com.gaius.gaiusapp.utils.LogOut;
 
 import org.json.JSONArray;
@@ -33,7 +35,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MyFriendsFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener, FragmentVisibleInterface {
+public class MyFriendsFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener, FragmentVisibleInterface, View.OnClickListener {
     private static String URL = "";
     List<Friend> friendList;
     SharedPreferences prefs;
@@ -41,6 +43,7 @@ public class MyFriendsFragment extends Fragment implements SwipeRefreshLayout.On
     RecyclerView recyclerView;
     SwipeRefreshLayout swipeLayout;
     FriendsAdapter adapter;
+    View.OnClickListener mOnClickListener;
 
     @Nullable
     @Override
@@ -49,6 +52,8 @@ public class MyFriendsFragment extends Fragment implements SwipeRefreshLayout.On
         swipeLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_container);
         swipeLayout.setOnRefreshListener(this);
         swipeLayout.setEnabled(true);
+        prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+        mOnClickListener = this;
         return view;
     }
 
@@ -56,7 +61,7 @@ public class MyFriendsFragment extends Fragment implements SwipeRefreshLayout.On
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         String token, base_url;
         noFriends = view.findViewById(R.id.noFriends);
-        prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+
         token = prefs.getString("token", "null");
         base_url = prefs.getString("base_url", null);
         URL = base_url+"listFriends2.py?token=" + token;
@@ -74,19 +79,13 @@ public class MyFriendsFragment extends Fragment implements SwipeRefreshLayout.On
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setVisibility(View.GONE);
         friendList = new ArrayList<>();
-        adapter = new FriendsAdapter(getContext(), friendList);
+        adapter = new FriendsAdapter(getContext(), friendList, this);
         recyclerView.setAdapter(adapter);
         this.fragmentBecameVisible();
     }
 
     private void loadFriends() {
-        /*
-         * Creating a String Request
-         * The request type is GET defined by first parameter
-         * The URL is defined in the second parameter
-         * Then we have a Response Listener and a Error Listener
-         * In response listener we will get the JSON response as a String
-         * */
+
         StringRequest stringRequest = new StringRequest(Request.Method.GET, URL,
                 new Response.Listener<String>() {
                     @Override
@@ -115,7 +114,7 @@ public class MyFriendsFragment extends Fragment implements SwipeRefreshLayout.On
                                     // save the pending requests to the sharedprefs
                                     SharedPreferences.Editor editor = prefs.edit();
                                     editor.putInt("pending-requests", number);
-                                    editor.apply();
+                                    editor.commit();
 
                                     FriendsFragment.updateNotificationBadge();
                                     MainActivity.setBadge(number);
@@ -133,7 +132,7 @@ public class MyFriendsFragment extends Fragment implements SwipeRefreshLayout.On
                                 ));
                             }
 
-                            adapter = new FriendsAdapter(getContext(), friendList);
+                            adapter = new FriendsAdapter(getContext(), friendList, mOnClickListener);
                             recyclerView.setAdapter(adapter);
                             noInternet.setVisibility(View.GONE);
                             recyclerView.setVisibility(View.VISIBLE);
@@ -176,5 +175,37 @@ public class MyFriendsFragment extends Fragment implements SwipeRefreshLayout.On
     @Override
     public void fragmentBecameVisible() {
         loadFriends();
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == 0) {
+            if(resultCode == Activity.RESULT_OK){
+                adapter.removeItemFromFriendsList(data.getIntExtra("removeIndex", Constants.INVALID_POSITION));
+                if (adapter.getItemCount() == 0) {
+                    noFriends.setVisibility(View.VISIBLE);
+                }
+            }
+            if (resultCode == Activity.RESULT_CANCELED) {
+               // do nothing
+            }
+        }
+    }
+
+    @Override
+    public void onClick(View v) {
+        Log.d("prefs", "onclick " + v.getTag());
+        Friend friend = adapter.getItemFromFriendsList((Integer) v.getTag());
+        Intent intent = new Intent(getContext(), FriendPageActivity.class);
+        Bundle bundle = new Bundle();
+        bundle.putString("userID", friend.getUserID());
+        bundle.putString("name", friend.getName());
+        bundle.putInt("position",(Integer) v.getTag());
+        bundle.putString("status", "I'm using Gaius");
+        bundle.putString("avatar", prefs.getString("base_url", null) + friend.getImage());
+        intent.putExtras(bundle);
+        startActivityForResult(intent, 0);
     }
 }

@@ -92,6 +92,14 @@ public class ContentFragment extends Fragment implements View.OnClickListener {
         contentCategoryList = new ArrayList<>();
 
         loadItems();
+        Bundle bundle = this.getArguments();
+        if (bundle != null && bundle.getBoolean("approval", false)) {
+            Fragment fragment = new ApproveContentFragment();
+            bundle.clear();
+            getActivity().getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.fragment_container, fragment)
+                    .commit();
+        }
     }
 
     private void loadItems() {

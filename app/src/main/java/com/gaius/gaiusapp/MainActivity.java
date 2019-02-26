@@ -53,6 +53,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
     static TextView badgeTextView;
     static Context mCtx;
+    Bundle contentBundle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,6 +86,8 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         //loading the default fragment
         loadFragment(new NewsFeedFragment());
 
+
+
         BottomNavigationView mBottomNavigationView = findViewById(R.id.navigation);
         mBottomNavigationView.setOnNavigationItemSelectedListener(this);
 
@@ -100,9 +103,13 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
         badgeTextView = friendBadgeView.findViewById(R.id.badge);
         mCtx = this;
+        contentBundle = new Bundle();
 
-        if (getIntent().getBooleanExtra("notification", false)) {
+        if (getIntent().getBooleanExtra("navigation_friends", false)) {
             mBottomNavigationView.setSelectedItemId(R.id.navigation_friends);
+        } else if (getIntent().getBooleanExtra("navigation_content", false)) {
+            mBottomNavigationView.setSelectedItemId(R.id.navigation_content);
+            contentBundle.putBoolean("approval", true);
         } else {
             mBottomNavigationView.setSelectedItemId(R.id.navigation_home);
         }
@@ -151,6 +158,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
             case R.id.navigation_content:
                 fragment = new ContentFragment();
+                fragment.setArguments(contentBundle);
                 setTitle("Content Browser");
                 break;
 //

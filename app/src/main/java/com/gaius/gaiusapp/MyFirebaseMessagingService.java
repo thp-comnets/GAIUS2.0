@@ -39,7 +39,11 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     public void onMessageReceived(RemoteMessage remoteMessage) {
 
         Intent notificationIntent = new Intent(this, MainActivity.class);
-        notificationIntent.putExtra("notification", true);
+        if (remoteMessage.getData().containsKey("admin")) {
+            notificationIntent.putExtra("navigation_content", true);
+        } else {
+            notificationIntent.putExtra("navigation_friends", true);
+        }
 
         final PendingIntent pendingIntent = PendingIntent.getActivity(this,
                 0, notificationIntent,

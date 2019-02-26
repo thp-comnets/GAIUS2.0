@@ -3,11 +3,13 @@ package com.gaius.gaiusapp;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatButton;
 import android.support.v7.widget.LinearLayoutManager;
@@ -122,33 +124,58 @@ public class FriendPageActivity extends AppCompatActivity {
 
         mButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
-                String token = prefs.getString("token", "null");
-                String URL = prefs.getString("base_url", null) + "modifyFriend.py?token=" + token + "&remove=" + userID;
-                v.setVisibility(View.INVISIBLE);
-                mProgressBar.setVisibility(View.VISIBLE);
+            public void onClick(final View v) {
 
-                StringRequest stringRequest = new StringRequest(Request.Method.GET, URL,
-                        new Response.Listener<String>() {
-                            @Override
-                            public void onResponse(String response) {
-                                Intent returnIntent = new Intent();
-                                returnIntent.putExtra("removeIndex", position);
-                                setResult(Activity.RESULT_OK, returnIntent);
-                                finish();
-                            }
-                        },
-                        new Response.ErrorListener() {
-                            @Override
-                            public void onErrorResponse(VolleyError error) {
-                                mProgressBar.setVisibility(View.INVISIBLE);
-                                mButton.setVisibility(View.VISIBLE);
-                                Log.d("Yasir","Error "+error);
-                            }
-                        });
-                Log.d("Yasir","added request "+stringRequest);
 
-                Volley.newRequestQueue(getApplicationContext()).add(stringRequest);
+                AlertDialog.Builder builder = new AlertDialog.Builder(mCtx);
+
+                builder.setTitle("Remove friend?");
+                builder.setMessage("Do you want to remove this friend?");
+
+                builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+
+                    public void onClick(DialogInterface dialog, int which) {
+                        String token = prefs.getString("token", "null");
+                        String URL = prefs.getString("base_url", null) + "modifyFriend.py?token=" + token + "&remove=" + userID;
+                        v.setVisibility(View.INVISIBLE);
+                        mProgressBar.setVisibility(View.VISIBLE);
+
+                        StringRequest stringRequest = new StringRequest(Request.Method.GET, URL,
+                                new Response.Listener<String>() {
+                                    @Override
+                                    public void onResponse(String response) {
+                                        Intent returnIntent = new Intent();
+                                        returnIntent.putExtra("removeIndex", position);
+                                        setResult(Activity.RESULT_OK, returnIntent);
+                                        finish();
+                                    }
+                                },
+                                new Response.ErrorListener() {
+                                    @Override
+                                    public void onErrorResponse(VolleyError error) {
+                                        mProgressBar.setVisibility(View.INVISIBLE);
+                                        mButton.setVisibility(View.VISIBLE);
+                                        Log.d("Yasir","Error "+error);
+                                    }
+                                });
+                        Log.d("Yasir","added request "+stringRequest);
+
+                        Volley.newRequestQueue(getApplicationContext()).add(stringRequest);
+
+                        dialog.dismiss();
+                    }
+                });
+
+                builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+
+                AlertDialog alert = builder.create();
+                alert.show();
             }
         });
 

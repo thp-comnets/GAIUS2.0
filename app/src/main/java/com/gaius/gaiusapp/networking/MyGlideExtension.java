@@ -1,5 +1,7 @@
 package com.gaius.gaiusapp.networking;
 
+import android.support.annotation.NonNull;
+
 import com.bumptech.glide.Priority;
 import com.bumptech.glide.annotation.GlideExtension;
 import com.bumptech.glide.annotation.GlideOption;
@@ -12,6 +14,7 @@ public class MyGlideExtension {
 
     private MyGlideExtension() {}
 
+    @NonNull
     @GlideOption
     public static RequestOptions avatar(RequestOptions options) {
         return options.placeholder(R.drawable.ic_avatar)
@@ -21,6 +24,7 @@ public class MyGlideExtension {
                 .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC);
     }
 
+    @NonNull
     @GlideOption
     public static RequestOptions content(RequestOptions options) {
         return options.placeholder(R.drawable.placeholder)

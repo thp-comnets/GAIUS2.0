@@ -1,5 +1,6 @@
 package com.gaius.gaiusapp.networking;
 
+import android.app.Activity;
 import android.content.Context;
 import android.util.Log;
 import android.widget.ImageView;
@@ -17,12 +18,14 @@ public class GlideImageLoadingService implements ImageLoadingService {
 
     @Override
     public void loadImage(String url, ImageView imageView) {
-        Log.d("thp", "Loading image " + url);
-        GlideApp.with(context)
-                .load(url)
-                .priority(Priority.HIGH)
-                .content()
-                .into(imageView);
+        if (isValidContextForGlide(context)) {
+            Log.d("thp", "Loading image " + url);
+            GlideApp.with(context)
+                    .load(url)
+                    .priority(Priority.HIGH)
+                    .content()
+                    .into(imageView);
+        }
     }
 
     @Override
@@ -33,5 +36,18 @@ public class GlideImageLoadingService implements ImageLoadingService {
     @Override
     public void loadImage(String url, int placeHolder, int errorDrawable, ImageView imageView) {
         //not implemented
+    }
+
+    public static boolean isValidContextForGlide(final Context context) {
+        if (context == null) {
+            return false;
+        }
+        if (context instanceof Activity) {
+            final Activity activity = (Activity) context;
+            if (activity.isDestroyed() || activity.isFinishing()) {
+                return false;
+            }
+        }
+        return true;
     }
 }

@@ -562,12 +562,14 @@ public class RenderMAML extends AppCompatActivity {
                                     case "Save":
                                         MediaStore.Images.Media.insertImage(getApplicationContext().getContentResolver(), finalImg_file ,url.substring(url.lastIndexOf('/')) , "");
                                         Toast.makeText(getApplicationContext(), "Image saved locally on device.", Toast.LENGTH_LONG).show();
+                                        break;
 
                                     case "Share":
                                         Intent shareIntent = new Intent(android.content.Intent.ACTION_SEND);
                                         shareIntent.putExtra(Intent.EXTRA_STREAM, getImageUri(getApplicationContext(), finalImg_file));
                                         shareIntent.setType("image/jpeg");
                                         startActivity(Intent.createChooser(shareIntent, "Share image with:"));
+                                        break;
                                 }
                                 popupMenu.dismiss();
 

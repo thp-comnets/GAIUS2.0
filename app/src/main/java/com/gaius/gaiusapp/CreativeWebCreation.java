@@ -232,10 +232,6 @@ public class CreativeWebCreation extends AppCompatActivity implements TextEditor
         initTextEntitiesListeners();
         initRectEntitiesListeners();
 
-        convertedVideoPaths = new ArrayList<>();
-
-//        UploadService.NAMESPACE = BuildConfig.APPLICATION_ID;
-//        UploadService.NAMESPACE = "com.gaius.contentupload";
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
 
         BASE_URL = prefs.getString("base_url", null);
@@ -1062,10 +1058,6 @@ public class CreativeWebCreation extends AppCompatActivity implements TextEditor
 
         textLayer.setFont(font);
 
-//        if (BuildConfig.DEBUG) {
-//            textLayer.setText("Hello, world :))");
-//        }
-
         return textLayer;
     }
 
@@ -1304,6 +1296,8 @@ public class CreativeWebCreation extends AppCompatActivity implements TextEditor
         if (builder.getObjectCount() > 0) {
             Log.d("GAIUS", "ContentBuilderActivity " + builder.getPageAsString());
             mamlFilePath = builder.makeFile(Constants.TEMPDIR);
+            numVideos = videoPaths.size();
+            convertedVideoPaths = new ArrayList<>();
             uploadMultipart(publish);
         } else {
             Toast.makeText (getApplicationContext(), "No content added", Toast.LENGTH_SHORT).show ();
@@ -1420,8 +1414,7 @@ public class CreativeWebCreation extends AppCompatActivity implements TextEditor
         String[] filename = new File(videoPath).getName().split("/");
 
         try {
-            File file = File.createTempFile(filename[filename.length -1], "", this.getCacheDir());
-//            final String convertedVideoPath = Environment.getExternalStorageDirectory().getPath() + File.separator + Constants.TEMPDIR + File.separator + "c_" + filename[filename.length -1];
+            File file = File.createTempFile(filename[filename.length -1].substring(0, filename[filename.length -1].lastIndexOf(".")), ".mp4", this.getCacheDir());
             final String convertedVideoPath = file.getPath();
             compressTask = VideoCompress.compressVideoLow(videoPath, convertedVideoPath, new VideoCompress.CompressListener() {
                 @Override
@@ -1438,12 +1431,10 @@ public class CreativeWebCreation extends AppCompatActivity implements TextEditor
                                 }
                             });
                     progress.show();
-                    Log.d("videocompression", "start ");
                 }
 
                 @Override
                 public void onSuccess() {
-                    Log.d("videocompression", "success");
                     progress.dismiss();
                     convertedVideoPaths.add(convertedVideoPath);
                     uploadMultipart(publish); //call it again and see if there is still work to do

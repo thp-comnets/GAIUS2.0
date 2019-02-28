@@ -192,13 +192,11 @@ public class ContentFragment extends Fragment implements View.OnClickListener {
                                                     }
                                                 });
                                         progress.show();
-                                        Log.d("videocompression", "start ");
                                     }
 
                                     @Override
                                     public void onSuccess() {
                                         progress.dismiss();
-                                        Log.d("videocompression", "success");
                                         alertD.hide();
                                         uploadMultipart(editTextPagename.getText().toString(), editTextDescription.getText().toString(), true);
                                     }

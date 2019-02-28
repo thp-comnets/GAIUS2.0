@@ -3,10 +3,10 @@ package com.gaius.gaiusapp;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.ActivityInfo;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -33,6 +33,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -44,6 +45,7 @@ import com.androidnetworking.error.ANError;
 import com.androidnetworking.interfaces.AnalyticsListener;
 import com.androidnetworking.interfaces.OkHttpResponseListener;
 import com.androidnetworking.interfaces.UploadProgressListener;
+import com.example.videocompressionlibrary.VideoCompress;
 import com.gaius.gaiusapp.adapters.ItemsAdapter;
 import com.gaius.gaiusapp.classes.Item;
 import com.gaius.gaiusapp.helper.OnStartDragListener;
@@ -80,9 +82,11 @@ public class SimpleWebCreation extends AppCompatActivity implements OnStartDragL
     private String iconPath;
     private ProgressDialog progress;
     AlertDialog alertD;
-    ArrayList<String> imagePaths, videoPaths;
+    ArrayList<String> imagePaths, videoPaths, convertedVideoPaths;
+    int numVideos;
     String mamlFilePath;
     private boolean doubleBackToExitPressedOnce = false;
+    VideoCompress.VideoCompressTask compressTask;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -390,7 +394,16 @@ public class SimpleWebCreation extends AppCompatActivity implements OnStartDragL
 
         pageName = editTextPagename.getText().toString();
         pageDescription = editTextDescription.getText().toString();
+        hideKeyboard(editTextPagename);
+        hideKeyboard(editTextDescription);
         return true;
+    }
+
+    public void hideKeyboard(View view) {
+        if (view != null) {
+            InputMethodManager imm = (InputMethodManager) this.getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
     }
 
     public int convertToPixles(int value) {
@@ -426,7 +439,6 @@ public class SimpleWebCreation extends AppCompatActivity implements OnStartDragL
                     filename = new File("" + Uri.parse(item.getImagePath())).getName().split("/");
                     imagePaths.add(item.getImagePath());
                     builder.addImage(filename[filename.length - 1], item.getX(), yPos, item.getW(), item.getH());
-
                     break;
                 case "video":
                     filename = new File("" + Uri.parse(item.getVideoPath())).getName().split("/");
@@ -440,13 +452,77 @@ public class SimpleWebCreation extends AppCompatActivity implements OnStartDragL
         if (builder.getObjectCount() > 0) {
             Log.d("save", "ContentBuilderActivity " + builder.getPageAsString());
             mamlFilePath = builder.makeFile(Constants.TEMPDIR);
+            numVideos = videoPaths.size();
             uploadMultipart(publish);
         } else {
             Toast.makeText(getApplicationContext(), "No content added", Toast.LENGTH_SHORT).show();
         }
     }
 
+    private boolean videoCompressionToDo(final boolean publish) {
+        if (videoPaths.size() == 0) {
+            return false;
+        }
+
+        String videoPath = videoPaths.remove(0); //pop element from list
+        String[] filename = new File(videoPath).getName().split("/");
+
+        try {
+            File file = File.createTempFile(filename[filename.length -1], "", this.getCacheDir());
+//            final String convertedVideoPath = Environment.getExternalStorageDirectory().getPath() + File.separator + Constants.TEMPDIR + File.separator + "c_" + filename[filename.length -1];
+            final String convertedVideoPath = file.getPath();
+            compressTask = VideoCompress.compressVideoLow(videoPath, convertedVideoPath, new VideoCompress.CompressListener() {
+                @Override
+                public void onStart() {
+                    progress = new ProgressDialog(SimpleWebCreation.this);
+                    progress.setMessage("Compressing video (" + (numVideos - videoPaths.size()) + "/" + numVideos + ")...");
+                    progress.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+                    progress.setCancelable(false);
+                    progress.setProgress(0);
+                    progress.setButton(ProgressDialog.BUTTON_NEUTRAL, "Cancel",
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    compressTask.cancel(true);
+                                }
+                            });
+                    progress.show();
+                    Log.d("videocompression", "start ");
+                }
+
+                @Override
+                public void onSuccess() {
+                    Log.d("videocompression", "success");
+                    progress.dismiss();
+                    convertedVideoPaths.add(convertedVideoPath);
+                    uploadMultipart(publish); //call it again and see if there is still work to do
+                }
+
+                @Override
+                public void onFail() {
+                    progress.dismiss();
+                    Toast.makeText(getApplicationContext(), "Something went wrong with the compression", Toast.LENGTH_LONG).show();
+                    Log.d("videocompression", "fail");
+                }
+
+                @Override
+                public void onProgress(float percent) {
+                    progress.setProgress((int)(percent));
+                }
+            });
+        } catch (IOException e) {
+            e.printStackTrace();
+            Toast.makeText(getApplicationContext(), "Something went wrong with the compression", Toast.LENGTH_LONG).show();
+        }
+
+        return true;
+    }
+
     private void uploadMultipart(boolean publish) {
+        if (videoCompressionToDo(publish)) {
+            //there is still work to do, let the videocompressor handle it from now on
+            return;
+        }
+
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
 
         progress = new ProgressDialog(this);
@@ -462,7 +538,7 @@ public class SimpleWebCreation extends AppCompatActivity implements OnStartDragL
                 });
         progress.show();
 
-        ANRequest.MultiPartBuilder multiPartBuilder = new ANRequest.MultiPartBuilder(prefs.getString("base_url", null) + "upload.py");
+        final ANRequest.MultiPartBuilder multiPartBuilder = new ANRequest.MultiPartBuilder(prefs.getString("base_url", null) + "upload.py");
 
         multiPartBuilder.addMultipartParameter("token", prefs.getString("token", "null"));
         multiPartBuilder.addMultipartParameter("title", pageName);
@@ -478,9 +554,8 @@ public class SimpleWebCreation extends AppCompatActivity implements OnStartDragL
             }
         }
 
-        for (String videoPath : videoPaths) {
+        for (String videoPath : convertedVideoPaths) {
             if (videoPath != null) {
-                //TODO: add video compression
                 multiPartBuilder.addMultipartFile("videos", new File(videoPath));
             }
         }

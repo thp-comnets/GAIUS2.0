@@ -7,7 +7,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.database.Cursor;
@@ -41,6 +40,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -59,6 +59,7 @@ import com.androidnetworking.error.ANError;
 import com.androidnetworking.interfaces.AnalyticsListener;
 import com.androidnetworking.interfaces.OkHttpResponseListener;
 import com.androidnetworking.interfaces.UploadProgressListener;
+import com.example.videocompressionlibrary.VideoCompress;
 import com.flask.colorpicker.ColorPickerView;
 import com.flask.colorpicker.builder.ColorPickerClickListener;
 import com.flask.colorpicker.builder.ColorPickerDialogBuilder;
@@ -90,10 +91,10 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import static com.gaius.gaiusapp.utils.ResourceHelper.getResizedBitmap;
+
 //import ly.kite.instagramphotopicker.InstagramPhoto;
 //import ly.kite.instagramphotopicker.InstagramPhotoPicker;
-
-import static com.gaius.gaiusapp.utils.ResourceHelper.getResizedBitmap;
 
 
 public class CreativeWebCreation extends AppCompatActivity implements TextEditorDialogFragment.OnTextLayerCallback {
@@ -112,7 +113,8 @@ public class CreativeWebCreation extends AppCompatActivity implements TextEditor
     public int tmpW = 0;
     public int tmpH = 0;
 
-    ArrayList<String> imagePaths, videoPaths;
+    ArrayList<String> imagePaths, videoPaths, convertedVideoPaths;
+    int numVideos;
     String mamlFilePath;
 
     protected MotionView motionView;
@@ -120,6 +122,7 @@ public class CreativeWebCreation extends AppCompatActivity implements TextEditor
     protected View rectEntityEditPanel;
     private CustomScrollView customScrollView;
     private ProgressDialog progress;
+    VideoCompress.VideoCompressTask compressTask;
 
 
     private final MotionView.MotionViewCallback motionViewCallback = new MotionView.MotionViewCallback() {
@@ -1332,7 +1335,16 @@ public class CreativeWebCreation extends AppCompatActivity implements TextEditor
 
         pageName = editTextPagename.getText().toString();
         pageDescription = editTextDescription.getText().toString();
+        hideKeyboard(editTextPagename);
+        hideKeyboard(editTextDescription);
         return true;
+    }
+
+    public void hideKeyboard(View view) {
+        if (view != null) {
+            InputMethodManager imm = (InputMethodManager) this.getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
     }
 
     public boolean onOptionsItemSelected (MenuItem item)
@@ -1398,7 +1410,70 @@ public class CreativeWebCreation extends AppCompatActivity implements TextEditor
         return false;
     }
 
+    private boolean videoCompressionToDo(final boolean publish) {
+        if (videoPaths.size() == 0) {
+            return false;
+        }
+
+        String videoPath = videoPaths.remove(0); //pop element from list
+        String[] filename = new File(videoPath).getName().split("/");
+
+        try {
+            File file = File.createTempFile(filename[filename.length -1], "", this.getCacheDir());
+//            final String convertedVideoPath = Environment.getExternalStorageDirectory().getPath() + File.separator + Constants.TEMPDIR + File.separator + "c_" + filename[filename.length -1];
+            final String convertedVideoPath = file.getPath();
+            compressTask = VideoCompress.compressVideoLow(videoPath, convertedVideoPath, new VideoCompress.CompressListener() {
+                @Override
+                public void onStart() {
+                    progress = new ProgressDialog(CreativeWebCreation.this);
+                    progress.setMessage("Compressing video (" + (numVideos - videoPaths.size()) + "/" + numVideos + ")...");
+                    progress.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+                    progress.setCancelable(false);
+                    progress.setProgress(0);
+                    progress.setButton(ProgressDialog.BUTTON_NEUTRAL, "Cancel",
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    compressTask.cancel(true);
+                                }
+                            });
+                    progress.show();
+                    Log.d("videocompression", "start ");
+                }
+
+                @Override
+                public void onSuccess() {
+                    Log.d("videocompression", "success");
+                    progress.dismiss();
+                    convertedVideoPaths.add(convertedVideoPath);
+                    uploadMultipart(publish); //call it again and see if there is still work to do
+                }
+
+                @Override
+                public void onFail() {
+                    progress.dismiss();
+                    Toast.makeText(getApplicationContext(), "Something went wrong with the compression2", Toast.LENGTH_LONG).show();
+                    Log.d("videocompression", "fail");
+                }
+
+                @Override
+                public void onProgress(float percent) {
+                    progress.setProgress((int)(percent));
+                }
+            });
+        } catch (IOException e) {
+            e.printStackTrace();
+            Toast.makeText(getApplicationContext(), "Something went wrong with the compression", Toast.LENGTH_LONG).show();
+
+        }
+        return true;
+    }
+
     private void uploadMultipart(boolean publish) {
+        if (videoCompressionToDo(publish)) {
+            //there is still work to do, let the videocompressor handle it from now on
+            return;
+        }
+
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
 
         progress = new ProgressDialog(this);
@@ -1430,9 +1505,8 @@ public class CreativeWebCreation extends AppCompatActivity implements TextEditor
             }
         }
 
-        for (String videoPath : videoPaths) {
+        for (String videoPath : convertedVideoPaths) {
             if (videoPath != null) {
-                //TODO: add video compression
                 multiPartBuilder.addMultipartFile("videos", new File(videoPath));
             }
         }

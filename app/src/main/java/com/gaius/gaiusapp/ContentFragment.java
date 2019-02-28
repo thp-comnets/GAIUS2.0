@@ -2,6 +2,7 @@ package com.gaius.gaiusapp;
 
 import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -24,6 +25,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -36,6 +38,7 @@ import com.androidnetworking.error.ANError;
 import com.androidnetworking.interfaces.AnalyticsListener;
 import com.androidnetworking.interfaces.OkHttpResponseListener;
 import com.androidnetworking.interfaces.UploadProgressListener;
+import com.example.videocompressionlibrary.VideoCompress;
 import com.gaius.gaiusapp.adapters.ContentsCategoryAdapter;
 import com.gaius.gaiusapp.adapters.UrlGalleryAdapter;
 import com.gaius.gaiusapp.classes.ContentCategory;
@@ -71,6 +74,7 @@ public class ContentFragment extends Fragment implements View.OnClickListener {
     TextInputLayout editTextPagenameLayout, editTextDescriptionLayout;
     AlertDialog alertD;
     private ProgressDialog progress;
+    VideoCompress.VideoCompressTask compressTask;
 
 
     @Nullable
@@ -155,7 +159,7 @@ public class ContentFragment extends Fragment implements View.OnClickListener {
                 jzVideoPlayerStandard.thumbImageView.setImageBitmap(selectedImage);
 
                 Button cancel_button = (Button) promptView.findViewById(R.id.cancel_button);
-                Button upload_button = (Button) promptView.findViewById(R.id.upload_button);
+                final Button upload_button = (Button) promptView.findViewById(R.id.upload_button);
 
                 cancel_button.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -168,9 +172,54 @@ public class ContentFragment extends Fragment implements View.OnClickListener {
                     @Override
                     public void onClick(View view) {
                         if (filledFields(promptView)) {
-                            alertD.hide();
-//                            uploadMultipartVideo(getContext(), filePath, editTextPagename.getText().toString(), editTextDescription.getText().toString());
-                            uploadMultipart(editTextPagename.getText().toString(), editTextDescription.getText().toString(), true);
+                            String sourcePath = uploadVideoPath;
+                            try {
+                                File file = File.createTempFile("tmp", ".mp4", getContext().getCacheDir());
+                                uploadVideoPath = file.getPath();
+                                compressTask = VideoCompress.compressVideoLow(sourcePath, uploadVideoPath, new VideoCompress.CompressListener() {
+                                    @Override
+                                    public void onStart() {
+                                        alertD.hide();
+                                        progress = new ProgressDialog(getActivity());
+                                        progress.setMessage("Compressing video...");
+                                        progress.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+                                        progress.setCancelable(false);
+                                        progress.setProgress(0);
+                                        progress.setButton(ProgressDialog.BUTTON_NEUTRAL, "Cancel",
+                                                new DialogInterface.OnClickListener() {
+                                                    public void onClick(DialogInterface dialog, int which) {
+                                                        compressTask.cancel(true);
+                                                    }
+                                                });
+                                        progress.show();
+                                        Log.d("videocompression", "start ");
+                                    }
+
+                                    @Override
+                                    public void onSuccess() {
+                                        progress.dismiss();
+                                        Log.d("videocompression", "success");
+                                        alertD.hide();
+                                        uploadMultipart(editTextPagename.getText().toString(), editTextDescription.getText().toString(), true);
+                                    }
+
+                                    @Override
+                                    public void onFail() {
+                                        progress.dismiss();
+                                        alertD.show();
+                                        Toast.makeText(getContext(), "Something went wrong with the compression", Toast.LENGTH_LONG).show();
+                                        Log.d("videocompression", "fail");
+                                    }
+
+                                    @Override
+                                    public void onProgress(float percent) {
+                                        progress.setProgress((int)(percent));
+                                    }
+                                });
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                                Toast.makeText(getContext(), "Something went wrong with the compression", Toast.LENGTH_LONG).show();
+                            }
                         }
                     }
                 });
@@ -308,8 +357,16 @@ public class ContentFragment extends Fragment implements View.OnClickListener {
         if (!haveContent) {
             return false;
         }
-
+        hideKeyboard(editTextPagename);
+        hideKeyboard(editTextDescription);
         return true;
+    }
+
+    public void hideKeyboard(View view) {
+        if (view != null) {
+            InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
     }
 
     private String[] getVideoPath(Uri contentUri) {

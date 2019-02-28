@@ -99,6 +99,7 @@ public class SimpleWebCreation extends AppCompatActivity implements OnStartDragL
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         itemList = new ArrayList<>();
+        convertedVideoPaths = new ArrayList<>();
 
         //adding the product to product list
         itemList.add(new Item(itemsCnt, "text", "paragraph", null, null));

@@ -232,6 +232,7 @@ public class CreativeWebCreation extends AppCompatActivity implements TextEditor
         initTextEntitiesListeners();
         initRectEntitiesListeners();
 
+        convertedVideoPaths = new ArrayList<>();
 
 //        UploadService.NAMESPACE = BuildConfig.APPLICATION_ID;
 //        UploadService.NAMESPACE = "com.gaius.contentupload";

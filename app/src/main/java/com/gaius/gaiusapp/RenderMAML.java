@@ -52,6 +52,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import cn.jzvd.Jzvd;
 import cn.jzvd.JzvdStd;
 
 import static com.gaius.gaiusapp.utils.ResourceHelper.getImageUri;
@@ -823,6 +824,18 @@ public class RenderMAML extends AppCompatActivity {
 
     interface VolleyCallback {
         void onSuccess(String result);
+    }
+
+    @Override
+    public void onBackPressed() {
+        Jzvd.releaseAllVideos();
+        finish();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Jzvd.releaseAllVideos(); // thp: I think this should go to onStop()
     }
 }
 

@@ -9,7 +9,7 @@ android {
         applicationId "com.gaius.gaiusapp"
         minSdkVersion 17
         targetSdkVersion 28
-        versionCode 91
+        versionCode 92
         versionName "2.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true

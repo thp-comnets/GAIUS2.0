@@ -34,6 +34,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -113,7 +114,9 @@ public class CreativeWebCreation extends AppCompatActivity implements TextEditor
     public int tmpW = 0;
     public int tmpH = 0;
 
-    ArrayList<String> imagePaths, videoPaths, convertedVideoPaths;
+    ArrayList<String> imagePaths, convertedVideoPaths;
+    ArrayList<Pair<String, String>> videoPaths; // holds src and dest file path
+
     int numVideos;
     String mamlFilePath;
 
@@ -1174,10 +1177,6 @@ public class CreativeWebCreation extends AppCompatActivity implements TextEditor
                 String[] videoFile = getVideoPath(fileUri);
                 String filePath = videoFile[0];
                 Bitmap selectedImage = ThumbnailUtils.createVideoThumbnail(videoFile[0], MediaStore.Images.Thumbnails.MINI_KIND);
-                long fileSize = Long.parseLong(videoFile[1])/1024/1024;
-                if ( fileSize > 5) {
-                    Toast.makeText (getApplicationContext(), "Video size is larger than " + fileSize +" MB. Consider uploading a smaller video!", Toast.LENGTH_SHORT).show ();
-                }
                 addBitmapToLayout(VIDEO_BITMAP, selectedImage, filePath);
             }
 
@@ -1244,8 +1243,8 @@ public class CreativeWebCreation extends AppCompatActivity implements TextEditor
 
         MamlPageBuilder builder = new MamlPageBuilder();
 
-        imagePaths = new ArrayList<String>();
-        videoPaths = new ArrayList<String>();
+        imagePaths = new ArrayList<>();
+        videoPaths = new ArrayList<>();
 
         int color = Color.WHITE;
         Drawable background = motionView.getBackground();
@@ -1273,10 +1272,18 @@ public class CreativeWebCreation extends AppCompatActivity implements TextEditor
                 filename = new File("" + Uri.parse(mE.getLayer().getPath())).getName().split("/");
                 if (mE.getLayer().isVideo()) {
                     if (!mE.getLayer().isNewContent()) {
+                        //FIXME Not sure if that needs to change too
                         builder.addVideo(mE.getLayer().getPath(), (int)coord.x, (int)coord.y, (int) (coord2.x - coord.x), (int) (coord2.y - coord.y));
                     } else {
-                        videoPaths.add(mE.getLayer().getPath());
-                        builder.addVideo(filename[filename.length - 1], (int)coord.x, (int)coord.y, (int) (coord2.x - coord.x), (int) (coord2.y - coord.y));
+                        try {
+                            File tempfile = File.createTempFile(filename[filename.length -1].substring(0, filename[filename.length -1].lastIndexOf(".")), ".mp4", this.getCacheDir());
+                            String[] tempfilename = tempfile.getName().split("/");
+                            videoPaths.add(new Pair<>(mE.getLayer().getPath(), tempfile.getPath()));
+                            builder.addVideo(tempfilename[tempfilename.length -1], (int)coord.x, (int)coord.y, (int) (coord2.x - coord.x), (int) (coord2.y - coord.y));
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                            Toast.makeText(getApplicationContext(), "Something went wrong with the compression", Toast.LENGTH_LONG).show();
+                        }
                     }
                 } else {
                     if (!mE.getLayer().getPath().equals("")) {
@@ -1410,53 +1417,45 @@ public class CreativeWebCreation extends AppCompatActivity implements TextEditor
             return false;
         }
 
-        String videoPath = videoPaths.remove(0); //pop element from list
-        String[] filename = new File(videoPath).getName().split("/");
+        final Pair<String, String> videoPath = videoPaths.remove(0); //pop element from list
 
-        try {
-            File file = File.createTempFile(filename[filename.length -1].substring(0, filename[filename.length -1].lastIndexOf(".")), ".mp4", this.getCacheDir());
-            final String convertedVideoPath = file.getPath();
-            compressTask = VideoCompress.compressVideoLow(videoPath, convertedVideoPath, new VideoCompress.CompressListener() {
-                @Override
-                public void onStart() {
-                    progress = new ProgressDialog(CreativeWebCreation.this);
-                    progress.setMessage("Compressing video (" + (numVideos - videoPaths.size()) + "/" + numVideos + ")...");
-                    progress.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-                    progress.setCancelable(false);
-                    progress.setProgress(0);
-                    progress.setButton(ProgressDialog.BUTTON_NEUTRAL, "Cancel",
-                            new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int which) {
-                                    compressTask.cancel(true);
-                                }
-                            });
-                    progress.show();
-                }
+        compressTask = VideoCompress.compressVideoLow(videoPath.first, videoPath.second, new VideoCompress.CompressListener() {
+            @Override
+            public void onStart() {
+                progress = new ProgressDialog(CreativeWebCreation.this);
+                progress.setMessage("Compressing video (" + (numVideos - videoPaths.size()) + "/" + numVideos + ")...");
+                progress.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+                progress.setCancelable(false);
+                progress.setProgress(0);
+                progress.setButton(ProgressDialog.BUTTON_NEUTRAL, "Cancel",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                compressTask.cancel(true);
+                            }
+                        });
+                progress.show();
+            }
 
-                @Override
-                public void onSuccess() {
-                    progress.dismiss();
-                    convertedVideoPaths.add(convertedVideoPath);
-                    uploadMultipart(publish); //call it again and see if there is still work to do
-                }
+            @Override
+            public void onSuccess() {
+                progress.dismiss();
+                convertedVideoPaths.add(videoPath.second);
+                uploadMultipart(publish); //call it again and see if there is still work to do
+            }
 
-                @Override
-                public void onFail() {
-                    progress.dismiss();
-                    Toast.makeText(getApplicationContext(), "Something went wrong with the compression2", Toast.LENGTH_LONG).show();
-                    Log.d("videocompression", "fail");
-                }
+            @Override
+            public void onFail() {
+                progress.dismiss();
+                Toast.makeText(getApplicationContext(), "Something went wrong with the compression2", Toast.LENGTH_LONG).show();
+                Log.d("videocompression", "fail");
+            }
 
-                @Override
-                public void onProgress(float percent) {
-                    progress.setProgress((int)(percent));
-                }
-            });
-        } catch (IOException e) {
-            e.printStackTrace();
-            Toast.makeText(getApplicationContext(), "Something went wrong with the compression", Toast.LENGTH_LONG).show();
+            @Override
+            public void onProgress(float percent) {
+                progress.setProgress((int)(percent));
+            }
+        });
 
-        }
         return true;
     }
 

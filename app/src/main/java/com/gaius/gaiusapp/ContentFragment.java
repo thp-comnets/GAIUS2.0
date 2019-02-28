@@ -136,10 +136,7 @@ public class ContentFragment extends Fragment implements View.OnClickListener {
                 String[] videoFile = getVideoPath(fileUri);
                 uploadVideoPath = videoFile[0];
                 Bitmap selectedImage = ThumbnailUtils.createVideoThumbnail(videoFile[0], MediaStore.Images.Thumbnails.MINI_KIND);
-                long fileSize = Long.parseLong(videoFile[1]) / 1024 / 1024;
-                if (fileSize > 5) {
-                    Toast.makeText(getContext(), "Video size is larger than " + fileSize + " MB. Consider uploading a smaller video!", Toast.LENGTH_SHORT).show();
-                }
+
                 Log.d("yasir","Upload video " + uploadVideoPath + " " + selectedImage);
 
                 LayoutInflater layoutInflater = LayoutInflater.from(getContext());

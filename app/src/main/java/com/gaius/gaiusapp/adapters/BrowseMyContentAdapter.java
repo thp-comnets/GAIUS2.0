@@ -29,6 +29,7 @@ import com.gaius.gaiusapp.VideoViewActivity;
 import com.gaius.gaiusapp.classes.Content;
 import com.gaius.gaiusapp.networking.GlideApp;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.gaius.gaiusapp.utils.ResourceHelper.convertImageURLBasedonFidelity;
@@ -64,10 +65,18 @@ public class BrowseMyContentAdapter extends RecyclerView.Adapter<BrowseMyContent
             holder.imageView.setImageDrawable(mCtx.getResources().getDrawable(R.drawable.placeholder));
         }
         else {
-            GlideApp.with(mCtx)
-                    .load(convertImageURLBasedonFidelity(prefs.getString("base_url", null) + content.getThumbnail(), fidelity))
-                    .content()
-                    .into(holder.imageView);
+            if (content.getType().equals("ad")) {
+                GlideApp.with(mCtx)
+                        .load(prefs.getString("base_url", null) + content.getThumbnail())
+                        .content()
+                        .into(holder.imageView);
+            }
+            else {
+                GlideApp.with(mCtx)
+                        .load(convertImageURLBasedonFidelity(prefs.getString("base_url", null) + content.getThumbnail(), fidelity))
+                        .content()
+                        .into(holder.imageView);
+            }
         }
 
         holder.imageStats.setVisibility(View.GONE);
@@ -119,7 +128,8 @@ public class BrowseMyContentAdapter extends RecyclerView.Adapter<BrowseMyContent
                 holder.videoStats.setVisibility(View.VISIBLE);
 
                 GlideApp.with(mCtx)
-                        .load(convertImageURLBasedonFidelity(prefs.getString("base_url", null) + content.getUrl(), fidelity))
+//                        .load(convertImageURLBasedonFidelity(prefs.getString("base_url", null) + content.getUrl(), fidelity))
+                        .load(prefs.getString("base_url", null) + content.getUrl())
                         .content()
                         .into(holder.videoView);
 
@@ -145,7 +155,12 @@ public class BrowseMyContentAdapter extends RecyclerView.Adapter<BrowseMyContent
 
                     Bundle bundle = new Bundle();
                     Intent target = new Intent(mCtx, ImageViewActivity.class);
-                    bundle.putString("URL", prefs.getString("base_url", null) + content.getThumbnail());
+
+                    ArrayList<String> imgList = new ArrayList<>();
+                    imgList.add(prefs.getString("base_url", null) + content.getThumbnail());
+                    bundle.putStringArrayList("URLs", imgList);
+                    bundle.putInt("position", 0);
+
                     target.putExtras(bundle);
                     mCtx.startActivity(target);
                 }

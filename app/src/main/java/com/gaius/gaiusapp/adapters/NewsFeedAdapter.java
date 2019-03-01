@@ -184,6 +184,7 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.newsFe
                     Intent i = new Intent(mCtx, RenderMAML.class);
                     bundle.putSerializable("BASEURL", prefs.getString("base_url", null));
                     bundle.putSerializable("URL", n.getUrl());
+                    bundle.putString("title", n.getTitle());
                     i.putExtras(bundle);
                     mCtx.startActivity(i);
                 }

@@ -155,6 +155,7 @@ public class ApproveContentAdapter extends RecyclerView.Adapter<ApproveContentAd
                 if (content.getType().equals("page")) {
                     i = new Intent(mCtx, RenderMAML.class);
                     bundle.putSerializable("BASEURL", prefs.getString("base_url", null));
+                    bundle.putString("title", content.getTitle());
                 }
                 else if (content.getType().equals("image")) {
                     i = new Intent(mCtx, AlbumViewActivity.class);

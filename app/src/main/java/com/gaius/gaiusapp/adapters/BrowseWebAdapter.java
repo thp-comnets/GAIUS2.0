@@ -81,6 +81,7 @@ public class BrowseWebAdapter extends RecyclerView.Adapter<BrowseWebAdapter.Chan
 
                     bundle.putSerializable("BASEURL", prefs.getString("base_url", null));
                     bundle.putSerializable("URL", c.getUrl());
+                    bundle.putString("title", c.getTitle());
                     i.putExtras(bundle);
                     mCtx.startActivity(i);
                 }

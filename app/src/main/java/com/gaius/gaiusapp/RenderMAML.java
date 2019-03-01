@@ -124,6 +124,9 @@ public class RenderMAML extends AppCompatActivity {
             mPageUrl =  (String) bundle.getSerializable("URL");
             mNoAds =  (String) bundle.getSerializable("LOCAL_CONTENT");
             campaign = (String) bundle.getSerializable("CAMPAIGN");
+            if (bundle.getString("title") != null) { //TODO handle this in requestPage and send title with the file?
+                ((AppCompatActivity) this).getSupportActionBar().setTitle(bundle.getString("title"));
+            }
         }
 
         // request and parse the index.maml page

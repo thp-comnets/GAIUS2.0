@@ -185,8 +185,9 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.newsFe
         holder.textViewTitle.setText(newsfeed.getTitle());
         holder.textViewDescription.setText(newsfeed.getDescription());
 
+        //FIXME: thp: Yasir, why is all of this here and not in the if statements above?
         if (newsfeed.getType().contains("page")) {
-
+            holder.imageView.setTag(position);
             holder.shareButton.setTag(position);
             holder.shareButton.setOnClickListener(new View.OnClickListener() {
                 @Override

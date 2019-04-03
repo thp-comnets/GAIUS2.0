@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -90,6 +89,19 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.newsFe
                     .content()
 //                    .transition(withCrossFade())
                     .into(holder.imageView);
+            holder.imageView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    NewsFeed n = newsFeedList.get((Integer) v.getTag());
+                    Bundle bundle = new Bundle();
+                    Intent i = new Intent(mCtx, RenderMAML.class);
+                    bundle.putSerializable("BASEURL", prefs.getString("base_url", null));
+                    bundle.putSerializable("URL", n.getUrl());
+                    bundle.putString("title", n.getTitle());
+                    i.putExtras(bundle);
+                    mCtx.startActivity(i);
+                }
+            });
         }
         else if (newsfeed.getType().equals("video")) {
             holder.videoView.setVisibility(View.VISIBLE);
@@ -172,23 +184,8 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.newsFe
         holder.textViewUpdateTime.setText(newsfeed.getUpdateTime());
         holder.textViewTitle.setText(newsfeed.getTitle());
         holder.textViewDescription.setText(newsfeed.getDescription());
-        holder.newsFeedCard.setOnClickListener(null);
 
         if (newsfeed.getType().contains("page")) {
-            holder.newsFeedCard.setTag(position);
-            holder.newsFeedCard.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    NewsFeed n = newsFeedList.get((Integer) v.getTag());
-                    Bundle bundle = new Bundle();
-                    Intent i = new Intent(mCtx, RenderMAML.class);
-                    bundle.putSerializable("BASEURL", prefs.getString("base_url", null));
-                    bundle.putSerializable("URL", n.getUrl());
-                    bundle.putString("title", n.getTitle());
-                    i.putExtras(bundle);
-                    mCtx.startActivity(i);
-                }
-            });
 
             holder.shareButton.setTag(position);
             holder.shareButton.setOnClickListener(new View.OnClickListener() {
@@ -289,7 +286,7 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.newsFe
 
     public class newsFeedViewHolder extends RecyclerView.ViewHolder {
 
-        CardView newsFeedCard;
+//        CardView newsFeedCard;
         TextView textViewName, textViewUpdateTime, textViewTitle, textViewDescription;
         ImageView avatarView, imageView, likeButton, shareButton;
         JzvdStd videoView;
@@ -310,7 +307,7 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.newsFe
             slider = itemView.findViewById(R.id.slider);
             textViewTitle = itemView.findViewById(R.id.textViewTitle);
             textViewDescription = itemView.findViewById(R.id.textViewDescription);
-            newsFeedCard =  itemView.findViewById(R.id.imageViewCardView);
+//            newsFeedCard =  itemView.findViewById(R.id.imageViewCardView);
             likeButton = itemView.findViewById(R.id.like);
             shareButton = itemView.findViewById(R.id.share);
         }

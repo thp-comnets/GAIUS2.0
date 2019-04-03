@@ -90,6 +90,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
         BottomNavigationView mBottomNavigationView = findViewById(R.id.navigation);
         mBottomNavigationView.setOnNavigationItemSelectedListener(this);
+        mBottomNavigationView.setItemIconTintList(null); //disable icon tinting - otherwise it will show squares not the icons
 
         BottomNavigationMenuView mBottomNavigationMenuView =
                 (BottomNavigationMenuView) mBottomNavigationView.getChildAt(0);
@@ -151,21 +152,21 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                 setTitle("Home");
                 break;
 
-            case R.id.navigation_friends:
-                fragment = new FriendsFragment();
-                setTitle("Friends");
-                break;
-
             case R.id.navigation_content:
                 fragment = new ContentFragment();
                 fragment.setArguments(contentBundle);
                 setTitle("Content Browser");
                 break;
-//
-//            case R.id.navigation_videos:
-//                fragment = new ContentFragment();
-//                setTitle("Videos");
-//                break;
+
+            case R.id.navigation_friends:
+                fragment = new FriendsFragment();
+                setTitle("Friends");
+                break;
+
+             case R.id.navigation_add_content:
+                fragment = new ContentFragment();
+                setTitle("Videos");
+                break;
         }
 
         return loadFragment(fragment);

@@ -164,8 +164,10 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                 break;
 
              case R.id.navigation_add_content:
-                fragment = new ContentFragment();
-                setTitle("Videos");
+                 //this will launch a new activity, not a fragment
+//                fragment = new ContentFragment();
+//                setTitle("Videos");
+                 startActivity(new Intent(this, CreateContentActivity.class));
                 break;
         }
 

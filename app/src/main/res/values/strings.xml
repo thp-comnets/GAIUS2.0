@@ -141,5 +141,6 @@
     <string name="capture_video">Capture Video</string>
     <string name="create_blog">Create Blog</string>
     <string name="create_webpage">Create Webpage</string>
+    <string name="approve_content">Approve Content</string>
 
 </resources>

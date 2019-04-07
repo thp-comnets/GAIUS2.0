@@ -60,6 +60,12 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
+            android:name=".ApproveContentActivity"
+            android:label="Approve Content"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
             android:name=".RenderMAML"
             android:launchMode="standard"
             android:theme="@style/AppTheme">

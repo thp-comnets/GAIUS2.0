@@ -82,13 +82,6 @@ public class NewsFeedFragment extends Fragment implements SwipeRefreshLayout.OnR
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setVisibility(View.GONE);
-//        recyclerView.addItemDecoration(new DividerItemDecoration(recyclerView.getContext(), DividerItemDecoration.VERTICAL));
-        //add
-//        DividerItemDecoration verticalDecoration = new DividerItemDecoration(recyclerView.getContext(),
-//                DividerItemDecoration.HORIZONTAL);
-//        Drawable verticalDivider = ContextCompat.getDrawable(getActivity(), R.drawable.vertical_divider);
-//        verticalDecoration.setDrawable(verticalDivider);
-//        recyclerView.addItemDecoration(verticalDecoration);
 
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override

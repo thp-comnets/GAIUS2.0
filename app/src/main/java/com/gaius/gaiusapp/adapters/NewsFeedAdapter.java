@@ -92,7 +92,7 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.newsFe
             holder.imageView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    NewsFeed n = newsFeedList.get((Integer) v.getTag());
+                    NewsFeed n = newsFeedList.get((Integer) v.getTag(R.id.imageView));
                     Bundle bundle = new Bundle();
                     Intent i = new Intent(mCtx, RenderMAML.class);
                     bundle.putSerializable("BASEURL", prefs.getString("base_url", null));
@@ -187,7 +187,7 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.newsFe
 
         //FIXME: thp: Yasir, why is all of this here and not in the if statements above?
         if (newsfeed.getType().contains("page")) {
-            holder.imageView.setTag(position);
+            holder.imageView.setTag(R.id.imageView, position); //we need the key here, otherwise Glide will complain
             holder.shareButton.setTag(position);
             holder.shareButton.setOnClickListener(new View.OnClickListener() {
                 @Override

@@ -110,7 +110,8 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                 .inflate(R.layout.badge_layout, mBottomNavigationMenuView, false);
 
         itemView.addView(friendBadgeView);
-
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
         actionBar = getSupportActionBar();
 
         badgeTextView = friendBadgeView.findViewById(R.id.badge);
@@ -218,7 +219,6 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                     case 1:
                         loadFragment(new ViewMyContentFragment());
                         break;
-
                 }
                 return false;
             }

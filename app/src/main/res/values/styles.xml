@@ -40,12 +40,13 @@
 
     <style name="TextViewSpinnerDropDownItem" parent="Widget.AppCompat.DropDownItem.Spinner">
         <item name="android:textAppearance">@style/TextAppearance.AppCompat.Body1</item>
-        <item name="android:textSize">15sp</item>
+        <item name="android:textSize">18sp</item>
         <item name="android:textColor">#FFFFFF</item>
         <!--<item name="android:background">@color/grey_10</item>-->
     </style>
     <style name="ThemeOverlaySpinner" parent="ThemeOverlay.AppCompat.Light">
         <item name="android:background">@color/colorPrimary</item>
+        <!--<item name="overlapAnchor">true</item>-->
         <!--<item name="android:dropDownVerticalOffset">35dp</item>-->
     </style>
 

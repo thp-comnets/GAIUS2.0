@@ -112,7 +112,7 @@
                         android:layout_height="24dp"
                         android:layout_centerVertical="true"
                         android:layout_alignParentEnd="true"
-                        app:srcCompat="@drawable/ic_like" />
+                        app:srcCompat="@drawable/icon_like" />
 
                     <ImageView
                         android:id="@+id/share"

@@ -216,7 +216,7 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.newsFe
         }
 
         if (newsfeed.getLiked().equals("true")) {
-            holder.likeButton.setImageResource(R.drawable.ic_liked);
+            holder.likeButton.setImageResource(R.drawable.icon_liked);
         }
 
         holder.likeButton.setTag(position);
@@ -235,11 +235,11 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.newsFe
                             public void onResponse(String response) {
                                 if (response.contains("Success") && response.contains("true")) {
 //                                    mLikes.setText((Integer.parseInt(mLikes.getText().toString()) + 1) + "");
-                                    holder.likeButton.setImageResource(R.drawable.ic_liked);
+                                    holder.likeButton.setImageResource(R.drawable.icon_liked);
                                 }
                                 else if (response.contains("Success") && response.contains("false")) {
 //                                    mLikes.setText((Integer.parseInt(mLikes.getText().toString()) - 1) + "");
-                                    holder.likeButton.setImageResource(R.drawable.ic_like);
+                                    holder.likeButton.setImageResource(R.drawable.icon_like);
                                 }
                             }
                         },

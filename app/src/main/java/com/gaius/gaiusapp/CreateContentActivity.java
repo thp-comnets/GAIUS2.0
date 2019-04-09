@@ -4,20 +4,16 @@ import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
 
 public class CreateContentActivity extends AppCompatActivity {
 
-
     private SectionsPagerAdapter mSectionsPagerAdapter;
-
     private ViewPager mViewPager;
+    TabLayout tabLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,9 +34,69 @@ public class CreateContentActivity extends AppCompatActivity {
         mViewPager = (ViewPager) findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
 
-        TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
+        tabLayout = (TabLayout) findViewById(R.id.tabs);
+
+        // make sure all icons have the correct opacity
+        tabLayout.getTabAt(0).getIcon().setAlpha(255);
+        tabLayout.getTabAt(1).getIcon().setAlpha(128);
+        tabLayout.getTabAt(2).getIcon().setAlpha(128);
+        tabLayout.getTabAt(3).getIcon().setAlpha(128);
+        tabLayout.getTabAt(4).getIcon().setAlpha(128);
 
         mViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
+        mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int i, float v, int i1) {
+
+            }
+
+            @Override
+            public void onPageSelected(int i) {
+                switch (i) {
+                    case 0:
+                        tabLayout.getTabAt(0).getIcon().setAlpha(255);
+                        tabLayout.getTabAt(1).getIcon().setAlpha(128);
+                        tabLayout.getTabAt(2).getIcon().setAlpha(128);
+                        tabLayout.getTabAt(3).getIcon().setAlpha(128);
+                        tabLayout.getTabAt(4).getIcon().setAlpha(128);
+                        break;
+                    case 1:
+                        tabLayout.getTabAt(0).getIcon().setAlpha(128);
+                        tabLayout.getTabAt(1).getIcon().setAlpha(255);
+                        tabLayout.getTabAt(2).getIcon().setAlpha(128);
+                        tabLayout.getTabAt(3).getIcon().setAlpha(128);
+                        tabLayout.getTabAt(4).getIcon().setAlpha(128);
+                        break;
+                    case 2:
+                        tabLayout.getTabAt(0).getIcon().setAlpha(128);
+                        tabLayout.getTabAt(1).getIcon().setAlpha(128);
+                        tabLayout.getTabAt(2).getIcon().setAlpha(255);
+                        tabLayout.getTabAt(3).getIcon().setAlpha(128);
+                        tabLayout.getTabAt(4).getIcon().setAlpha(128);
+                        break;
+                    case 3:
+                        tabLayout.getTabAt(0).getIcon().setAlpha(128);
+                        tabLayout.getTabAt(1).getIcon().setAlpha(128);
+                        tabLayout.getTabAt(2).getIcon().setAlpha(128);
+                        tabLayout.getTabAt(3).getIcon().setAlpha(255);
+                        tabLayout.getTabAt(4).getIcon().setAlpha(128);
+                        break;
+                    case 4:
+                        tabLayout.getTabAt(0).getIcon().setAlpha(128);
+                        tabLayout.getTabAt(1).getIcon().setAlpha(128);
+                        tabLayout.getTabAt(2).getIcon().setAlpha(128);
+                        tabLayout.getTabAt(3).getIcon().setAlpha(128);
+                        tabLayout.getTabAt(4).getIcon().setAlpha(255);
+                        break;
+                }
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int i) {
+
+            }
+        });
+
         tabLayout.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(mViewPager));
 
     }
@@ -52,31 +108,7 @@ public class CreateContentActivity extends AppCompatActivity {
         return true;
     }
 
-    public static class PlaceholderFragment extends Fragment {
-
-        public PlaceholderFragment() {
-        }
-
-        /**
-         * Returns a new instance of this fragment for the given content creation.
-         */
-        public static PlaceholderFragment newInstance(int position) {
-            PlaceholderFragment fragment = new PlaceholderFragment();
-            Bundle args = new Bundle();
-            args.putInt("position", position);
-            fragment.setArguments(args);
-            return fragment;
-        }
-
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_create_content_placeholder, container, false);
-            return rootView;
-        }
-    }
-
-    public class SectionsPagerAdapter extends FragmentPagerAdapter {
+    public class SectionsPagerAdapter extends FragmentStatePagerAdapter {
 
         public SectionsPagerAdapter(FragmentManager fm) {
             super(fm);

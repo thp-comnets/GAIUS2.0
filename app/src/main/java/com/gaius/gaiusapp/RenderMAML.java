@@ -234,7 +234,7 @@ public class RenderMAML extends AppCompatActivity {
                             final ImageView likeImageView = view.findViewById(R.id.imageViewLikes);
 
                             if (pageLiked.equals("true")) {
-                                likeImageView.setImageResource(R.drawable.ic_liked);
+                                likeImageView.setImageResource(R.drawable.icon_liked);
                             }
 
                             likeImageView.setOnClickListener(new View.OnClickListener() {
@@ -246,11 +246,11 @@ public class RenderMAML extends AppCompatActivity {
 
                                             if (result.contains("Success") && result.contains("true")) {
                                                 mLikes.setText((Integer.parseInt(mLikes.getText().toString()) + 1) + "");
-                                                likeImageView.setImageResource(R.drawable.ic_liked);
+                                                likeImageView.setImageResource(R.drawable.icon_liked);
                                             }
                                             else if (result.contains("Success") && result.contains("false")) {
                                                 mLikes.setText((Integer.parseInt(mLikes.getText().toString()) - 1) + "");
-                                                likeImageView.setImageResource(R.drawable.ic_like);
+                                                likeImageView.setImageResource(R.drawable.icon_like);
                                             }
                                         }
                                     };

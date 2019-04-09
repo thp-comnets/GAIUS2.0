@@ -327,5 +327,4 @@ public class CreateContentImagesFragment extends Fragment {
             imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
         }
     }
-
 }

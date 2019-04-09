@@ -15,16 +15,21 @@ import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import com.androidnetworking.AndroidNetworking;
+import com.gaius.gaiusapp.interfaces.OnFragmentInteractionListener;
 import com.gaius.gaiusapp.networking.GlideApp;
 import com.gaius.gaiusapp.networking.GlideImageLoadingService;
 import com.gaius.gaiusapp.utils.LogOut;
@@ -38,7 +43,7 @@ import ss.com.bannerslider.Slider;
 
 import static com.gaius.gaiusapp.utils.Constants.MULTIPLE_PERMISSIONS;
 
-public class MainActivity extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener {
+public class MainActivity extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener, OnFragmentInteractionListener {
 
     String[] permissions= new String[]{
             Manifest.permission.READ_CONTACTS,
@@ -54,6 +59,12 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
     static TextView badgeTextView;
     static Context mCtx;
     Bundle contentBundle;
+
+    private ActionBar actionBar;
+    private Toolbar toolbar;
+
+    // Navigation adapter
+    private BaseAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,8 +97,6 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         //loading the default fragment
         loadFragment(new NewsFeedFragment());
 
-
-
         BottomNavigationView mBottomNavigationView = findViewById(R.id.navigation);
         mBottomNavigationView.setOnNavigationItemSelectedListener(this);
         mBottomNavigationView.setItemIconTintList(null); //disable icon tinting - otherwise it will show squares not the icons
@@ -101,6 +110,8 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                 .inflate(R.layout.badge_layout, mBottomNavigationMenuView, false);
 
         itemView.addView(friendBadgeView);
+
+        actionBar = getSupportActionBar();
 
         badgeTextView = friendBadgeView.findViewById(R.id.badge);
         mCtx = this;
@@ -149,25 +160,22 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         switch (item.getItemId()) {
             case R.id.navigation_home:
                 fragment = new NewsFeedFragment();
+                disableTitleDropdownMenu();
                 setTitle("Home");
                 break;
 
             case R.id.navigation_content:
-                fragment = new ContentFragment();
-                fragment.setArguments(contentBundle);
-                setTitle("Content Browser");
-                break;
-
+                // creating the fragment is handled in the enableTitleDrowdownMenu() when the spinner is initialized. true has to be returned, otherwise bottomnavigation is not properly selected
+                enableTitleDropdownMenu();
+                return true;
             case R.id.navigation_friends:
                 fragment = new FriendsFragment();
+                disableTitleDropdownMenu();
                 setTitle("Friends");
                 break;
 
              case R.id.navigation_add_content:
-                 //this will launch a new activity, not a fragment
-//                fragment = new ContentFragment();
-//                setTitle("Videos");
-                 startActivity(new Intent(this, CreateContentActivity.class));
+                startActivity(new Intent(this, CreateContentActivity.class));
                 break;
         }
 
@@ -185,6 +193,46 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
             return true;
         }
         return false;
+    }
+
+    private void enableTitleDropdownMenu() {
+        // Hide the action bar title
+        actionBar.setDisplayShowTitleEnabled(false);
+
+        // Enabling Spinner dropdown navigation
+        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
+        ArrayList<String> mNavigationItems=new ArrayList<String>();
+        mNavigationItems.add("Browse Content");
+        mNavigationItems.add("My Content");
+        ArrayAdapter<CharSequence> mArrayAdapter;
+        mArrayAdapter = new ArrayAdapter(this, R.layout.support_simple_spinner_dropdown_item, mNavigationItems);
+        mArrayAdapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
+
+        actionBar.setListNavigationCallbacks(mArrayAdapter, new ActionBar.OnNavigationListener() {
+            @Override
+            public boolean onNavigationItemSelected(int i, long l) {
+                switch (i) {
+                    case 0:
+                        loadFragment(new ViewContentFragment());
+                        break;
+                    case 1:
+                        loadFragment(new ViewMyContentFragment());
+                        break;
+
+                }
+                return false;
+            }
+        });
+
+    }
+
+    private void disableTitleDropdownMenu() {
+        // Show the action bar title
+        actionBar.setDisplayShowTitleEnabled(true);
+
+        // Enabling Spinner dropdown navigation
+        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
+        actionBar.setDisplayShowTitleEnabled(true);
     }
 
     private  boolean checkPermissions() {
@@ -233,7 +281,6 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         int id = item.getItemId();
 
         if (id == R.id.logoutButton) {
-            // do something here
             LogOut.logout(getApplicationContext());
             Intent i = new Intent(this, LoginActivity.class);
             startActivity(i);
@@ -275,7 +322,6 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                 }
 
             case R.id.navigation_content:
-                Log.d("tags", "tag is " + recycler.getTag()+"");
 
                 if ((recycler.getTag()+"").contains("SubWeb")) {
                     setTitle("Content Browser");
@@ -328,5 +374,10 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                 GlideApp.get(ctx).clearMemory();
             }
         }.execute();
+    }
+
+    @Override
+    public void onFragmentInteraction(Integer action) {
+        Log.d("thp", "interaction " + action);
     }
 }

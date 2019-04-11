@@ -12,12 +12,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.gaius.gaiusapp.interfaces.FragmentVisibleInterface;
 import com.gaius.gaiusapp.interfaces.OnFragmentInteractionListener;
+import com.gaius.gaiusapp.utils.Constants;
 
 public class ViewMyContentFragment extends Fragment {
     private ViewPager mViewPager;
     private OnFragmentInteractionListener mListener;
     private ViewMyContentFragment.SectionsPagerAdapter mSectionsPagerAdapter;
+    private ViewPager.OnPageChangeListener pageChangeListener;
     TabLayout tabLayout;
 
     public ViewMyContentFragment() {
@@ -78,7 +81,8 @@ public class ViewMyContentFragment extends Fragment {
         tabLayout.getTabAt(4).getIcon().setAlpha(128);
 
         mViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
-        mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+
+        pageChangeListener = new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int i, float v, int i1) {
 
@@ -123,16 +127,35 @@ public class ViewMyContentFragment extends Fragment {
                         tabLayout.getTabAt(4).getIcon().setAlpha(255);
                         break;
                 }
+                //only load content if fragment becomes visible
+                FragmentVisibleInterface fragment = (FragmentVisibleInterface) mSectionsPagerAdapter.instantiateItem(mViewPager, i);
+                if (fragment != null) {
+                    fragment.fragmentBecameVisible();
+                }
             }
 
             @Override
             public void onPageScrollStateChanged(int i) {
 
             }
-        });
+        };
+        mViewPager.addOnPageChangeListener(pageChangeListener);
 
         tabLayout.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(mViewPager));
 
+        /*
+        Run this in a runnable to make sure the viewPager's views are already instantiated before triggering the onPageSelected call.
+        This is required in order to trigger the fragmentBecameVisible()
+         */
+
+        mViewPager.post(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                pageChangeListener.onPageSelected(0);
+            }
+        });
     }
 
     public void onButtonPressed(Integer action) {
@@ -170,19 +193,20 @@ public class ViewMyContentFragment extends Fragment {
             Fragment fragment = null;
             switch (position) {
                 case 0:
-                    fragment = new BrowseImagesFragment();
+                    fragment = NewsFeedFragment.newInstance(Constants.REQUEST_TYPE_MYOWN, Constants.REQUEST_CONTENT_IMAGES);
                     break;
                 case 1:
-                    fragment = new BrowseVideosFragment();
+                    fragment = NewsFeedFragment.newInstance(Constants.REQUEST_TYPE_MYOWN, Constants.REQUEST_CONTENT_VIDEOS);
                     break;
                 case 2:
-                    fragment = new BrowseWebFragment();
+                    fragment = NewsFeedFragment.newInstance(Constants.REQUEST_TYPE_MYOWN, Constants.REQUEST_CONTENT_PAGES);
                     break;
                 case 3:
                     fragment = PlaceholderFragment.newInstance(position);
                     break;
                 default:
-                    fragment = PlaceholderFragment.newInstance(position);
+                    fragment = PlaceholderFragment.newInstance(position); //TODO there will be another tab for ads
+//                    fragment = NewsFeedFragment.newInstance(Constants.REQUEST_TYPE_MYOWN, Constants.REQUEST_CONTENT_ADS);
             }
             return fragment;
         }

@@ -32,6 +32,7 @@ import com.androidnetworking.AndroidNetworking;
 import com.gaius.gaiusapp.interfaces.OnFragmentInteractionListener;
 import com.gaius.gaiusapp.networking.GlideApp;
 import com.gaius.gaiusapp.networking.GlideImageLoadingService;
+import com.gaius.gaiusapp.utils.Constants;
 import com.gaius.gaiusapp.utils.LogOut;
 
 import java.util.ArrayList;
@@ -95,7 +96,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         setContentView(R.layout.activity_main);
 
         //loading the default fragment
-        loadFragment(new NewsFeedFragment());
+//        loadFragment(NewsFeedFragment.newInstance(0, 0));
 
         BottomNavigationView mBottomNavigationView = findViewById(R.id.navigation);
         mBottomNavigationView.setOnNavigationItemSelectedListener(this);
@@ -110,6 +111,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                 .inflate(R.layout.badge_layout, mBottomNavigationMenuView, false);
 
         itemView.addView(friendBadgeView);
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         actionBar = getSupportActionBar();
@@ -160,11 +162,11 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
         switch (item.getItemId()) {
             case R.id.navigation_home:
-                fragment = new NewsFeedFragment();
+//                fragment = new NewsFeedFragment();
+                fragment = NewsFeedFragment.newInstance(Constants.REQUEST_TYPE_NEWSFEED,0);
                 disableTitleDropdownMenu();
                 setTitle("Home");
                 break;
-
             case R.id.navigation_content:
                 // creating the fragment is handled in the enableTitleDrowdownMenu() when the spinner is initialized. true has to be returned, otherwise bottomnavigation is not properly selected
                 enableTitleDropdownMenu();

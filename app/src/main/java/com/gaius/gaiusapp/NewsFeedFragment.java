@@ -25,6 +25,8 @@ import com.androidnetworking.interfaces.JSONArrayRequestListener;
 import com.facebook.shimmer.ShimmerFrameLayout;
 import com.gaius.gaiusapp.adapters.NewsFeedAdapter;
 import com.gaius.gaiusapp.classes.NewsFeed;
+import com.gaius.gaiusapp.interfaces.FragmentVisibleInterface;
+import com.gaius.gaiusapp.utils.Constants;
 import com.gaius.gaiusapp.utils.LogOut;
 
 import org.json.JSONArray;
@@ -36,7 +38,7 @@ import java.util.List;
 
 import static com.gaius.gaiusapp.utils.ResourceHelper.convertImageURLBasedonFidelity;
 
-public class NewsFeedFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
+public class NewsFeedFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener, FragmentVisibleInterface {
     String base_URL;
     List<NewsFeed> newsFeedList;
     SwipeRefreshLayout swipeLayout;
@@ -47,6 +49,45 @@ public class NewsFeedFragment extends Fragment implements SwipeRefreshLayout.OnR
     Button buttonReturnToTop;
     NewsFeedAdapter adapter;
     Context mCtx;
+    private static final String ARG_PARAM1 = "typeParam";
+    private static final String ARG_PARAM2 = "contentParam";
+    private static final String ARG_PARAM3 = "userIDParam";
+    Integer contentParam, typeParam;
+    String userIDParam;
+
+    /**
+     * Use this factory method to create a new instance of
+     * this fragment using the provided parameters.
+     */
+    public static NewsFeedFragment newInstance(Integer type, Integer content) {
+        NewsFeedFragment fragment = new NewsFeedFragment();
+        Bundle args = new Bundle();
+        args.putInt(ARG_PARAM1, type);
+        args.putInt(ARG_PARAM2, content);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    // for user pages
+    public static NewsFeedFragment newInstance(Integer type, Integer content, String userID) {
+        NewsFeedFragment fragment = new NewsFeedFragment();
+        Bundle args = new Bundle();
+        args.putInt(ARG_PARAM1, type);
+        args.putInt(ARG_PARAM2, content);
+        args.putString(ARG_PARAM3, userID);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if (getArguments() != null) {
+            typeParam = getArguments().getInt(ARG_PARAM1);
+            contentParam = getArguments().getInt(ARG_PARAM2);
+            userIDParam = getArguments().getString(ARG_PARAM3, "");
+        }
+    }
 
     @Nullable
     @Override
@@ -112,7 +153,13 @@ public class NewsFeedFragment extends Fragment implements SwipeRefreshLayout.OnR
         newsFeedList = new ArrayList<>();
         adapter = new NewsFeedAdapter(getContext(), newsFeedList);
         recyclerView.setAdapter(adapter);
-        loadPages();
+
+        //if this instance is the newsfeed, load content right away
+        if (typeParam.equals(Constants.REQUEST_TYPE_NEWSFEED)) {
+            this.fragmentBecameVisible();
+        }
+
+//        loadPages();
     }
 
     @Override
@@ -124,9 +171,27 @@ public class NewsFeedFragment extends Fragment implements SwipeRefreshLayout.OnR
 //        loadPages();
     }
 
+
+//
+
     private void loadPages() {
-        AndroidNetworking.get(base_URL+"listPages.py")
-                .addQueryParameter("token", prefs.getString("token", "null"))
+
+        /*
+        Compose request parameter, using this format: |type|content|token|userID|
+        and set the corresponding URL. If type == 0, then its a newsfeed request
+         */
+        String query, url;
+        if (typeParam.equals(Constants.REQUEST_TYPE_NEWSFEED)) {
+             query = prefs.getString("token", "null");
+             url = base_URL+"listPages.py";
+        } else {
+            query = typeParam + "" + contentParam + prefs.getString("token", "null") + userIDParam;
+            url = base_URL+"listContents.py";
+        }
+
+        AndroidNetworking.get(url)
+                .addQueryParameter("token", prefs.getString("token", "null")) //TODO remove this later
+                .addQueryParameter("req", query)
                 .addQueryParameter("cm-token", prefs.getString("cm-token", "null"))
                 .setPriority(Priority.HIGH)
                 .build()
@@ -162,7 +227,6 @@ public class NewsFeedFragment extends Fragment implements SwipeRefreshLayout.OnR
                                     editor.apply();
 
                                     MainActivity.setBadge(number);
-
                                 }
 
                                 ArrayList<String> imagesList = new ArrayList<String>();
@@ -245,6 +309,12 @@ public class NewsFeedFragment extends Fragment implements SwipeRefreshLayout.OnR
         newsFeedList = new ArrayList<>();
         loadPages();
         swipeLayout.setRefreshing(false);
+    }
+
+    @Override
+    public void fragmentBecameVisible() {
+        newsFeedList = new ArrayList<>();
+        loadPages();
     }
 }
 

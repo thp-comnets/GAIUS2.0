@@ -137,7 +137,7 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.newsFe
             });
 
             holder.slider.setSelectedSlide(0);
-            holder.slider.setInterval(2000);
+//            holder.slider.setInterval(2000);
             holder.slider.setOnSlideClickListener(new OnSlideClickListener() {
                 @Override
                 public void onSlideClick(int position) {

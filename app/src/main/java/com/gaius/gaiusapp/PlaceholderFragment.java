@@ -6,7 +6,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-public class PlaceholderFragment extends Fragment {
+import com.gaius.gaiusapp.interfaces.FragmentVisibleInterface;
+
+public class PlaceholderFragment extends Fragment implements FragmentVisibleInterface {
 
     public PlaceholderFragment() {
     }
@@ -27,5 +29,10 @@ public class PlaceholderFragment extends Fragment {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_create_content_placeholder, container, false);
         return rootView;
+    }
+
+    @Override
+    public void fragmentBecameVisible() {
+        //do nothing
     }
 }

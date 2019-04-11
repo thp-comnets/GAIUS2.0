@@ -7,7 +7,8 @@ import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,8 +18,11 @@ import android.widget.TextView;
 import com.gaius.gaiusapp.interfaces.FragmentVisibleInterface;
 
 public class FriendsFragment extends Fragment {
+
     String[] tabArray;
-    static TabLayout tabLayout;
+    TabLayout tabLayout;
+    private ViewPager mViewPager;
+    private FriendsFragment.FragmentPagerAdapter fragmentPagerAdapter;
     static Context mCtx;
 
     @Nullable
@@ -34,44 +38,17 @@ public class FriendsFragment extends Fragment {
         tabArray = getResources().getStringArray(R.array.tabTitles);
         mCtx = getContext();
 
-        final FragmentPagerAdapter mFragmentPagerAdapter = new FragmentPagerAdapter(getChildFragmentManager()) {
-            @Override
-            public Fragment getItem(int position) {
-                switch (position) {
-                    case 0:
-                        return new MyFriendsFragment();
-                    case 1:
-                        return new MyFriendsSearchFragment();
-                    case 2:
-                        return new MyFriendsRequestsFragment();
-                    default:
-                        return null;
-                }
-            }
+        fragmentPagerAdapter = new FriendsFragment.FragmentPagerAdapter(getFragmentManager());
 
-            @Override
-            public int getCount() {
-                return 3;
-            }
+        mViewPager = (ViewPager) view.findViewById(R.id.viewpager);
+        mViewPager.setAdapter(fragmentPagerAdapter);
 
-            @Nullable
-            @Override
-            public CharSequence getPageTitle(int position) {
-                switch (position) {
-                    case 0:
-                        return tabArray[0];
-                    case 1:
-                        return tabArray[1];
-                    case 2:
-                        return tabArray[2];
-                }
-                return null;
-            }
-        };
+        tabLayout = (TabLayout) view.findViewById(R.id.tabs);
+        tabLayout.bringToFront(); //needed to make the tab layout clickable
 
-        final ViewPager viewPager = (ViewPager) view.findViewById(R.id.viewpager);
-        viewPager.setAdapter(mFragmentPagerAdapter);
-        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+        mViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
+
+        mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
 
@@ -79,7 +56,17 @@ public class FriendsFragment extends Fragment {
 
             @Override
             public void onPageSelected(int position) {
-                FragmentVisibleInterface fragment = (FragmentVisibleInterface) mFragmentPagerAdapter.instantiateItem(viewPager, position);
+                TextView tv;
+                //set all titles to inactive
+                for (int i = 0; i < tabLayout.getTabCount(); i++) {
+                    tv = tabLayout.getTabAt(i).getCustomView().findViewById(R.id.tab_title);
+                    tv.setTextColor(getResources().getColor(R.color.white_50));
+                }
+                //now set the active tab
+                tv = tabLayout.getTabAt(position).getCustomView().findViewById(R.id.tab_title);
+                tv.setTextColor(getResources().getColor(R.color.white));
+
+                FragmentVisibleInterface fragment = (FragmentVisibleInterface) fragmentPagerAdapter.instantiateItem(mViewPager, position);
                 if (fragment != null) {
                     updateNotificationBadge();
                     fragment.fragmentBecameVisible();
@@ -91,10 +78,10 @@ public class FriendsFragment extends Fragment {
 
             }
         });
-        tabLayout = (TabLayout) view.findViewById(R.id.sliding_tabs);
-        tabLayout.setupWithViewPager(viewPager);
 
-        // add tab views
+        tabLayout.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(mViewPager));
+
+        // add custom tab views
         for (int i = 0; i < tabLayout.getTabCount(); i++) {
             tabLayout.getTabAt(i).setCustomView(prepareTabView(i));
         }
@@ -102,18 +89,27 @@ public class FriendsFragment extends Fragment {
     }
 
     private View prepareTabView(int pos) {
-        ViewGroup view = (ViewGroup) getLayoutInflater().inflate(R.layout.tab_layout, null);
+
+        ViewGroup view;
+
+        if (pos == 2) {
+            view = (ViewGroup) getLayoutInflater().inflate(R.layout.tab_layout_badge, null);
+        } else {
+            view = (ViewGroup) getLayoutInflater().inflate(R.layout.tab_layout, null);
+
+        }
+
         TextView tabTitle = (TextView) view.findViewById(R.id.tab_title);
         tabTitle.setText(tabArray[pos]);
 
-        if (pos == 2) {
-            View friendBadgeView = getLayoutInflater().inflate(R.layout.badge_layout_tab, view, false);
-            view.addView(friendBadgeView);
+        //set the initial color
+        if (pos == 0) {
+            tabTitle.setTextColor(getResources().getColor(R.color.white));
         }
         return view;
     }
 
-    static public void updateNotificationBadge() {
+    public void updateNotificationBadge() {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mCtx);
         int number = prefs.getInt("pending-requests", 0);
 
@@ -126,7 +122,47 @@ public class FriendsFragment extends Fragment {
             badgeView.setVisibility(View.VISIBLE);
             badgeView.setText(""+number);
         }
-        MainActivity.setBadge(number);
+//        MainActivity.setBadge(number);
     }
+
+    public class FragmentPagerAdapter extends FragmentStatePagerAdapter {
+
+        public FragmentPagerAdapter(FragmentManager fm) {
+            super(fm);
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            switch (position) {
+                case 0:
+                    return new MyFriendsFragment();
+                case 1:
+                    return new MyFriendsSearchFragment();
+                case 2:
+                    return new MyFriendsRequestsFragment();
+                default:
+                    return null;
+            }
+        }
+//
+//        @Nullable
+//        @Override
+//        public CharSequence getPageTitle(int position) {
+//            switch (position) {
+//                case 0:
+//                    return tabArray[0];
+//                case 1:
+//                    return tabArray[1];
+//                case 2:
+//                    return tabArray[2];
+//            }
+//            return null;
+//        }
+
+        @Override
+        public int getCount() {
+            return 3;
+        }
+    };
 }
 

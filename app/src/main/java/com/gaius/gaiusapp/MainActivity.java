@@ -25,7 +25,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
-import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import com.androidnetworking.AndroidNetworking;
@@ -57,15 +56,12 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
             Manifest.permission.READ_CONTACTS,
             Manifest.permission.VIBRATE};
 
-    static TextView badgeTextView;
-    static Context mCtx;
+    TextView badgeTextView;
+    Context mCtx;
+    private SharedPreferences prefs;
     Bundle contentBundle;
-
     private ActionBar actionBar;
-    private Toolbar toolbar;
 
-    // Navigation adapter
-    private BaseAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,7 +69,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         AndroidNetworking.initialize(getApplicationContext());
         AndroidNetworking.enableLogging();
         // creating the BASE_URL of the GAIUS edge
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        prefs = PreferenceManager.getDefaultSharedPreferences(this);
         SharedPreferences.Editor editor = prefs.edit();
         String hostIP = "91.230.41.34";
         String hostPort = "8080";
@@ -130,7 +126,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         }
     }
 
-    public static void setBadge(int num) {
+    private void setBadge(int num) {
 
         if (badgeTextView == null) {
             Log.e("Gaius", "badgeView is null");
@@ -162,10 +158,9 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
         switch (item.getItemId()) {
             case R.id.navigation_home:
-//                fragment = new NewsFeedFragment();
                 fragment = NewsFeedFragment.newInstance(Constants.REQUEST_TYPE_NEWSFEED,0);
                 disableTitleDropdownMenu();
-                setTitle("Home");
+                getSupportActionBar().setTitle("Home");
                 break;
             case R.id.navigation_content:
                 // creating the fragment is handled in the enableTitleDrowdownMenu() when the spinner is initialized. true has to be returned, otherwise bottomnavigation is not properly selected
@@ -174,9 +169,8 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
             case R.id.navigation_friends:
                 fragment = new FriendsFragment();
                 disableTitleDropdownMenu();
-                setTitle("Friends");
+                getSupportActionBar().setTitle("Friends");
                 break;
-
              case R.id.navigation_add_content:
                 startActivity(new Intent(this, CreateContentActivity.class));
                 break;
@@ -192,7 +186,6 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                     .beginTransaction()
                     .replace(R.id.fragment_container, fragment)
                     .commit();
-
             return true;
         }
         return false;
@@ -380,6 +373,15 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
     @Override
     public void onFragmentInteraction(Integer action) {
+
         Log.d("thp", "interaction " + action);
+        //update the notification badge in the friendsfragment
+        if (action == Constants.UPDATE_BADGE_NOTIFICATION_FRIENDS) {
+            FriendsFragment fragment = (FriendsFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_container);
+            fragment.updateNotificationBadge();
+        }
+
+        setBadge(prefs.getInt("pending-requests", 0));
+
     }
 }

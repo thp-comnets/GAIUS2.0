@@ -1,35 +1,54 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
-    android:layout_height="match_parent"
-    xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context="com.gaius.gaiusapp.MainActivity">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true">
 
     <android.support.design.widget.TabLayout
-        android:id="@+id/sliding_tabs"
+        android:id="@+id/tabs"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#000000"
-        app:tabTextColor="#ffffff"
-        app:tabSelectedTextColor="#ffffff"
-        app:tabGravity="fill"
-        app:tabIndicatorColor="@color/accent_color"
-        app:tabMaxWidth="0dp"
-        app:tabMode="fixed" />
+        android:background="@color/colorPrimary"
+        app:tabTextAppearance="@style/FriendTabStyle"
+        app:tabMinWidth="100dp"
+        app:tabMode="scrollable">
+        <!--app:tabTextColor="@color/white_50"-->
+        <!--app:tabSelectedTextColor="@color/white"-->
+        <!--app:tabIndicatorColor="@android:color/white"-->
+
+        <android.support.design.widget.TabItem
+            android:id="@+id/tabItem"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/friends"/>
+
+        <android.support.design.widget.TabItem
+            android:id="@+id/tabItem2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/search"/>
+
+        <android.support.design.widget.TabItem
+            android:id="@+id/tabItem3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/requests"/>
+
+    </android.support.design.widget.TabLayout>
 
     <android.support.v4.view.ViewPager
         android:id="@+id/viewpager"
-        android:layout_below="@+id/sliding_tabs"
+        android:layout_below="@+id/tabs"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 
-    <FrameLayout
-        android:id="@+id/tab_container"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/title_home"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+    <!--<FrameLayout-->
+        <!--android:id="@+id/tab_container"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent"-->
+        <!--android:text="@string/title_home"-->
+        <!--app:layout_constraintLeft_toLeftOf="parent"-->
+        <!--app:layout_constraintTop_toTopOf="parent" />-->
 
 </RelativeLayout>

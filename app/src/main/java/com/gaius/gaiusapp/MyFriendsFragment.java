@@ -1,6 +1,7 @@
 package com.gaius.gaiusapp;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -25,6 +26,8 @@ import com.android.volley.toolbox.Volley;
 import com.gaius.gaiusapp.adapters.FriendsAdapter;
 import com.gaius.gaiusapp.classes.Friend;
 import com.gaius.gaiusapp.interfaces.FragmentVisibleInterface;
+import com.gaius.gaiusapp.interfaces.OnAdapterInteractionListener;
+import com.gaius.gaiusapp.interfaces.OnFragmentInteractionListener;
 import com.gaius.gaiusapp.utils.Constants;
 import com.gaius.gaiusapp.utils.LogOut;
 
@@ -35,7 +38,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MyFriendsFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener, FragmentVisibleInterface, View.OnClickListener {
+public class MyFriendsFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener, FragmentVisibleInterface, View.OnClickListener, OnAdapterInteractionListener {
     private static String URL = "";
     List<Friend> friendList;
     SharedPreferences prefs;
@@ -44,6 +47,8 @@ public class MyFriendsFragment extends Fragment implements SwipeRefreshLayout.On
     SwipeRefreshLayout swipeLayout;
     FriendsAdapter adapter;
     View.OnClickListener mOnClickListener;
+    private OnFragmentInteractionListener mListener;
+    private OnAdapterInteractionListener mAdapterListener;
 
     @Nullable
     @Override
@@ -54,6 +59,7 @@ public class MyFriendsFragment extends Fragment implements SwipeRefreshLayout.On
         swipeLayout.setEnabled(true);
         prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
         mOnClickListener = this;
+        mAdapterListener = this;
         return view;
     }
 
@@ -79,7 +85,7 @@ public class MyFriendsFragment extends Fragment implements SwipeRefreshLayout.On
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setVisibility(View.GONE);
         friendList = new ArrayList<>();
-        adapter = new FriendsAdapter(getContext(), friendList, this);
+        adapter = new FriendsAdapter(getContext(), friendList, this, this);
         recyclerView.setAdapter(adapter);
         this.fragmentBecameVisible();
     }
@@ -116,8 +122,8 @@ public class MyFriendsFragment extends Fragment implements SwipeRefreshLayout.On
                                     editor.putInt("pending-requests", number);
                                     editor.commit();
 
-                                    FriendsFragment.updateNotificationBadge();
-                                    MainActivity.setBadge(number);
+                                    mListener.onFragmentInteraction(Constants.UPDATE_BADGE_NOTIFICATION_FRIENDS);
+
                                 }
 
                                 //adding the product to product list
@@ -132,7 +138,7 @@ public class MyFriendsFragment extends Fragment implements SwipeRefreshLayout.On
                                 ));
                             }
 
-                            adapter = new FriendsAdapter(getContext(), friendList, mOnClickListener);
+                            adapter = new FriendsAdapter(getContext(), friendList, mOnClickListener, mAdapterListener);
                             recyclerView.setAdapter(adapter);
                             noInternet.setVisibility(View.GONE);
                             recyclerView.setVisibility(View.VISIBLE);
@@ -178,6 +184,23 @@ public class MyFriendsFragment extends Fragment implements SwipeRefreshLayout.On
     }
 
     @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (context instanceof OnFragmentInteractionListener) {
+            mListener = (OnFragmentInteractionListener) context;
+        } else {
+            throw new RuntimeException(context.toString()
+                    + " must implement OnFragmentInteractionListener");
+        }
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mListener = null;
+    }
+
+    @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
@@ -207,5 +230,11 @@ public class MyFriendsFragment extends Fragment implements SwipeRefreshLayout.On
         bundle.putString("avatar", prefs.getString("base_url", null) + friend.getImage());
         intent.putExtras(bundle);
         startActivityForResult(intent, 0);
+    }
+
+    @Override
+    public void onAdapterInteraction(Integer action) {
+        //signal the badge change up to the MainActivity
+        mListener.onFragmentInteraction(Constants.UPDATE_BADGE_NOTIFICATION_FRIENDS);
     }
 }

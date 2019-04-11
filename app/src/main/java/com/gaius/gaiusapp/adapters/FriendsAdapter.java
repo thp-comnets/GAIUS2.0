@@ -20,10 +20,9 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.gaius.gaiusapp.FriendsFragment;
-import com.gaius.gaiusapp.MainActivity;
 import com.gaius.gaiusapp.R;
 import com.gaius.gaiusapp.classes.Friend;
+import com.gaius.gaiusapp.interfaces.OnAdapterInteractionListener;
 import com.gaius.gaiusapp.networking.GlideApp;
 import com.gaius.gaiusapp.utils.Constants;
 
@@ -35,16 +34,19 @@ public class FriendsAdapter extends RecyclerView.Adapter<FriendsAdapter.FriendVi
     private List<Friend> friendsList;
     private SharedPreferences prefs;
     View.OnClickListener friendOnClickListener;
+    OnAdapterInteractionListener mAdapterListener;
 
-    public FriendsAdapter(Context mCtx, List<Friend> friendsList) {
+    public FriendsAdapter(Context mCtx, List<Friend> friendsList, OnAdapterInteractionListener mListener) {
         this.mCtx = mCtx;
         this.friendsList = friendsList;
+        this.mAdapterListener = mListener;
     }
 
-    public FriendsAdapter(Context mCtx, List<Friend> friendsList, View.OnClickListener onClickListener) {
+    public FriendsAdapter(Context mCtx, List<Friend> friendsList, View.OnClickListener onClickListener, OnAdapterInteractionListener mListener) {
         this.mCtx = mCtx;
         this.friendsList = friendsList;
         friendOnClickListener = onClickListener;
+        this.mAdapterListener = mListener;
     }
 
     @Override
@@ -135,8 +137,7 @@ public class FriendsAdapter extends RecyclerView.Adapter<FriendsAdapter.FriendVi
                                         editor.putInt("pending-requests", number);
                                         editor.apply();
 
-                                        FriendsFragment.updateNotificationBadge();
-                                        MainActivity.setBadge(number);
+                                        mAdapterListener.onAdapterInteraction(Constants.UPDATE_BADGE_NOTIFICATION_FRIENDS);
                                     }
                                 }
                             }

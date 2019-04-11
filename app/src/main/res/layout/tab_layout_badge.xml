@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+xmlns:android="http://schemas.android.com/apk/res/android"
+android:id="@+id/tab_title_relative_layout"
+android:layout_width="wrap_content"
+android:layout_height="wrap_content">
+
+<LinearLayout
+    android:id="@+id/tab_title_layout"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="4dp"
+    android:layout_marginTop="4dp">
+
+    <TextView
+        android:id="@+id/tab_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textColor="@color/white_50"
+        android:textStyle="bold"
+        android:textSize="16sp"
+        android:text="dddd"
+        android:textAllCaps="false"
+        android:maxLines="1" />
+
+</LinearLayout>
+
+
+<TextView
+    android:id="@+id/badge"
+    android:layout_width="20dp"
+    android:layout_height="20dp"
+    android:layout_toEndOf="@+id/tab_title_layout"
+    android:layout_gravity="top|right"
+    android:layout_marginRight="0dp"
+    android:background="@drawable/badge_circle"
+    android:backgroundTint="@color/red"
+    android:gravity="center"
+    android:text=""
+    android:visibility="gone"
+    android:textColor="@android:color/white"
+    android:textSize="12sp" />
+
+</RelativeLayout>
+    <!--<?xml version="1.0" encoding="utf-8"?>-->
+    <!--<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"-->
+    <!--android:id="@+id/frame_layout_badge"-->
+    <!--android:layout_width="wrap_content"-->
+    <!--android:layout_height="wrap_content">-->
+
+    <!--<TextView-->
+    <!--android:id="@+id/badge"-->
+    <!--android:layout_width="20dp"-->
+    <!--android:layout_height="20dp"-->
+    <!--android:layout_gravity="top|right"-->
+    <!--android:layout_marginRight="0dp"-->
+    <!--android:background="@drawable/badge_circle"-->
+    <!--android:backgroundTint="@color/red"-->
+    <!--android:gravity="center"-->
+    <!--android:text=""-->
+    <!--android:visibility="gone"-->
+    <!--android:textColor="@android:color/white"-->
+    <!--android:textSize="12sp" />-->
+
+    <!--</FrameLayout>-->

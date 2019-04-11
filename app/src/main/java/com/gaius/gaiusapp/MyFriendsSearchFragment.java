@@ -1,6 +1,5 @@
 package com.gaius.gaiusapp;
 
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -9,7 +8,6 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.provider.ContactsContract;
 import android.support.annotation.Nullable;
-import android.support.annotation.StringRes;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -36,6 +34,9 @@ import com.androidnetworking.interfaces.JSONArrayRequestListener;
 import com.gaius.gaiusapp.adapters.FriendsAdapter;
 import com.gaius.gaiusapp.classes.Friend;
 import com.gaius.gaiusapp.interfaces.FragmentVisibleInterface;
+import com.gaius.gaiusapp.interfaces.OnAdapterInteractionListener;
+import com.gaius.gaiusapp.interfaces.OnFragmentInteractionListener;
+import com.gaius.gaiusapp.utils.Constants;
 import com.gaius.gaiusapp.utils.LogOut;
 
 import org.json.JSONArray;
@@ -49,7 +50,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MyFriendsSearchFragment extends Fragment implements FragmentVisibleInterface {
+public class MyFriendsSearchFragment extends Fragment implements FragmentVisibleInterface, OnAdapterInteractionListener {
     SharedPreferences prefs;
     public static File path;
     public static Context context;
@@ -57,10 +58,13 @@ public class MyFriendsSearchFragment extends Fragment implements FragmentVisible
     RecyclerView recyclerView, recyclerView2;
     RelativeLayout noFriendsSearch;
     TextView importFriendsTitle;
+    private OnFragmentInteractionListener mListener;
+    private OnAdapterInteractionListener mAdapterListener;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        mAdapterListener = this;
         return inflater.inflate(R.layout.search_friends_fragment, null);
     }
 
@@ -104,6 +108,23 @@ public class MyFriendsSearchFragment extends Fragment implements FragmentVisible
             }
         });
 
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (context instanceof OnFragmentInteractionListener) {
+            mListener = (OnFragmentInteractionListener) context;
+        } else {
+            throw new RuntimeException(context.toString()
+                    + " must implement OnFragmentInteractionListener");
+        }
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mListener = null;
     }
 
     public void loadPossibleFriends() {
@@ -196,7 +217,7 @@ public class MyFriendsSearchFragment extends Fragment implements FragmentVisible
                             }
 
                             //creating adapter object and setting it to recyclerview
-                            FriendsAdapter adapter = new FriendsAdapter(getContext(), friendList);
+                            FriendsAdapter adapter = new FriendsAdapter(getContext(), friendList, mAdapterListener);
                             recyclerView.setAdapter(adapter);
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -271,7 +292,7 @@ public class MyFriendsSearchFragment extends Fragment implements FragmentVisible
                             }
 
                             //creating adapter object and setting it to recyclerview
-                            FriendsAdapter adapter = new FriendsAdapter(getContext(), friendList2);
+                            FriendsAdapter adapter = new FriendsAdapter(getContext(), friendList2, mAdapterListener);
                             recyclerView2.setAdapter(adapter);
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -302,5 +323,11 @@ public class MyFriendsSearchFragment extends Fragment implements FragmentVisible
     @Override
     public void fragmentBecameVisible() {
         //do nothing
+    }
+
+    @Override
+    public void onAdapterInteraction(Integer action) {
+        //signal the badge change up to the MainActivity
+        mListener.onFragmentInteraction(Constants.UPDATE_BADGE_NOTIFICATION_FRIENDS);
     }
 }

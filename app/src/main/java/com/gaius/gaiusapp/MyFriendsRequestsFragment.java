@@ -1,5 +1,6 @@
 package com.gaius.gaiusapp;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -24,6 +25,9 @@ import com.android.volley.toolbox.Volley;
 import com.gaius.gaiusapp.adapters.FriendsAdapter;
 import com.gaius.gaiusapp.classes.Friend;
 import com.gaius.gaiusapp.interfaces.FragmentVisibleInterface;
+import com.gaius.gaiusapp.interfaces.OnAdapterInteractionListener;
+import com.gaius.gaiusapp.interfaces.OnFragmentInteractionListener;
+import com.gaius.gaiusapp.utils.Constants;
 import com.gaius.gaiusapp.utils.LogOut;
 
 import org.json.JSONArray;
@@ -33,7 +37,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MyFriendsRequestsFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener, FragmentVisibleInterface {
+public class MyFriendsRequestsFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener, FragmentVisibleInterface, OnAdapterInteractionListener {
     private static String URL = "";
     List<Friend> friendList;
     SharedPreferences prefs;
@@ -41,6 +45,8 @@ public class MyFriendsRequestsFragment extends Fragment implements SwipeRefreshL
     RecyclerView recyclerView;
     SwipeRefreshLayout swipeLayout;
     FriendsAdapter adapter;
+    private OnFragmentInteractionListener mListener;
+    private OnAdapterInteractionListener mAdapterListener;
 
     @Nullable
     @Override
@@ -49,6 +55,7 @@ public class MyFriendsRequestsFragment extends Fragment implements SwipeRefreshL
         swipeLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_container);
         swipeLayout.setOnRefreshListener(this);
         swipeLayout.setEnabled(true);
+        mAdapterListener = this;
         return view;
     }
 
@@ -73,8 +80,25 @@ public class MyFriendsRequestsFragment extends Fragment implements SwipeRefreshL
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setVisibility(View.GONE);
-        adapter = new FriendsAdapter(getContext(), friendList);
+        adapter = new FriendsAdapter(getContext(), friendList, mAdapterListener);
         recyclerView.setAdapter(adapter);
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (context instanceof OnFragmentInteractionListener) {
+            mListener = (OnFragmentInteractionListener) context;
+        } else {
+            throw new RuntimeException(context.toString()
+                    + " must implement OnFragmentInteractionListener");
+        }
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mListener = null;
     }
 
     private void loadFriends() {
@@ -128,11 +152,10 @@ public class MyFriendsRequestsFragment extends Fragment implements SwipeRefreshL
                             editor.putInt("pending-requests", number);
                             editor.apply();
 
-                            FriendsFragment.updateNotificationBadge();
-                            MainActivity.setBadge(number);
+                            mListener.onFragmentInteraction(Constants.UPDATE_BADGE_NOTIFICATION_FRIENDS);
 
                             //creating adapter object and setting it to recyclerview
-                            adapter = new FriendsAdapter(getContext(), friendList);
+                            adapter = new FriendsAdapter(getContext(), friendList, mAdapterListener);
                             recyclerView.setAdapter(adapter);
                             noInternet.setVisibility(View.GONE);
                             recyclerView.setVisibility(View.VISIBLE);
@@ -177,5 +200,11 @@ public class MyFriendsRequestsFragment extends Fragment implements SwipeRefreshL
     public void fragmentBecameVisible() {
         friendList = new ArrayList<>();
         loadFriends();
+    }
+
+    @Override
+    public void onAdapterInteraction(Integer action) {
+        //signal the badge change up to the MainActivity
+        mListener.onFragmentInteraction(Constants.UPDATE_BADGE_NOTIFICATION_FRIENDS);
     }
 }

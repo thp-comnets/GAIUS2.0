@@ -26,6 +26,7 @@ import com.facebook.shimmer.ShimmerFrameLayout;
 import com.gaius.gaiusapp.adapters.NewsFeedAdapter;
 import com.gaius.gaiusapp.classes.NewsFeed;
 import com.gaius.gaiusapp.interfaces.FragmentVisibleInterface;
+import com.gaius.gaiusapp.interfaces.OnFragmentInteractionListener;
 import com.gaius.gaiusapp.utils.Constants;
 import com.gaius.gaiusapp.utils.LogOut;
 
@@ -54,6 +55,7 @@ public class NewsFeedFragment extends Fragment implements SwipeRefreshLayout.OnR
     private static final String ARG_PARAM3 = "userIDParam";
     Integer contentParam, typeParam;
     String userIDParam;
+    private OnFragmentInteractionListener mListener;
 
     /**
      * Use this factory method to create a new instance of
@@ -163,6 +165,23 @@ public class NewsFeedFragment extends Fragment implements SwipeRefreshLayout.OnR
     }
 
     @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (context instanceof OnFragmentInteractionListener) {
+            mListener = (OnFragmentInteractionListener) context;
+        } else {
+            throw new RuntimeException(context.toString()
+                    + " must implement OnFragmentInteractionListener");
+        }
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mListener = null;
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
 
@@ -189,6 +208,7 @@ public class NewsFeedFragment extends Fragment implements SwipeRefreshLayout.OnR
             url = base_URL+"listContents.py";
         }
 
+        Log.d("thp", prefs.getString("cm-token", "null"));
         AndroidNetworking.get(url)
                 .addQueryParameter("token", prefs.getString("token", "null")) //TODO remove this later
                 .addQueryParameter("req", query)
@@ -226,7 +246,8 @@ public class NewsFeedFragment extends Fragment implements SwipeRefreshLayout.OnR
                                     editor.putInt("pending-requests", number);
                                     editor.apply();
 
-                                    MainActivity.setBadge(number);
+                                    //signal the badge change up to the MainActivity
+                                    mListener.onFragmentInteraction(Constants.UPDATE_BADGE_NOTIFICATION_LAUNCHER);
                                 }
 
                                 ArrayList<String> imagesList = new ArrayList<String>();

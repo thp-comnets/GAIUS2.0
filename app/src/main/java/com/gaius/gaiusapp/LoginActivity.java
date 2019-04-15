@@ -42,12 +42,7 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         getSupportActionBar().hide();
-
         prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
-        String hostIP = prefs.getString("ip_edge", "91.230.41.34");
-        String hostPort = prefs.getString("port_edge", "8080");
-        String hostPath = prefs.getString("path_edge", "test");
-        URL_FOR_LOGIN = "http://" + hostIP + ":" + hostPort + "/" + hostPath + "/"+"login.php";
 
         VideoView view = (VideoView)findViewById(R.id.logo);
         String path = "android.resource://" + getPackageName() + "/" + R.raw.gaius_logo;
@@ -126,11 +121,64 @@ public class LoginActivity extends AppCompatActivity {
             error = true;
         }
         if (!error) {
-            loginUser(loginInputEmail.getText().toString(), loginInputPassword.getText().toString());
+            getLocalServer(loginInputEmail.getText().toString(), loginInputPassword.getText().toString());
         }
     }
 
+    private void getLocalServer (final String email, final String password) {
+        // get local server information
+
+        // Tag used to cancel the request
+        String cancel_req_tag = "login";
+        StringRequest strReq = new StringRequest(Request.Method.POST,
+                "http://192.169.152.158/test/getLocalServer.py", new Response.Listener<String>() {
+
+            @Override
+            public void onResponse(String response) {
+                try {
+                    JSONObject jObj = new JSONObject(response);
+
+                    SharedPreferences.Editor editor = prefs.edit();
+                    editor.putString("base_url", "http://" + jObj.getString("server_ip") + ":" + jObj.getString("server_port") + "/" + jObj.getString("server_path") + "/");
+                    editor.commit();
+
+                    loginUser(email, password);
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        }, new Response.ErrorListener() {
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.d("get local server", "Login Error: " + error.getMessage());
+                Log.d("get local server", "token "+prefs.getString("token", "XXXXX"));
+                Toast.makeText(getApplicationContext(),
+                        error.getMessage(), Toast.LENGTH_LONG).show();
+            }
+        })
+//        {
+//
+//            @Override
+//            protected Map<String, String> getParams() {
+//                // Posting params to login url
+//                Map<String, String> params = new HashMap<String, String>();
+//                params.put("email", email);
+//                params.put("password", password);
+//                return params;
+//            }
+//        }
+        ;
+        // Adding request to request queue
+        AppSingleton.getInstance(getApplicationContext()).addToRequestQueue(strReq,cancel_req_tag);
+    }
+
     private void loginUser(final String email, final String password) {
+        String baseURL = prefs.getString("base_url", "http://192.169.152.158/test/");
+        URL_FOR_LOGIN = baseURL+"login.php";
+
         // Tag used to cancel the request
         String cancel_req_tag = "login";
         StringRequest strReq = new StringRequest(Request.Method.POST,

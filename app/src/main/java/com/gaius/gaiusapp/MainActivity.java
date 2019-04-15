@@ -70,12 +70,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         AndroidNetworking.enableLogging();
         // creating the BASE_URL of the GAIUS edge
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        SharedPreferences.Editor editor = prefs.edit();
-        String hostIP = "91.230.41.34";
-        String hostPort = "8080";
-        String hostPath = "test";
-        editor.putString("base_url", "http://" + hostIP + ":" + hostPort + "/" + hostPath + "/");
-        editor.commit();
+
 
         if (prefs.getString("token", null) == null) {
             Intent i = new Intent(this, LoginActivity.class);

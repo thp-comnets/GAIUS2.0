@@ -19,7 +19,7 @@
             android:layout_height="60dp"
             android:padding="4dp"
             app:civ_border_color="#000000"
-            app:civ_border_width="1dp"/>
+            app:civ_border_width="0dp"/>
 
         <LinearLayout
             android:id="@+id/name_layout"

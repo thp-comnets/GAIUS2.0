@@ -193,13 +193,13 @@ public class ViewMyContentFragment extends Fragment {
             Fragment fragment = null;
             switch (position) {
                 case 0:
-                    fragment = NewsFeedFragment.newInstance(Constants.REQUEST_TYPE_MYOWN, Constants.REQUEST_CONTENT_IMAGES);
+                    fragment = NewsFeedFragment.newInstance(Constants.REQUEST_TYPE_MYOWN, Constants.REQUEST_CONTENT_PAGES);
                     break;
                 case 1:
-                    fragment = NewsFeedFragment.newInstance(Constants.REQUEST_TYPE_MYOWN, Constants.REQUEST_CONTENT_VIDEOS);
+                    fragment = NewsFeedFragment.newInstance(Constants.REQUEST_TYPE_MYOWN, Constants.REQUEST_CONTENT_IMAGES);
                     break;
                 case 2:
-                    fragment = NewsFeedFragment.newInstance(Constants.REQUEST_TYPE_MYOWN, Constants.REQUEST_CONTENT_PAGES);
+                    fragment = NewsFeedFragment.newInstance(Constants.REQUEST_TYPE_MYOWN, Constants.REQUEST_CONTENT_VIDEOS);
                     break;
                 case 3:
                     fragment = PlaceholderFragment.newInstance(position);

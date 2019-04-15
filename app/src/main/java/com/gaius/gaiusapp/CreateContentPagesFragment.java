@@ -24,20 +24,20 @@ public class CreateContentPagesFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_create_content_pages, container, false);
-        ImageView uploadImage = (ImageView) rootView.findViewById(R.id.imageViewUpload);
+        ImageView uploadImage = (ImageView) rootView.findViewById(R.id.imageViewWebpage);
         uploadImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent i = new Intent(getContext(), SimpleWebCreation.class);
+                Intent i = new Intent(getContext(), CreativeWebCreation.class);
                 getContext().startActivity(i);
             }
         });
 
-        ImageView captureImage = (ImageView) rootView.findViewById(R.id.imageViewCapture);
+        ImageView captureImage = (ImageView) rootView.findViewById(R.id.imageViewBlog);
         captureImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent i = new Intent(getContext(), CreativeWebCreation.class);
+                Intent i = new Intent(getContext(), SimpleWebCreation.class);
                 getContext().startActivity(i);
             }
         });

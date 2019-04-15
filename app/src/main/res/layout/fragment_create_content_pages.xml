@@ -13,7 +13,7 @@
             android:orientation="vertical">
 
             <ImageView
-                android:id="@+id/imageViewUpload"
+                android:id="@+id/imageViewWebpage"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:layout_centerHorizontal="true"
@@ -21,32 +21,32 @@
                 android:src="@drawable/icon_page" />
 
             <TextView
-                android:id="@+id/textViewUpload"
+                android:id="@+id/textViewWebpage"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="sans-serif-medium"
                 android:textStyle="normal"
                 android:textColor="@color/black_87"
-                android:layout_below="@+id/imageViewUpload"
+                android:layout_below="@+id/imageViewWebpage"
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="10dp"
                 android:textSize="15sp"
                 android:text="@string/create_webpage" />
 
             <ImageView
-                android:id="@+id/imageViewCapture"
+                android:id="@+id/imageViewBlog"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
-                android:layout_below="@+id/textViewUpload"
+                android:layout_below="@+id/textViewWebpage"
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="80dp"
                 android:src="@drawable/icon_blog" />
 
             <TextView
-                android:id="@+id/textViewCapture"
+                android:id="@+id/textViewBlog"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/imageViewCapture"
+                android:layout_below="@+id/imageViewBlog"
                 android:fontFamily="sans-serif-medium"
                 android:textStyle="normal"
                 android:textColor="@color/black_87"

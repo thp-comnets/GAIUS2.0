@@ -11,8 +11,10 @@ import android.text.method.PasswordTransformationMethod;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VideoView;
@@ -21,18 +23,28 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
+import com.androidnetworking.AndroidNetworking;
+import com.androidnetworking.common.Priority;
+import com.androidnetworking.error.ANError;
+import com.androidnetworking.interfaces.JSONArrayRequestListener;
+import com.gaius.gaiusapp.utils.ServerInfo;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
 public class LoginActivity extends AppCompatActivity {
     private String URL_FOR_LOGIN;
     private Button customSigninButton;
-    private TextView custom_signup_button, forgotpassword_button;
+    private TextView custom_signup_button, forgotpassword_button, serverList;
     private EditText loginInputEmail, loginInputPassword;
+    private Spinner spinner;
+    private ArrayList<ServerInfo> serversArrayList;
+    private ArrayList<String> names;
     SharedPreferences prefs;
 
     @Override
@@ -44,7 +56,7 @@ public class LoginActivity extends AppCompatActivity {
         getSupportActionBar().hide();
         prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
 
-        VideoView view = (VideoView)findViewById(R.id.logo);
+        VideoView view = (VideoView) findViewById(R.id.logo);
         String path = "android.resource://" + getPackageName() + "/" + R.raw.gaius_logo;
         view.setVideoURI(Uri.parse(path));
         view.start();
@@ -85,7 +97,7 @@ public class LoginActivity extends AppCompatActivity {
                 Intent i = new Intent(getApplicationContext(), SignUp.class);
                 startActivity(i);
                 finish();
-                }
+            }
         });
 
         forgotpassword_button = (TextView) findViewById(R.id.custom_forgotpassword);
@@ -96,21 +108,28 @@ public class LoginActivity extends AppCompatActivity {
                 startActivity(i);
             }
         });
+
+        serverList = findViewById(R.id.switch_server);
+        spinner = findViewById(R.id.server_selection);
+        names = new ArrayList<String>();
+        if (prefs.getString("admin", "0").equals("1")) {
+            spinner.setVisibility(View.VISIBLE);
+            serverList.setVisibility(View.VISIBLE);
+            loadServers();
+        }
     }
 
     @Override
-    public void onResume(){
+    public void onResume() {
         super.onResume();
 
-        VideoView view = (VideoView)findViewById(R.id.logo);
+        VideoView view = (VideoView) findViewById(R.id.logo);
         String path = "android.resource://" + getPackageName() + "/" + R.raw.gaius_logo;
         view.setVideoURI(Uri.parse(path));
         view.start();
-
-//        loginFromSaveData();
     }
 
-    private void doLogin () {
+    private void doLogin() {
         boolean error = false;
         if (loginInputEmail.getText().toString().matches("")) {
             loginInputEmail.setError("Email can't be empty", null);
@@ -121,63 +140,130 @@ public class LoginActivity extends AppCompatActivity {
             error = true;
         }
         if (!error) {
-            getLocalServer(loginInputEmail.getText().toString(), loginInputPassword.getText().toString());
+            if (prefs.getString("admin", "0").equals("1") && serversArrayList != null) {
+
+                ServerInfo server = serversArrayList.get(spinner.getSelectedItemPosition());
+                Log.d("thp", "selected spinner " + server.getName());
+
+                SharedPreferences.Editor editor = prefs.edit();
+                editor.putString("base_url", "http://" + server.getIp() + ":" + server.getPort() + "/" + server.getPath() + "/");
+                editor.commit();
+
+                loginUser(loginInputEmail.getText().toString(), loginInputPassword.getText().toString());
+            } else {
+                getLocalServer(loginInputEmail.getText().toString(), loginInputPassword.getText().toString());
+            }
         }
     }
 
-    private void getLocalServer (final String email, final String password) {
+    private void loadServers() {
+        String baseURL = prefs.getString("base_url", "http://192.169.152.158/test/");
+
+        AndroidNetworking.get("http://192.169.152.158/test/getLocalServer.py")
+                .setPriority(Priority.HIGH)
+                .build()
+                .getAsJSONArray(new JSONArrayRequestListener() {
+                    @Override
+                    public void onResponse(JSONArray response) {
+
+                        Log.d("thp", "Server list response as JSON " + response);
+
+                        try {
+
+                            JSONObject servers;
+                            serversArrayList = new ArrayList<ServerInfo>();
+
+                            for (int i = 0; i < response.length(); i++) {
+
+                                servers = response.getJSONObject(i);
+
+                                ServerInfo server = new ServerInfo(servers.getString("server_name"), servers.getString("server_ip"), servers.getString("server_port"), servers.getString("server_path"));
+                                serversArrayList.add(server);
+
+                            }
+
+                            for (int i = 0; i < serversArrayList.size(); i++) {
+                                names.add(serversArrayList.get(i).getName().toString());
+                            }
+
+                            ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>(LoginActivity.this, android.R.layout.simple_spinner_item, names);
+                            spinnerArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                            spinner.setAdapter(spinnerArrayAdapter);
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                            Log.d("Yasir", "Json error " + e);
+                        }
+
+                    }
+
+                    @Override
+                    public void onError(ANError error) {
+
+                        switch (error.getErrorCode()) {
+                            case 401:
+                                break;
+                            case 500:
+                                Log.d("Yasir", "Error 500" + error);
+                                break;
+                            default:
+                                Log.d("Yasir", "Error no Internet " + error);
+                        }
+                    }
+                });
+
+    }
+
+    private void getLocalServer(final String email, final String password) {
         // get local server information
+        AndroidNetworking.get("http://192.169.152.158/test/getLocalServer.py")
+                .setPriority(Priority.HIGH)
+                .build()
+                .getAsJSONArray(new JSONArrayRequestListener() {
+                    @Override
+                    public void onResponse(JSONArray response) {
 
-        // Tag used to cancel the request
-        String cancel_req_tag = "login";
-        StringRequest strReq = new StringRequest(Request.Method.POST,
-                "http://192.169.152.158/test/getLocalServer.py", new Response.Listener<String>() {
+                        Log.d("thp", "Server response as JSON " + response);
 
-            @Override
-            public void onResponse(String response) {
-                try {
-                    JSONObject jObj = new JSONObject(response);
+                        try {
 
-                    SharedPreferences.Editor editor = prefs.edit();
-                    editor.putString("base_url", "http://" + jObj.getString("server_ip") + ":" + jObj.getString("server_port") + "/" + jObj.getString("server_path") + "/");
-                    editor.commit();
+                            JSONObject servers;
 
-                    loginUser(email, password);
+                            //getting first object from json array, this is the global server
+                            servers = response.getJSONObject(0);
+                            SharedPreferences.Editor editor = prefs.edit();
+                            editor.putString("base_url", "http://" + servers.getString("server_ip") + ":" + servers.getString("server_port") + "/" + servers.getString("server_path") + "/");
+                            editor.commit();
 
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
+                            loginUser(email, password);
 
-            }
-        }, new Response.ErrorListener() {
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                            Log.d("Yasir", "Json error " + e);
+                        }
 
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.d("get local server", "Login Error: " + error.getMessage());
-                Log.d("get local server", "token "+prefs.getString("token", "XXXXX"));
-                Toast.makeText(getApplicationContext(),
-                        error.getMessage(), Toast.LENGTH_LONG).show();
-            }
-        })
-//        {
-//
-//            @Override
-//            protected Map<String, String> getParams() {
-//                // Posting params to login url
-//                Map<String, String> params = new HashMap<String, String>();
-//                params.put("email", email);
-//                params.put("password", password);
-//                return params;
-//            }
-//        }
-        ;
-        // Adding request to request queue
-        AppSingleton.getInstance(getApplicationContext()).addToRequestQueue(strReq,cancel_req_tag);
+                    }
+
+                    @Override
+                    public void onError(ANError error) {
+
+                        switch (error.getErrorCode()) {
+                            case 401:
+                                break;
+                            case 500:
+                                Log.d("Yasir", "Error 500" + error);
+                                break;
+                            default:
+                                Log.d("Yasir", "Error no Internet " + error);
+                        }
+                    }
+                });
+
     }
 
     private void loginUser(final String email, final String password) {
         String baseURL = prefs.getString("base_url", "http://192.169.152.158/test/");
-        URL_FOR_LOGIN = baseURL+"login.php";
+        URL_FOR_LOGIN = baseURL + "login.php";
 
         // Tag used to cancel the request
         String cancel_req_tag = "login";
@@ -223,7 +309,7 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onErrorResponse(VolleyError error) {
                 Log.d("User Login", "Login Error: " + error.getMessage());
-                Log.d("User Login", "token "+prefs.getString("token", "XXXXX"));
+                Log.d("User Login", "token " + prefs.getString("token", "XXXXX"));
                 Toast.makeText(getApplicationContext(),
                         error.getMessage(), Toast.LENGTH_LONG).show();
             }
@@ -239,6 +325,6 @@ public class LoginActivity extends AppCompatActivity {
             }
         };
         // Adding request to request queue
-        AppSingleton.getInstance(getApplicationContext()).addToRequestQueue(strReq,cancel_req_tag);
+        AppSingleton.getInstance(getApplicationContext()).addToRequestQueue(strReq, cancel_req_tag);
     }
 }

@@ -71,7 +71,6 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         // creating the BASE_URL of the GAIUS edge
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
 
-
         if (prefs.getString("token", null) == null) {
             Intent i = new Intent(this, LoginActivity.class);
             startActivity(i);
@@ -90,6 +89,13 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 //        loadFragment(NewsFeedFragment.newInstance(0, 0));
 
         BottomNavigationView mBottomNavigationView = findViewById(R.id.navigation);
+
+        if (prefs.getString("admin", "0").equals("1")) {
+            mBottomNavigationView.inflateMenu(R.menu.bottom_navigation_admin);
+        } else {
+            mBottomNavigationView.inflateMenu(R.menu.bottom_navigation);
+        }
+
         mBottomNavigationView.setOnNavigationItemSelectedListener(this);
         mBottomNavigationView.setItemIconTintList(null); //disable icon tinting - otherwise it will show squares not the icons
 
@@ -169,6 +175,9 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
              case R.id.navigation_add_content:
                 startActivity(new Intent(this, CreateContentActivity.class));
                 break;
+            case R.id.navigation_approve_content:
+                startActivity(new Intent(this, ApproveContentActivity.class));
+                break;
         }
 
         return loadFragment(fragment);
@@ -190,7 +199,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         // Hide the action bar title
         actionBar.setDisplayShowTitleEnabled(false);
 
-        // Enabling Spinner dropdown navigation
+        // Enabling Spinner dropdown bottom_navigation
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
         ArrayList<String> mNavigationItems=new ArrayList<String>();
         mNavigationItems.add("Browse Content");
@@ -220,7 +229,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         // Show the action bar title
         actionBar.setDisplayShowTitleEnabled(true);
 
-        // Enabling Spinner dropdown navigation
+        // Enabling Spinner dropdown bottom_navigation
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
         actionBar.setDisplayShowTitleEnabled(true);
     }

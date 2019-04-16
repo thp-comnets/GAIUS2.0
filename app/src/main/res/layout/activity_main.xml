@@ -41,7 +41,6 @@
         android:layout_gravity="bottom"
         android:background="@color/white"
         app:itemIconSize="32dp"
-        app:labelVisibilityMode="unlabeled"
-        app:menu="@menu/navigation" />
+        app:labelVisibilityMode="unlabeled" />
 
 </android.support.design.widget.CoordinatorLayout>

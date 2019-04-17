@@ -453,7 +453,7 @@ public class CreativeWebCreation extends AppCompatActivity implements TextEditor
     private void requestPage(final String mPageUrl) {
         String tmpUrl = BASE_URL + "index.maml?url=" + mPageUrl + "&fidelity=1" + "&resolution=" + ResourceHelper.getScreenWidth(this) + "&noADs=1";
 
-        downloadMaml(tmpUrl, new RenderMAML.VolleyCallback() {
+        downloadMaml(tmpUrl, new RenderMAMLActivity.VolleyCallback() {
             @Override
             public void onSuccess(final String result) {
 
@@ -512,7 +512,7 @@ public class CreativeWebCreation extends AppCompatActivity implements TextEditor
         });
     }
 
-    private void downloadMaml(final String mUrl, final RenderMAML.VolleyCallback callback) {
+    private void downloadMaml(final String mUrl, final RenderMAMLActivity.VolleyCallback callback) {
         // starting to download main index.maml
         final Date startDate = new Date();
 

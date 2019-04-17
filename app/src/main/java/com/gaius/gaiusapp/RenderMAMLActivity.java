@@ -16,6 +16,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.util.TypedValue;
@@ -57,7 +58,7 @@ import cn.jzvd.JzvdStd;
 
 import static com.gaius.gaiusapp.utils.ResourceHelper.getImageUri;
 
-public class RenderMAML extends AppCompatActivity {
+public class RenderMAMLActivity extends AppCompatActivity {
     SharedPreferences prefs;
     String fidelity;
     String token;
@@ -78,6 +79,10 @@ public class RenderMAML extends AppCompatActivity {
         setContentView(R.layout.maml_page);
 
         super.onCreate(savedInstanceState);
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
 
         gestureView = findViewById(R.id.drawer_layout);
         gestureView.getController().getSettings()
@@ -125,7 +130,7 @@ public class RenderMAML extends AppCompatActivity {
             mNoAds =  (String) bundle.getSerializable("LOCAL_CONTENT");
             campaign = (String) bundle.getSerializable("CAMPAIGN");
             if (bundle.getString("title") != null) { //TODO handle this in requestPage and send title with the file?
-                ((AppCompatActivity) this).getSupportActionBar().setTitle(bundle.getString("title"));
+                getSupportActionBar().setTitle(bundle.getString("title"));
             }
         }
 
@@ -138,13 +143,20 @@ public class RenderMAML extends AppCompatActivity {
         }
     }
 
+    //handle the back arrow press in the toolbar
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
+    }
+
     private void requestPage(final String mUrl, final String adUrl, final String mPageUrl, final String mNoAds, final FrameLayout root, final String campaign) {
         String tmpUrl = createURL(mUrl, mPageUrl, mNoAds, campaign);
 
         final Long startTime = System.currentTimeMillis();
         pageSize=0;
 
-        downloadMaml(tmpUrl, adUrl, new RenderMAML.VolleyCallback() {
+        downloadMaml(tmpUrl, adUrl, new RenderMAMLActivity.VolleyCallback() {
             @Override
             public void onSuccess(final String result) {
 
@@ -458,7 +470,7 @@ public class RenderMAML extends AppCompatActivity {
         return tmpUrl;
     }
 
-    private void downloadMaml(final String mUrl, final String adUrl, final RenderMAML.VolleyCallback callback) {
+    private void downloadMaml(final String mUrl, final String adUrl, final RenderMAMLActivity.VolleyCallback callback) {
         Log.d("MAML", "MamlPageActivity: Request index.maml " + mUrl);
 
         InputStreamVolleyRequest request = new InputStreamVolleyRequest(Request.Method.GET, mUrl,
@@ -527,7 +539,7 @@ public class RenderMAML extends AppCompatActivity {
                             startActivity(browserIntent);
                         }
                         else {
-                            Intent intent = new Intent(view.getContext(), RenderMAML.class);
+                            Intent intent = new Intent(view.getContext(), RenderMAMLActivity.class);
                             Bundle bundle = new Bundle();
                             bundle.putSerializable("BASEURL", mUrl);
                             bundle.putSerializable("ADURL", adUrl);
@@ -656,7 +668,7 @@ public class RenderMAML extends AppCompatActivity {
                                     pageSize += response.length;
                                     Bitmap bmp = BitmapFactory.decodeByteArray(response, 0, response.length);
 
-                                    JzvdStd jzVideoPlayerStandard = new JzvdStd (RenderMAML.this);
+                                    JzvdStd jzVideoPlayerStandard = new JzvdStd (RenderMAMLActivity.this);
                                     jzVideoPlayerStandard.setUp(url,"", JzvdStd.SCREEN_WINDOW_NORMAL);
                                     jzVideoPlayerStandard.thumbImageView.setImageBitmap(bmp);
 
@@ -797,7 +809,7 @@ public class RenderMAML extends AppCompatActivity {
                             startActivity(browserIntent);
                         }
                         else {
-                            Intent intent = new Intent(view.getContext(), RenderMAML.class);
+                            Intent intent = new Intent(view.getContext(), RenderMAMLActivity.class);
                             Bundle bundle = new Bundle();
                             bundle.putSerializable("BASEURL", mUrl);
                             bundle.putSerializable("ADURL", adUrl);

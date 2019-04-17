@@ -17,7 +17,7 @@ import android.widget.TextView;
 
 import com.gaius.gaiusapp.BrowseWebFragment;
 import com.gaius.gaiusapp.R;
-import com.gaius.gaiusapp.RenderMAML;
+import com.gaius.gaiusapp.RenderMAMLActivity;
 import com.gaius.gaiusapp.classes.Web;
 import com.gaius.gaiusapp.networking.GlideApp;
 
@@ -77,7 +77,7 @@ public class BrowseWebAdapter extends RecyclerView.Adapter<BrowseWebAdapter.Chan
                         .commit();
                 }
                 else {
-                    Intent i = new Intent(mCtx, RenderMAML.class);
+                    Intent i = new Intent(mCtx, RenderMAMLActivity.class);
 
                     bundle.putSerializable("BASEURL", prefs.getString("base_url", null));
                     bundle.putSerializable("URL", c.getUrl());

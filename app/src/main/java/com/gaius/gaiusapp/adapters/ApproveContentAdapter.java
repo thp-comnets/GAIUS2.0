@@ -25,7 +25,7 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.gaius.gaiusapp.AlbumViewActivity;
 import com.gaius.gaiusapp.R;
-import com.gaius.gaiusapp.RenderMAML;
+import com.gaius.gaiusapp.RenderMAMLActivity;
 import com.gaius.gaiusapp.VideoViewActivity;
 import com.gaius.gaiusapp.classes.Content;
 import com.gaius.gaiusapp.networking.GlideApp;
@@ -153,7 +153,7 @@ public class ApproveContentAdapter extends RecyclerView.Adapter<ApproveContentAd
                     return;
                 }
                 if (content.getType().equals("page")) {
-                    i = new Intent(mCtx, RenderMAML.class);
+                    i = new Intent(mCtx, RenderMAMLActivity.class);
                     bundle.putSerializable("BASEURL", prefs.getString("base_url", null));
                     bundle.putString("title", content.getTitle());
                 }

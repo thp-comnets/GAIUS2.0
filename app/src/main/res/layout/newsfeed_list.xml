@@ -93,7 +93,7 @@
         android:id="@+id/imageView"
         android:layout_width="match_parent"
         android:layout_height="255dp"
-        android:scaleType="centerCrop"
+        android:scaleType="fitStart"
         tools:background="@color/grey_10"/>
 
     <ss.com.bannerslider.Slider

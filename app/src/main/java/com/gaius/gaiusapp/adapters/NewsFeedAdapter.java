@@ -24,7 +24,7 @@ import com.bumptech.glide.Priority;
 import com.gaius.gaiusapp.AlbumViewActivity;
 import com.gaius.gaiusapp.BrowseWebFragment;
 import com.gaius.gaiusapp.R;
-import com.gaius.gaiusapp.RenderMAML;
+import com.gaius.gaiusapp.RenderMAMLActivity;
 import com.gaius.gaiusapp.classes.NewsFeed;
 import com.gaius.gaiusapp.networking.GlideApp;
 
@@ -110,7 +110,7 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.newsFe
                                 .commit();
                     } else {
                         // this is a simple page, render it
-                        Intent i = new Intent(mCtx, RenderMAML.class);
+                        Intent i = new Intent(mCtx, RenderMAMLActivity.class);
                         bundle.putSerializable("BASEURL", prefs.getString("base_url", null));
                         bundle.putSerializable("URL", n.getUrl());
                         bundle.putString("title", n.getTitle());

@@ -26,16 +26,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:paddingTop="?attr/actionBarSize">
-    <Switch
-        android:id="@+id/switchButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:layout_marginBottom="10dp"
-        android:layout_centerHorizontal="true"
-        android:text="Show only my content"
-        android:visibility="visible"/>
-
 
         <pl.droidsonroids.gif.GifImageView
             android:id="@+id/nothing_to_approve_image"
@@ -57,7 +47,6 @@
             android:layout_below="@+id/nothing_to_approve_image"/>
 
         <android.support.v7.widget.RecyclerView
-            android:layout_below="@+id/switchButton"
             android:id="@+id/recylcerView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"

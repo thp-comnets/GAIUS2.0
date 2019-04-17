@@ -223,6 +223,7 @@ public class FriendPageActivity extends AppCompatActivity {
                                         newsFeed.getString("title"),
                                         newsFeed.getString("description"),
                                         newsFeed.getString("url"),
+                                        newsFeed.getString("userID"),
                                         newsFeed.getString("type"),
                                         newsFeed.getString("liked"),
                                         false,

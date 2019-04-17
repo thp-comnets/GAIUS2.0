@@ -60,12 +60,13 @@ public class BrowseWebFragment extends Fragment {
             String userID = bundle.getString("userID", null);
             if (userID != null) {
                 URL += "?userID="+userID;
-                recyclerView.setTag("SubWeb");
+                recyclerView.setTag("channelView");
             }
             bundle.clear();
         }
         else{
             recyclerView.setTag("MainWeb");
+            throw new RuntimeException("BrowseWebFragment: Old code, we should not come here (delete this later)"); //FIXME this class needs somw updates
         }
 
         loadChannels();

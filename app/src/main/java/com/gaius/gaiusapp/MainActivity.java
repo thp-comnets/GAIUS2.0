@@ -322,13 +322,14 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
             case R.id.navigation_content:
 
-                if ((recycler.getTag()+"").contains("SubWeb")) {
-                    setTitle("Content Browser");
-                    loadFragment(new BrowseWebFragment());
+                if ((recycler.getTag()+"").contains("channelView")) {
+                    navigation.setSelectedItemId(R.id.navigation_content);
+//                    setTitle("Content Browser");
+//                    loadFragment(new BrowseWebFragment());
                     break;
-                }
-                else if ((recycler.getTag()+"").contains("MainWeb") || (recycler.getTag()+"").contains("MainVideo")
+                } else if ((recycler.getTag()+"").contains("MainWeb") || (recycler.getTag()+"").contains("MainVideo")
                         || (recycler.getTag()+"").contains("MyContent") || (recycler.getTag()+"").contains("ContentApproval")) {
+                    // FIXME we probably never come here anymore
                     navigation.setSelectedItemId(R.id.navigation_content);
                     break;
                 }

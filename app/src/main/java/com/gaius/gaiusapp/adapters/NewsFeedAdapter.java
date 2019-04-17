@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v4.app.Fragment;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -20,6 +22,7 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.bumptech.glide.Priority;
 import com.gaius.gaiusapp.AlbumViewActivity;
+import com.gaius.gaiusapp.BrowseWebFragment;
 import com.gaius.gaiusapp.R;
 import com.gaius.gaiusapp.RenderMAML;
 import com.gaius.gaiusapp.classes.NewsFeed;
@@ -94,12 +97,26 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.newsFe
                 public void onClick(View v) {
                     NewsFeed n = newsFeedList.get((Integer) v.getTag(R.id.imageView));
                     Bundle bundle = new Bundle();
-                    Intent i = new Intent(mCtx, RenderMAML.class);
-                    bundle.putSerializable("BASEURL", prefs.getString("base_url", null));
-                    bundle.putSerializable("URL", n.getUrl());
-                    bundle.putString("title", n.getTitle());
-                    i.putExtras(bundle);
-                    mCtx.startActivity(i);
+
+                    // we distinguish here between simple pages and channels
+                    if (!n.getUserID().equals("null")) {
+                        // this is a channel, inflate the browse fragme
+                        Fragment fragment = new BrowseWebFragment();
+                        bundle.putString("userID", n.getUserID());
+                        fragment.setArguments(bundle);
+
+                        ((AppCompatActivity) mCtx).getSupportFragmentManager().beginTransaction()
+                                .replace(R.id.fragment_container, fragment)
+                                .commit();
+                    } else {
+                        // this is a simple page, render it
+                        Intent i = new Intent(mCtx, RenderMAML.class);
+                        bundle.putSerializable("BASEURL", prefs.getString("base_url", null));
+                        bundle.putSerializable("URL", n.getUrl());
+                        bundle.putString("title", n.getTitle());
+                        i.putExtras(bundle);
+                        mCtx.startActivity(i);
+                    }
                 }
             });
         }

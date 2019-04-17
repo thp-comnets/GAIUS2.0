@@ -11,12 +11,13 @@ public class NewsFeed {
     private String title;
     private String description;
     private String url;
+    private String userID;
     private String type;
     private Boolean showAvatar;
     private ArrayList<String> imagesGallery;
     private String liked;
 
-    public NewsFeed (int id, String name, String updateTime, String avatar, String image, String title, String description, String url, String type, String liked, Boolean showAvatar, ArrayList<String> imagesGallery) {
+    public NewsFeed (int id, String name, String updateTime, String avatar, String image, String title, String description, String url, String userID, String type, String liked, Boolean showAvatar, ArrayList<String> imagesGallery) {
         this.id = id;
         this.name = name;
         this.updateTime = updateTime;
@@ -25,6 +26,7 @@ public class NewsFeed {
         this.title = title;
         this.description = description;
         this.url = url;
+        this.userID = userID;
         this.type = type;
         this.showAvatar = showAvatar;
         this.liked = liked;
@@ -61,6 +63,10 @@ public class NewsFeed {
     }
 
     public String getUrl() {return url; }
+
+    public String getUserID() { return userID; }
+
+    public void setUserID(String userID) { this.userID = userID; }
 
     public String getType() {return type; }
 

@@ -178,6 +178,7 @@ public class NewsFeedFragment extends Fragment implements SwipeRefreshLayout.OnR
     @Override
     public void onDetach() {
         super.onDetach();
+        Log.d("thp", "detach NewsFeedFragment " + contentParam + " " + typeParam);
         mListener = null;
     }
 
@@ -247,7 +248,13 @@ public class NewsFeedFragment extends Fragment implements SwipeRefreshLayout.OnR
                                     editor.apply();
 
                                     //signal the badge change up to the MainActivity
-                                    mListener.onFragmentInteraction(Constants.UPDATE_BADGE_NOTIFICATION_LAUNCHER);
+                                    if (mListener != null) {
+                                        Log.e("thp", "mListener is null (FIXME) " + contentParam + " " + typeParam);
+                                        Toast.makeText(getContext(), "FIXME mListener is null " + contentParam + " " + typeParam,
+                                                Toast.LENGTH_LONG).show();
+                                        mListener.onFragmentInteraction(Constants.UPDATE_BADGE_NOTIFICATION_LAUNCHER);
+                                    }
+
                                 }
 
                                 ArrayList<String> imagesList = new ArrayList<String>();
@@ -265,6 +272,7 @@ public class NewsFeedFragment extends Fragment implements SwipeRefreshLayout.OnR
                                         newsFeed.getString("title"),
                                         newsFeed.getString("description"),
                                         newsFeed.getString("url"),
+                                        newsFeed.getString("userID"),
                                         newsFeed.getString("type"),
                                         newsFeed.getString("liked"),
                                         true,
@@ -323,6 +331,9 @@ public class NewsFeedFragment extends Fragment implements SwipeRefreshLayout.OnR
 
     @Override
     public void onRefresh() {
+        noInternet.setVisibility(View.GONE);
+        error500.setVisibility(View.GONE);
+
         if (recyclerView.getVisibility() == View.GONE) {
             mShimmerViewContainer.setVisibility(View.VISIBLE);
             mShimmerViewContainer.startShimmer();

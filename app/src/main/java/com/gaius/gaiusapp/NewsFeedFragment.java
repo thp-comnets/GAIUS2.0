@@ -249,15 +249,11 @@ public class NewsFeedFragment extends Fragment implements SwipeRefreshLayout.OnR
                                     editor.putInt("pending-requests", number);
                                     editor.apply();
 
-                                    //signal the badge change up to the MainActivity
+                                    //signal the badge change up to the MainActivity. it can be null if the response arrives when the fragment is detached
+                                    // TODO maybe we should skip the return then?
                                     if (mListener != null) {
                                         mListener.onFragmentInteraction(Constants.UPDATE_BADGE_NOTIFICATION_LAUNCHER);
-                                    } else {
-                                        Log.e("thp", "mListener is null (FIXME) " + contentParam + " " + typeParam);
-                                        Toast.makeText(getContext(), "FIXME mListener is null " + contentParam + " " + typeParam,
-                                                Toast.LENGTH_LONG).show();
                                     }
-
 
                                 }
 

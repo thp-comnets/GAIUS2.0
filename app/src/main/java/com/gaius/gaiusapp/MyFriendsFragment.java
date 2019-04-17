@@ -122,7 +122,11 @@ public class MyFriendsFragment extends Fragment implements SwipeRefreshLayout.On
                                     editor.putInt("pending-requests", number);
                                     editor.commit();
 
-                                    mListener.onFragmentInteraction(Constants.UPDATE_BADGE_NOTIFICATION_FRIENDS);
+                                    //signal the badge change up to the MainActivity. it can be null if the response arrives when the fragment is detached
+                                    // TODO maybe we should skip the return then?
+                                    if (mListener != null) {
+                                        mListener.onFragmentInteraction(Constants.UPDATE_BADGE_NOTIFICATION_FRIENDS);
+                                    }
 
                                 }
 

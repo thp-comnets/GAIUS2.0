@@ -152,7 +152,11 @@ public class MyFriendsRequestsFragment extends Fragment implements SwipeRefreshL
                             editor.putInt("pending-requests", number);
                             editor.apply();
 
-                            mListener.onFragmentInteraction(Constants.UPDATE_BADGE_NOTIFICATION_FRIENDS);
+                            //signal the badge change up to the MainActivity. it can be null if the response arrives when the fragment is detached
+                            // TODO maybe we should skip the return then?
+                            if (mListener != null) {
+                                mListener.onFragmentInteraction(Constants.UPDATE_BADGE_NOTIFICATION_FRIENDS);
+                            }
 
                             //creating adapter object and setting it to recyclerview
                             adapter = new FriendsAdapter(getContext(), friendList, mAdapterListener);

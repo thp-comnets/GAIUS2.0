@@ -385,6 +385,11 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
             FriendsFragment fragment = (FriendsFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_container);
             fragment.updateNotificationBadge();
         }
+        //TODO add badge for approve pages
+//        if (action == Constants.UPDATE_BADGE_NOTIFICATION_FRIENDS) {
+//            FriendsFragment fragment = (FriendsFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_container);
+//            fragment.updateNotificationBadge();
+//        }
 
         setBadge(prefs.getInt("pending-requests", 0));
 

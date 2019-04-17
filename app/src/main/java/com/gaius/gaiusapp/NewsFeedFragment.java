@@ -70,7 +70,7 @@ public class NewsFeedFragment extends Fragment implements SwipeRefreshLayout.OnR
         return fragment;
     }
 
-    // for user pages
+    // for specific user pages (not my own)
     public static NewsFeedFragment newInstance(Integer type, Integer content, String userID) {
         NewsFeedFragment fragment = new NewsFeedFragment();
         Bundle args = new Bundle();
@@ -167,6 +167,8 @@ public class NewsFeedFragment extends Fragment implements SwipeRefreshLayout.OnR
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
+        Log.d("thp", "attach NewsFeedFragment " + contentParam + " " + typeParam);
+
         if (context instanceof OnFragmentInteractionListener) {
             mListener = (OnFragmentInteractionListener) context;
         } else {
@@ -249,11 +251,13 @@ public class NewsFeedFragment extends Fragment implements SwipeRefreshLayout.OnR
 
                                     //signal the badge change up to the MainActivity
                                     if (mListener != null) {
+                                        mListener.onFragmentInteraction(Constants.UPDATE_BADGE_NOTIFICATION_LAUNCHER);
+                                    } else {
                                         Log.e("thp", "mListener is null (FIXME) " + contentParam + " " + typeParam);
                                         Toast.makeText(getContext(), "FIXME mListener is null " + contentParam + " " + typeParam,
                                                 Toast.LENGTH_LONG).show();
-                                        mListener.onFragmentInteraction(Constants.UPDATE_BADGE_NOTIFICATION_LAUNCHER);
                                     }
+
 
                                 }
 

@@ -1,5 +1,6 @@
 package com.gaius.gaiusapp;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -35,10 +36,12 @@ public class ApproveContentActivity extends AppCompatActivity {
     ImageView nothingToApproveImage;
     TextView nothingToApproveText;
     private static String URL = "";
+    Context mCtx;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mCtx = this;
         setContentView(R.layout.activity_approve_content);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -128,7 +131,7 @@ public class ApproveContentActivity extends AppCompatActivity {
                             }
 
                             //creating adapter object and setting it to recyclerview
-                            ApproveContentAdapter adapter = new ApproveContentAdapter(getApplicationContext(), contentList);
+                            ApproveContentAdapter adapter = new ApproveContentAdapter(mCtx, contentList);
                             recyclerView.setAdapter(adapter);
                         } catch (JSONException e) {
                             e.printStackTrace();

@@ -102,7 +102,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         BottomNavigationMenuView mBottomNavigationMenuView =
                 (BottomNavigationMenuView) mBottomNavigationView.getChildAt(0);
 
-        BottomNavigationItemView itemView = (BottomNavigationItemView) mBottomNavigationMenuView.getChildAt(1);
+        BottomNavigationItemView itemView = (BottomNavigationItemView) mBottomNavigationMenuView.getChildAt(2);
 
         View friendBadgeView = LayoutInflater.from(this)
                 .inflate(R.layout.badge_layout, mBottomNavigationMenuView, false);

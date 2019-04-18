@@ -95,6 +95,7 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.newsFe
                     .content()
 //                    .transition(withCrossFade())
                     .into(holder.imageView);
+
             holder.imageView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

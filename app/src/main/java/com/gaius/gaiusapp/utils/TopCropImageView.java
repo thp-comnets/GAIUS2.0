@@ -2,10 +2,11 @@ package com.gaius.gaiusapp.utils;
 
 import android.content.Context;
 import android.graphics.Matrix;
+import android.support.v7.widget.AppCompatImageView;
 import android.util.AttributeSet;
-import android.widget.ImageView;
+import android.util.Log;
 
-public class TopCropImageView extends ImageView {
+public class TopCropImageView extends AppCompatImageView {
     public TopCropImageView(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
@@ -23,10 +24,50 @@ public class TopCropImageView extends ImageView {
     @Override
     protected boolean setFrame(int l, int t, int r, int b)
     {
+        Log.d("thp", "enter");
         Matrix matrix = getImageMatrix();
         float scaleFactor = getWidth()/(float)getDrawable().getIntrinsicWidth();
         matrix.setScale(scaleFactor, scaleFactor, 0, 0);
         setImageMatrix(matrix);
+        Log.d("thp", "exit");
         return super.setFrame(l, t, r, b);
     }
+
+    //if the image shows only white background, try the code below
+
+    // this makes the image of pages TOP_CROP
+    // https://gist.github.com/arriolac/3843346
+//    @Override
+//    protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
+//        super.onLayout(changed, left, top, right, bottom);
+//        recomputeImgMatrix();
+//    }
+//
+//    @Override
+//    protected boolean setFrame(int l, int t, int r, int b) {
+//        recomputeImgMatrix();
+//        return super.setFrame(l, t, r, b);
+//    }
+//
+//    private void recomputeImgMatrix() {
+//        final Matrix matrix = getImageMatrix();
+//
+//        float scale;
+//        final int viewWidth = getWidth() - getPaddingLeft() - getPaddingRight();
+//        final int viewHeight = getHeight() - getPaddingTop() - getPaddingBottom();
+//        final int drawableWidth = getDrawable().getIntrinsicWidth();
+//        final int drawableHeight = getDrawable().getIntrinsicHeight();
+//
+//        if (drawableWidth * viewHeight > drawableHeight * viewWidth) {
+//            scale = (float) viewHeight / (float) drawableHeight;
+//        } else {
+//            scale = (float) viewWidth / (float) drawableWidth;
+//        }
+//
+//        Log.d("thp", "setframe " + getDrawable() + getImageMatrix());
+//
+//        matrix.setScale(scale, scale);
+//        setImageMatrix(matrix);
+//    }
+
 }

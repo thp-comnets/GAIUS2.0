@@ -95,7 +95,7 @@
         android:layout_height="220dp"
         android:scaleType="matrix"
         tools:background="@color/grey_10"
-        tools:visibility="gone"/>
+        tools:visibility="visible"/>
 
     <!--height is set in NewsFeedAdapter-->
     <ss.com.bannerslider.Slider
@@ -104,7 +104,7 @@
         android:layout_height="match_parent"
         app:slider_loopSlides="false"
         app:slider_animateIndicators="true"
-        tools:visibility="visible"
+        tools:visibility="gone"
         tools:background="@color/grey_10" />
 
     <RelativeLayout

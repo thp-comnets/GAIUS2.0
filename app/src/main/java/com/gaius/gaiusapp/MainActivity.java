@@ -72,7 +72,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
 
         if (prefs.getString("token", null) == null) {
-            Intent i = new Intent(this, LoginActivity.class);
+            Intent i = new Intent(this, LoginActivitySms.class);
             startActivity(i);
             finish();
             return;

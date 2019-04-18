@@ -9,6 +9,9 @@
         <!-- Override the dropdown item in support library -->
         <item name="spinnerDropDownItemStyle">@style/TextViewSpinnerDropDownItem</item>
         <item name="popupTheme">@style/ThemeOverlaySpinner</item>
+
+        <item name="otpViewStyle">@style/OtpWidget.OtpView</item>
+
     </style>
 
     <style name="TextLabel" parent="TextAppearance.AppCompat">

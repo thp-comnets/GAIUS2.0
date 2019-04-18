@@ -86,23 +86,26 @@
     <cn.jzvd.JzvdStd
         android:id="@+id/videoView"
         android:layout_width="match_parent"
-        android:layout_height="255dp"
+        android:layout_height="220dp"
         tools:visibility="gone"/>
 
-    <ImageView
+    <com.gaius.gaiusapp.utils.TopCropImageView
         android:id="@+id/imageView"
         android:layout_width="match_parent"
-        android:layout_height="255dp"
-        android:scaleType="fitStart"
-        tools:background="@color/grey_10"/>
+        android:layout_height="220dp"
+        android:scaleType="matrix"
+        tools:background="@color/grey_10"
+        tools:visibility="gone"/>
 
+    <!--height is set in NewsFeedAdapter-->
     <ss.com.bannerslider.Slider
         android:id="@+id/slider"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:slider_loopSlides="false"
         app:slider_animateIndicators="true"
-        tools:visibility="gone"/>
+        tools:visibility="visible"
+        tools:background="@color/grey_10" />
 
     <RelativeLayout
         android:id="@+id/newsfeed_footer"

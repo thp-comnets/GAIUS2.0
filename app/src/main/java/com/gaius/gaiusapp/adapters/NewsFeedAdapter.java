@@ -27,6 +27,7 @@ import com.gaius.gaiusapp.R;
 import com.gaius.gaiusapp.RenderMAMLActivity;
 import com.gaius.gaiusapp.classes.NewsFeed;
 import com.gaius.gaiusapp.networking.GlideApp;
+import com.gaius.gaiusapp.utils.TopCropImageView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,10 +45,12 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.newsFe
     private Context mCtx;
     private List<NewsFeed> newsFeedList;
     private SharedPreferences prefs;
+    private float scale;
 
     public NewsFeedAdapter(Context mCtx, List<NewsFeed> newsFeedList) {
         this.mCtx = mCtx;
         this.newsFeedList = newsFeedList;
+        this.scale = mCtx.getResources().getDisplayMetrics().density;
     }
 
     @Override
@@ -150,6 +153,7 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.newsFe
                 @Override
                 public void onBindImageSlide(int position, ImageSlideViewHolder imageSlideViewHolder) {
                     imageSlideViewHolder.bindImageSlide(holder.multiImageViewBitmaps.get(position));
+                    imageSlideViewHolder.imageView.setMaxHeight((int) (220 * scale));
                 }
             });
 
@@ -304,14 +308,12 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.newsFe
 
     public class newsFeedViewHolder extends RecyclerView.ViewHolder {
 
-//        CardView newsFeedCard;
         TextView textViewName, textViewUpdateTime, textViewTitle, textViewDescription;
-        ImageView avatarView, imageView, likeButton, shareButton;
+        ImageView avatarView, likeButton, shareButton;
+        TopCropImageView imageView;
         JzvdStd videoView;
-//        SliderLayout mDemoSlider;
         Slider slider;
         ArrayList<String> multiImageViewBitmaps;
-
 
         public newsFeedViewHolder(View itemView) {
             super(itemView);

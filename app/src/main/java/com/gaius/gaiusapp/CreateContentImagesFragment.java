@@ -9,10 +9,12 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -36,7 +38,9 @@ import com.gaius.gaiusapp.utils.ResourceHelper;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 import io.brotherjing.galleryview.GalleryView;
 import okhttp3.Response;
@@ -47,6 +51,8 @@ import static com.gaius.gaiusapp.utils.ResourceHelper.getResizedBitmap;
 public class CreateContentImagesFragment extends Fragment {
 
     private final int PICK_IMAGE_MULTIPLE = 0;
+    private final int REQUEST_TAKE_PHOTO = 1;
+    String currentPhotoPathCaptured;
     int currentImagePos = 0;
     ArrayList<String> multiImageViewBitmaps;
     ArrayList<String> uploadImagesPath;
@@ -69,11 +75,15 @@ public class CreateContentImagesFragment extends Fragment {
         uploadImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-                intent.setType("image/*");
-                intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
-                startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_MULTIPLE); //SELECT_PICTURES is simply a global int used to check the calling intent in onActivityResult
+                uploadImage();
+            }
+        });
 
+        TextView uploadImageTextView = (TextView) rootView.findViewById(R.id.textViewUpload);
+        uploadImageTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                uploadImage();
             }
         });
 
@@ -81,8 +91,15 @@ public class CreateContentImagesFragment extends Fragment {
         captureImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
-                startActivity(intent);
+                captureImage();
+            }
+        });
+
+        TextView captureImageTextView = (TextView) rootView.findViewById(R.id.textViewCapture);
+        captureImageTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                captureImage();
             }
         });
         return rootView;
@@ -133,7 +150,29 @@ public class CreateContentImagesFragment extends Fragment {
                     uploadImagesPath.add(imagePath);
                     multiImageViewBitmaps.add(imageUri.toString());
                 }
+            }
 
+            if (requestCode == REQUEST_TAKE_PHOTO) {
+                File file = new File(currentPhotoPathCaptured);
+                Bitmap bitmap = null;
+                try {
+                    bitmap = MediaStore.Images.Media.getBitmap(getContext().getContentResolver(), Uri.fromFile(file));
+                    bitmap = ResourceHelper.rotateImageIfRequired(getContext(), bitmap, Uri.fromFile(file));
+                    bitmap = ResourceHelper.getResizedBitmap(bitmap, 800);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                if (bitmap != null) {
+                    String imagePath = ResourceHelper.saveBitmapCompressed(getContext(), Uri.fromFile(file), bitmap);
+                    multiImageViewBitmaps = new ArrayList<>();
+                    uploadImagesPath = new ArrayList<>();
+                    uploadImagesPath.add(imagePath);
+                    multiImageViewBitmaps.add(Uri.fromFile(file).toString());
+                }
+            }
+
+            if (!uploadImagesPath.isEmpty()) {
                 LayoutInflater layoutInflater = LayoutInflater.from(getContext());
                 final View promptView = layoutInflater.inflate(R.layout.activity_upload_album, null);
                 alertD = new AlertDialog.Builder(getContext()).create();
@@ -201,11 +240,53 @@ public class CreateContentImagesFragment extends Fragment {
         }
     }
 
+    private void uploadImage() {
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        intent.setType("image/*");
+        intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+        startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_MULTIPLE); //SELECT_PICTURES is simply a global int used to check the calling intent in onActivityResult
+    }
+
+    private void captureImage() {
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        // Ensure that there's a camera activity to handle the intent
+        if (takePictureIntent.resolveActivity(getActivity().getPackageManager()) != null) {
+            // Create the File where the photo should go
+            File photoFile = null;
+            try {
+                photoFile = createImageFile();
+            } catch (IOException ex) {
+                // Error occurred while creating the File
+                Toast.makeText(getContext(), "Something went wrong when saving the image", Toast.LENGTH_LONG).show();
+            }
+            // Continue only if the File was successfully created
+            if (photoFile != null) {
+                Uri photoURI = FileProvider.getUriForFile(getContext(), "com.gaius.gaiusapp.fileprovider", photoFile);
+                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO);
+            }
+        }
+    }
+
     public void incrementCount(int index) {
         label.setText((index + 1) + "/" + galleryView.getAdapter().getCount());
         currentImagePos = index + 1;
     }
 
+    private File createImageFile() throws IOException {
+        // Create an image file name
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String imageFileName = "JPEG_" + timeStamp + "_";
+        File storageDir = getActivity().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File image = File.createTempFile(
+                imageFileName,  /* prefix */
+                ".jpg",         /* suffix */
+                storageDir      /* directory */
+        );
+
+        currentPhotoPathCaptured = image.getAbsolutePath();
+        return image;
+    }
 
     private void uploadMultipart(final String title, final String description) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity().getApplicationContext());

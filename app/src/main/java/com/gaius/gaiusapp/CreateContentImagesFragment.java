@@ -158,7 +158,7 @@ public class CreateContentImagesFragment extends Fragment {
                 try {
                     bitmap = MediaStore.Images.Media.getBitmap(getContext().getContentResolver(), Uri.fromFile(file));
                     bitmap = ResourceHelper.rotateImageIfRequired(getContext(), bitmap, Uri.fromFile(file));
-                    bitmap = ResourceHelper.getResizedBitmap(bitmap, 800);
+                    bitmap = ResourceHelper.getResizedBitmap(bitmap, 1200);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

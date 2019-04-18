@@ -68,4 +68,5 @@ dependencies {
     implementation project(path: ':videocompressionlibrary')
 
     implementation 'com.github.mukeshsolanki:android-otpview-pinview:2.0.3'
+    implementation 'swarajsaaj:otpreader:1.1'
 }

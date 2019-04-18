@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.util.Log;
@@ -11,6 +12,7 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.androidnetworking.AndroidNetworking;
 import com.androidnetworking.common.Priority;
@@ -18,6 +20,7 @@ import com.androidnetworking.error.ANError;
 import com.androidnetworking.interfaces.JSONArrayRequestListener;
 import com.gaius.gaiusapp.utils.ServerInfo;
 import com.mukesh.OtpView;
+
 
 import net.rimoto.intlphoneinput.IntlPhoneInput;
 
@@ -27,8 +30,11 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
+import swarajsaaj.smscodereader.interfaces.OTPListener;
+import swarajsaaj.smscodereader.receivers.OtpReader;
 
-public class LoginActivitySms extends AppCompatActivity {
+
+public class LoginActivitySms extends AppCompatActivity implements OTPListener {
 //    private String URL_FOR_LOGIN;
     private Button customSigninButton;
     private IntlPhoneInput phoneInputView;
@@ -65,12 +71,15 @@ public class LoginActivitySms extends AppCompatActivity {
                 doLogin();
             }
         });
+
+        OtpReader.bind(this,"sms");
+
     }
 
     void doLogin () {
         Log.d("sms", "Logging in");
 
-        String baseURL = prefs.getString("base_url", "http://192.169.152.158/test/");
+        final String baseURL = prefs.getString("base_url", "http://192.169.152.158/test/");
 
         customSigninButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -84,7 +93,8 @@ public class LoginActivitySms extends AppCompatActivity {
 //                editor.putString("gender", jObj.getJSONObject("user").getString("gender"));
 //                editor.putString("age", jObj.getJSONObject("user").getString("age"));
 //                editor.putString("userID", jObj.getJSONObject("user").getString("userID"));
-//                editor.putString("number", jObj.getJSONObject("user").getString("phoneNumber"));
+//                editor.putString("number", jObj.getJSONObject("user").getString("phoneNumber"))
+                editor.putString("base_url", baseURL);
                 editor.putString("admin", "1");
                 editor.apply();
 
@@ -140,4 +150,15 @@ public class LoginActivitySms extends AppCompatActivity {
                     }
                 });
     }
+
+    @Override
+    public void otpReceived(String smsText) {
+        int indexOfLast = smsText.lastIndexOf(" ");
+        String otp_code = smsText;
+        if(indexOfLast >= 0) otp_code = smsText.substring(indexOfLast+1, smsText.length());
+
+        Log.d("sms",otp_code);
+        otp_view.setText(otp_code);
+    }
+
 }

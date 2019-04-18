@@ -84,6 +84,7 @@ public class NewsFeedFragment extends Fragment implements SwipeRefreshLayout.OnR
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         if (getArguments() != null) {
             typeParam = getArguments().getInt(ARG_PARAM1);
             contentParam = getArguments().getInt(ARG_PARAM2);
@@ -135,7 +136,7 @@ public class NewsFeedFragment extends Fragment implements SwipeRefreshLayout.OnR
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
-                if (((LinearLayoutManager) recyclerView.getLayoutManager()).findLastVisibleItemPosition() <= 1) {
+                if (((LinearLayoutManager) recyclerView.getLayoutManager()).findFirstCompletelyVisibleItemPosition() == 0) {
                     buttonReturnToTop.setVisibility(View.GONE);
                 } else {
                     buttonReturnToTop.setVisibility(View.VISIBLE);
@@ -167,7 +168,7 @@ public class NewsFeedFragment extends Fragment implements SwipeRefreshLayout.OnR
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        Log.d("thp", "attach NewsFeedFragment " + contentParam + " " + typeParam);
+        Log.d("thp", "attach NewsFeedFragment");
 
         if (context instanceof OnFragmentInteractionListener) {
             mListener = (OnFragmentInteractionListener) context;

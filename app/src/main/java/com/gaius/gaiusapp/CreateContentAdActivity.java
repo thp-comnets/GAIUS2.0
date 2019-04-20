@@ -17,6 +17,7 @@ import android.provider.MediaStore;
 import android.support.v4.content.CursorLoader;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -25,6 +26,7 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -56,7 +58,7 @@ import cn.jzvd.Jzvd;
 import cn.jzvd.JzvdStd;
 import okhttp3.Response;
 
-public class AdCreationActivity extends AppCompatActivity {
+public class CreateContentAdActivity extends AppCompatActivity {
     private ImageView imageViewAd, videoDummyViewAd;
     private EditText editTextAd;
     JzvdStd videoViewAd;
@@ -82,11 +84,16 @@ public class AdCreationActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_create_ad);
 
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
 
         editTextAd = findViewById(R.id.editTextAd);
 
-        imageViewAd = findViewById(R.id.imageView);
+        imageViewAd = findViewById(R.id.imageViewAd);
         imageViewAd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -94,7 +101,7 @@ public class AdCreationActivity extends AppCompatActivity {
             }
         });
 
-        videoViewAd = findViewById(R.id.videoAdView);
+        videoViewAd = findViewById(R.id.videoViewAd);
         videoDummyViewAd = findViewById(R.id.video_dummy_View);
         videoDummyViewAd.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -113,6 +120,13 @@ public class AdCreationActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu (Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.create_ads, menu);
+        return true;
+    }
+
+    //handle the back arrow press in the toolbar
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
         return true;
     }
 
@@ -320,8 +334,9 @@ public class AdCreationActivity extends AppCompatActivity {
             if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
 
                 CropImage.ActivityResult result = CropImage.getActivityResult(data);
-                Log.d("thp", "crop image activity request");
                 imageViewAd.setImageURI(result.getUri());
+                // make the image bigger than the icon
+                imageViewAd.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, (int) (120 * getResources().getDisplayMetrics().density)));
                 imageFilePath = result.getUri().getPath();
             }
 

@@ -115,11 +115,11 @@
             android:launchMode="singleTask"
             android:theme="@style/AppTheme" />
         <activity
-            android:name=".AdCreationActivity"
+            android:name=".CreateContentAdActivity"
             android:configChanges="orientation|screenSize|screenLayout|keyboardHidden"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme" />
+            android:theme="@style/AppThemeCreateAds.NoActionBar" />
         <activity
             android:name=".AlbumViewActivity"
             android:configChanges="orientation|screenSize|screenLayout|keyboardHidden"

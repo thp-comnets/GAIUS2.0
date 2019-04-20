@@ -148,5 +148,6 @@
     <string name="friends">Friends</string>
     <string name="search">Search</string>
     <string name="requests">Requests</string>
+    <string name="upload_advertisement">Upload Advertisement</string>
 
 </resources>

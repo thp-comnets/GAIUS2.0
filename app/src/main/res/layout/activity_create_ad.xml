@@ -1,16 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/scrollView"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:isScrollContainer="false">
+    android:layout_height="match_parent"
+    tools:context=".CreateContentAdActivity">
+
+    <android.support.design.widget.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/AppTheme.AppBarOverlay">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:layout_weight="1"
+            android:background="?attr/colorPrimary"
+            app:layout_scrollFlags="scroll|enterAlways"
+            app:popupTheme="@style/AppTheme.PopupOverlay" />
+
+    </android.support.design.widget.AppBarLayout>
 
     <RelativeLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="20dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingTop="?attr/actionBarSize"
+        android:layout_marginTop="5dp"
         android:orientation="vertical">
 
         <android.support.v7.widget.CardView
@@ -21,52 +38,68 @@
             android:elevation="10dp"
             app:cardBackgroundColor="#ffffff"
             app:cardCornerRadius="10dp"
-            app:contentPadding="5dp">
+            app:contentPadding="20dp">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:text="Text"
-                android:textSize="14dp" />
-
-            <EditText
-                android:id="@+id/editTextAd"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="30dp" />
+                android:orientation="vertical">
 
+                <EditText
+                    android:id="@+id/editTextAd"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="30dp"
+                    android:layout_marginEnd="30dp"/>
+
+                <TextView
+                    android:id="@+id/textViewTextAdUpload"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="sans-serif-medium"
+                    android:textStyle="normal"
+                    android:textColor="@color/black_87"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="10dp"
+                    android:textSize="15sp"
+                    android:text="Text" />
+            </LinearLayout>
         </android.support.v7.widget.CardView>
 
         <android.support.v7.widget.CardView
             android:layout_below="@+id/ad_text_card"
             android:id="@+id/ad_image_card"
             android:layout_width="match_parent"
-            android:layout_height="150dp"
+            android:layout_height="wrap_content"
             android:layout_margin="5dp"
             android:elevation="10dp"
             app:cardBackgroundColor="#ffffff"
             app:cardCornerRadius="10dp"
-            app:contentPadding="5dp">
+            app:contentPadding="20dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="vertical">
 
+                <ImageView
+                    android:id="@+id/imageViewAd"
+                    android:layout_width="40dp"
+                    android:layout_height="45dp"
+                    android:layout_gravity="center_horizontal"
+                    android:src="@drawable/icon_upload_image" />
+
                 <TextView
+                    android:id="@+id/textViewImageAdUpload"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:fontFamily="sans-serif-medium"
+                    android:textStyle="normal"
+                    android:textColor="@color/black_87"
                     android:layout_gravity="center_horizontal"
-                    android:text="Image"
-                    android:textSize="14dp" />
-
-                <ImageView
-                    android:id="@+id/imageView"
-                    android:layout_width="match_parent"
-                    android:layout_height="120dp"
-                    android:layout_gravity="center_horizontal"
-                    android:src="@drawable/ic_image_create" />
+                    android:layout_marginTop="10dp"
+                    android:textSize="15sp"
+                    android:text="@string/upload_image" />
 
             </LinearLayout>
         </android.support.v7.widget.CardView>
@@ -74,38 +107,44 @@
         <android.support.v7.widget.CardView
             android:layout_below="@+id/ad_image_card"
             android:id="@+id/ad_video_card"
-            android:layout_width="wrap_content"
-            android:layout_height="150dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:layout_margin="5dp"
             android:elevation="10dp"
             app:cardBackgroundColor="#ffffff"
             app:cardCornerRadius="10dp"
-            app:contentPadding="5dp">
+            app:contentPadding="20dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="vertical">
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:text="Video (optional)"
-                    android:textSize="14dp" />
-
                 <ImageView
                     android:id="@+id/video_dummy_View"
-                    android:layout_width="wrap_content"
-                    android:layout_height="120dp"
-                    android:src="@drawable/ic_video_create"/>
+                    android:layout_width="40dp"
+                    android:layout_height="45dp"
+                    android:layout_gravity="center_horizontal"
+                    android:src="@drawable/icon_upload_video"/>
 
                 <cn.jzvd.JzvdStd
-                    android:id="@+id/videoAdView"
+                    android:id="@+id/videoViewAd"
                     android:layout_width="wrap_content"
                     android:layout_height="120dp"
-                    android:layout_margin="10dp"
+                    android:layout_gravity="center_horizontal"
                     android:visibility="gone"/>
+
+                <TextView
+                    android:id="@+id/textViewVideoUpload"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="sans-serif-medium"
+                    android:textStyle="normal"
+                    android:textColor="@color/black_87"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="10dp"
+                    android:textSize="15sp"
+                    android:text="Video (optional)" />
 
             </LinearLayout>
         </android.support.v7.widget.CardView>
@@ -113,28 +152,42 @@
         <android.support.v7.widget.CardView
             android:layout_below="@+id/ad_video_card"
             android:id="@+id/ad_link_card"
-            android:layout_width="fill_parent"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
             android:elevation="10dp"
             app:cardBackgroundColor="#ffffff"
             app:cardCornerRadius="10dp"
-            app:contentPadding="5dp">
+            app:contentPadding="20dp">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:text="Link to an existing page"
-                android:textSize="14dp" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
 
-            <Spinner
-                android:id="@+id/spinner"
-                android:layout_width="220sp"
-                android:layout_height="100dp"
-                android:spinnerMode="dropdown"
-                android:dropDownVerticalOffset="-35dp"
-                android:layout_gravity="center_horizontal"/>
+                <Spinner
+                    android:id="@+id/spinner"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginEnd="20dp"
+                    android:spinnerMode="dropdown"
+                    android:dropDownVerticalOffset="-35dp"
+                    android:layout_gravity="center_horizontal"/>
+
+                <TextView
+                    android:id="@+id/textViewLinkUpload"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="sans-serif-medium"
+                    android:textStyle="normal"
+                    android:textColor="@color/black_87"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="10dp"
+                    android:textSize="15sp"
+                    android:text="Link to an existing page" />
+
+            </LinearLayout>
         </android.support.v7.widget.CardView>
 
         <TextView
@@ -144,4 +197,4 @@
 
     </RelativeLayout>
 
-</ScrollView>
+</android.support.design.widget.CoordinatorLayout>

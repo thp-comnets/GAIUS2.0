@@ -9,6 +9,7 @@
         <!-- Override the dropdown item in support library -->
         <item name="spinnerDropDownItemStyle">@style/TextViewSpinnerDropDownItem</item>
         <item name="popupTheme">@style/ThemeOverlaySpinner</item>
+
     </style>
 
     <style name="TextLabel" parent="TextAppearance.AppCompat">
@@ -45,6 +46,33 @@
     </style>
     <style name="ThemeOverlaySpinner" parent="ThemeOverlay.AppCompat.Light">
         <item name="android:background">@color/colorPrimary</item>
+        <!--<item name="overlapAnchor">true</item>-->
+        <!--<item name="android:dropDownVerticalOffset">35dp</item>-->
+    </style>
+
+    <!--I couldn't find a better way of changing the spinner style in the CreateContentadActivity-->
+    <style name="AppThemeCreateAds" parent="Theme.AppCompat.Light.DarkActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <!-- Override the dropdown item in support library -->
+        <item name="spinnerDropDownItemStyle">@style/TextViewSpinnerDropDownItem</item>
+        <item name="popupTheme">@style/ThemeOverlaySpinnerLinks</item>
+
+    </style>
+
+    <style name="AppThemeCreateAds.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="AppThemeCreateAds.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="AppThemeCreateAds.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
+    <style name="ThemeOverlaySpinnerLinks" parent="ThemeOverlay.AppCompat.Light">
+        <item name="android:background">@color/white</item>
         <!--<item name="overlapAnchor">true</item>-->
         <!--<item name="android:dropDownVerticalOffset">35dp</item>-->
     </style>

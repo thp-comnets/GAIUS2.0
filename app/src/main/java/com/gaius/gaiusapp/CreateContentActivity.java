@@ -128,6 +128,9 @@ public class CreateContentActivity extends AppCompatActivity {
                 case 2:
                     fragment = new CreateContentPagesFragment();
                     break;
+                case 4:
+                    fragment = new CreateContentAdsFragment();
+                    break;
                 default:
                     fragment = PlaceholderFragment.newInstance(position);
             }

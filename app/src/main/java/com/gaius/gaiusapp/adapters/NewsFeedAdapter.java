@@ -50,7 +50,6 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.newsFe
     public NewsFeedAdapter(Context mCtx, List<NewsFeed> newsFeedList) {
         this.mCtx = mCtx;
         this.newsFeedList = newsFeedList;
-        this.scale = mCtx.getResources().getDisplayMetrics().density;
     }
 
     @Override
@@ -59,6 +58,7 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.newsFe
         View view = inflater.inflate(R.layout.newsfeed_list, null);
 
         prefs = PreferenceManager.getDefaultSharedPreferences(mCtx);
+        scale = mCtx.getResources().getDisplayMetrics().density;
         return new newsFeedViewHolder(view);
     }
 

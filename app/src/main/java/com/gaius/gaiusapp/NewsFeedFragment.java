@@ -84,6 +84,7 @@ public class NewsFeedFragment extends Fragment implements SwipeRefreshLayout.OnR
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mCtx = getActivity();
 
         if (getArguments() != null) {
             typeParam = getArguments().getInt(ARG_PARAM1);
@@ -98,7 +99,6 @@ public class NewsFeedFragment extends Fragment implements SwipeRefreshLayout.OnR
         View view = inflater.inflate(R.layout.fragment_newsfeed, null);
         swipeLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_container);
         swipeLayout.setOnRefreshListener(this);
-        mCtx = getActivity().getApplicationContext();
         return view;
     }
 

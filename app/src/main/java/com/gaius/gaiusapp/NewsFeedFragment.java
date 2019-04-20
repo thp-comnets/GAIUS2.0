@@ -282,7 +282,7 @@ public class NewsFeedFragment extends Fragment implements SwipeRefreshLayout.OnR
                                 ));
                             }
                             //FIXME check context, might be null
-                            adapter = new NewsFeedAdapter(mCtx, newsFeedList);
+                            adapter = new NewsFeedAdapter(getContext(), newsFeedList);
                             recyclerView.setAdapter(adapter);
                             noInternet.setVisibility(View.GONE);
                             error500.setVisibility(View.GONE);

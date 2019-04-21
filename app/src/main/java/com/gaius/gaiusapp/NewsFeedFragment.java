@@ -229,6 +229,8 @@ public class NewsFeedFragment extends Fragment implements SwipeRefreshLayout.OnR
                     @Override
                     public void onResponse(JSONArray response) {
 
+                        swipeLayout.setRefreshing(false);
+
                         Log.d("thp", "Response as JSON " + response);
 
                         try {
@@ -347,7 +349,6 @@ public class NewsFeedFragment extends Fragment implements SwipeRefreshLayout.OnR
         }
         newsFeedList = new ArrayList<>();
         loadPages();
-        swipeLayout.setRefreshing(false);
     }
 
     @Override

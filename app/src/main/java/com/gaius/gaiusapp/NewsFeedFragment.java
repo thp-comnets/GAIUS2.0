@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.androidnetworking.AndroidNetworking;
@@ -45,7 +46,8 @@ public class NewsFeedFragment extends Fragment implements SwipeRefreshLayout.OnR
     SwipeRefreshLayout swipeLayout;
     RecyclerView recyclerView;
     SharedPreferences prefs;
-    RelativeLayout noFriends, noInternet, error500;
+    RelativeLayout noContent, noInternet, error500;
+    TextView noContentTextView;
     ShimmerFrameLayout mShimmerViewContainer;
     Button buttonReturnToTop;
     NewsFeedAdapter adapter;
@@ -105,7 +107,9 @@ public class NewsFeedFragment extends Fragment implements SwipeRefreshLayout.OnR
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
 
-        noFriends = view.findViewById(R.id.noFriends);
+        noContent = view.findViewById(R.id.noContent);
+        noContentTextView = view.findViewById(R.id.noContentTextView);
+
         mShimmerViewContainer = view.findViewById(R.id.shimmer_view_container);
         mShimmerViewContainer.startShimmer();
 
@@ -207,9 +211,11 @@ public class NewsFeedFragment extends Fragment implements SwipeRefreshLayout.OnR
         if (typeParam.equals(Constants.REQUEST_TYPE_NEWSFEED)) {
              query = prefs.getString("token", "null");
              url = base_URL+"listPages.py";
+             noContentTextView.setText("You don't have added friends yet.\\nPlease consider adding some.");
         } else {
             query = typeParam + "" + contentParam + prefs.getString("token", "null") + userIDParam;
             url = base_URL+"listContents.py";
+            noContentTextView.setText("You haven't created content yet.");
         }
 
         Log.d("thp", prefs.getString("cm-token", "null"));
@@ -226,10 +232,10 @@ public class NewsFeedFragment extends Fragment implements SwipeRefreshLayout.OnR
                         Log.d("thp", "Response as JSON " + response);
 
                         try {
-                            noFriends.setVisibility(View.GONE);
+                            noContent.setVisibility(View.GONE);
 
                             if (response.length() == 0 ) {
-                                noFriends.setVisibility(View.VISIBLE);
+                                noContent.setVisibility(View.VISIBLE);
                                 mShimmerViewContainer.stopShimmer();
                                 mShimmerViewContainer.setVisibility(View.GONE);
                             }

@@ -39,7 +39,7 @@ public class LoginActivitySms extends AppCompatActivity implements OTPListener {
     private Button customSigninButton;
     private IntlPhoneInput phoneInputView;
     private CardView phoneCard;
-    private TextView message,message2;
+    private TextView message,message2,message3;
     private OtpView otp_view;
 
 //    private TextView custom_signup_button, forgotpassword_button, serverList;
@@ -62,13 +62,20 @@ public class LoginActivitySms extends AppCompatActivity implements OTPListener {
         phoneCard = findViewById(R.id.phoneCard);
         message = findViewById(R.id.message);
         message2 = findViewById(R.id.message2);
+        message3 = findViewById(R.id.resend_otp_message);
+
         otp_view = findViewById(R.id.otp_view);
 
         customSigninButton = (Button) findViewById(R.id.custom_signin_button);
         customSigninButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                doLogin();
+                if(!phoneInputView.isValid()) {
+                    Toast.makeText(getApplicationContext(), "Invalid phone number please correct", Toast.LENGTH_SHORT).show();
+                }
+                else {
+                    doLogin();
+                }
             }
         });
 
@@ -79,46 +86,32 @@ public class LoginActivitySms extends AppCompatActivity implements OTPListener {
     void doLogin () {
         Log.d("sms", "Logging in");
 
-        final String baseURL = prefs.getString("base_url", "http://192.169.152.158/test/");
-
-        customSigninButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                SharedPreferences.Editor editor = prefs.edit();
-                editor.putString("token", "45103155f1");
-//                editor.putString("email", email);
-//                editor.putString("password", password);
-//                editor.putString("name", jObj.getJSONObject("user").getString("name"));
-//                editor.putString("channel", jObj.getJSONObject("user").getString("channel"));
-//                editor.putString("gender", jObj.getJSONObject("user").getString("gender"));
-//                editor.putString("age", jObj.getJSONObject("user").getString("age"));
-//                editor.putString("userID", jObj.getJSONObject("user").getString("userID"));
-//                editor.putString("number", jObj.getJSONObject("user").getString("phoneNumber"))
-                editor.putString("base_url", baseURL);
-                editor.putString("admin", "1");
-                editor.apply();
-
-
-                Intent i = new Intent(getApplicationContext(), MainActivity.class);
-                startActivity(i);
-                finish();
-            }
-        });
-
-        AndroidNetworking.get("http://192.169.152.158/test/sendSMS.py")
+        AndroidNetworking.get("http://192.169.152.158/test/OTP.py")
+                .addQueryParameter("number", "00"+phoneInputView.getNumber().substring(1))
+                .addQueryParameter("cm-token", prefs.getString("cm-token", "null"))
                 .setPriority(Priority.HIGH)
                 .build()
                 .getAsJSONArray(new JSONArrayRequestListener() {
                     @Override
                     public void onResponse(JSONArray response) {
+                        customSigninButton.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                validateOTP();
+                            }
+                        });
+
                         message.setText("Enter the 4-digit code sent to you");
                         message2.setVisibility(View.VISIBLE);
+                        message3.setVisibility(View.VISIBLE);
                         otp_view.setVisibility(View.VISIBLE);
+
                         message2.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
                                 message.setText("Enter your mobile number");
                                 message2.setVisibility(View.INVISIBLE);
+                                message3.setVisibility(View.INVISIBLE);
                                 phoneCard.setVisibility(View.VISIBLE);
                                 otp_view.setVisibility(View.INVISIBLE);
 
@@ -128,6 +121,13 @@ public class LoginActivitySms extends AppCompatActivity implements OTPListener {
                                         doLogin();
                                     }
                                 });
+                            }
+                        });
+
+                        message3.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                doLogin();
                             }
                         });
 
@@ -143,6 +143,7 @@ public class LoginActivitySms extends AppCompatActivity implements OTPListener {
                                 break;
                             case 500:
                                 Log.d("SMS", "Error 500" + error);
+                                Toast.makeText(getApplicationContext(), "Invalid phone number", Toast.LENGTH_SHORT).show();
                                 break;
                             default:
                                 Log.d("SMS", "Error no Internet " + error);
@@ -151,6 +152,60 @@ public class LoginActivitySms extends AppCompatActivity implements OTPListener {
                 });
     }
 
+    void validateOTP () {
+        final String baseURL = prefs.getString("base_url", "http://192.169.152.158/test/");
+
+        AndroidNetworking.get("http://192.169.152.158/test/OTP.py")
+                .addQueryParameter("number", "00"+phoneInputView.getNumber().substring(1))
+                .addQueryParameter("OTP", otp_view.getText().toString())
+                .setPriority(Priority.HIGH)
+                .build()
+                .getAsJSONArray(new JSONArrayRequestListener() {
+                    @Override
+                    public void onResponse(JSONArray response) {
+                        try {
+                            JSONObject user_info;
+                            user_info = response.getJSONObject(0);
+
+                            SharedPreferences.Editor editor = prefs.edit();
+                            editor.putString("token", user_info.getString("token"));
+                            editor.putString("name", user_info.getString("name"));
+                            editor.putString("channel", user_info.getString("channel"));
+                            editor.putString("gender", user_info.getString("gender"));
+                            editor.putString("age", user_info.getString("age"));
+                            editor.putString("userID", user_info.getString("userID"));
+                            editor.putString("number", user_info.getString("phoneNumber"));
+                            editor.putString("base_url", baseURL);
+                            editor.putString("admin", user_info.getString("admin"));
+                            editor.apply();
+
+                            Intent i = new Intent(getApplicationContext(), MainActivity.class);
+                            startActivity(i);
+                            finish();
+                        }
+                        catch (JSONException e) {
+                        e.printStackTrace();
+                        Log.d("Yasir", "Json error " + e);
+                        }
+                    }
+
+                    @Override
+                    public void onError(ANError error) {
+
+                        switch (error.getErrorCode()) {
+                            case 401:
+                                break;
+                            case 500:
+                                Log.d("SMS", "Error 500" + error);
+                                Toast.makeText(getApplicationContext(), "Invalid OTP, please correct it", Toast.LENGTH_SHORT).show();
+
+                                break;
+                            default:
+                                Log.d("SMS", "Error no Internet " + error);
+                        }
+                    }
+                });
+    }
     @Override
     public void otpReceived(String smsText) {
         int indexOfLast = smsText.lastIndexOf(" ");

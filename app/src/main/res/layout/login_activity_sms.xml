@@ -13,8 +13,8 @@
         <ImageView
             android:id="@+id/logo"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:src="@drawable/image_cover_photo"
+            android:layout_height="190dp"
+            android:background="@color/colorAccent"
             android:adjustViewBounds="true"
             android:layout_centerHorizontal="true"/>
 
@@ -91,6 +91,7 @@
                 android:layout_below="@+id/message">
 
                 <net.rimoto.intlphoneinput.IntlPhoneInput
+                    android:id="@+id/my_phone_input"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="20dp"
@@ -99,7 +100,7 @@
                     android:layout_marginBottom="10dp"
                     app:textSize="18sp"
                     app:flagPaddingEnd="10dp"
-                    android:id="@+id/my_phone_input" />
+                    />
 
             </android.support.v7.widget.CardView>
 
@@ -117,6 +118,22 @@
                 app:viewType="rectangle"
                 android:visibility="invisible"
                 android:layout_below="@+id/message2"
+                />
+
+            <TextView
+                android:id="@+id/resend_otp_message"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="20dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                android:layout_marginBottom="10dp"
+                android:textColor="@color/orange_200"
+                android:text="Resend OTP"
+                android:textSize="18dp"
+                android:textStyle="bold"
+                android:visibility="invisible"
+                android:layout_below="@+id/otp_view"
                 />
 
             <android.support.v7.widget.AppCompatButton

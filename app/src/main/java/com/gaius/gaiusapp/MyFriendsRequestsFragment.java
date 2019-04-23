@@ -15,6 +15,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.Request;
@@ -41,8 +42,9 @@ public class MyFriendsRequestsFragment extends Fragment implements SwipeRefreshL
     private static String URL = "";
     List<Friend> friendList;
     SharedPreferences prefs;
-    RelativeLayout noFriends, noInternet;
+    RelativeLayout noFriendsLayout, noInternet;
     RecyclerView recyclerView;
+    TextView noFriendTextView;
     SwipeRefreshLayout swipeLayout;
     FriendsAdapter adapter;
     View.OnClickListener mOnClickListener;
@@ -64,7 +66,10 @@ public class MyFriendsRequestsFragment extends Fragment implements SwipeRefreshL
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         String token, base_url;
-        noFriends = view.findViewById(R.id.noFriends);
+        noFriendsLayout = view.findViewById(R.id.noFriends);
+        noFriendTextView = view.findViewById(R.id.noFriendTextView);
+        noFriendTextView.setText("You don't have any friend requests.");
+
         prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
         token = prefs.getString("token", "null");
         base_url = prefs.getString("base_url", null);
@@ -119,10 +124,10 @@ public class MyFriendsRequestsFragment extends Fragment implements SwipeRefreshL
                             //converting the string to json array object
                             JSONArray array = new JSONArray(response);
 
-                            noFriends.setVisibility(View.GONE);
+                            noFriendsLayout.setVisibility(View.GONE);
 
                             if (array.length() == 0 ) {
-                                noFriends.setVisibility(View.VISIBLE);
+                                noFriendsLayout.setVisibility(View.VISIBLE);
                             }
 
                             int number = 0;

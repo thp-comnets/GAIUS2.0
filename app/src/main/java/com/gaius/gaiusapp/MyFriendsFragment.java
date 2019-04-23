@@ -16,6 +16,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.Request;
@@ -42,8 +43,9 @@ public class MyFriendsFragment extends Fragment implements SwipeRefreshLayout.On
     private static String URL = "";
     List<Friend> friendList;
     SharedPreferences prefs;
-    RelativeLayout noFriends, noInternet;
+    RelativeLayout noFriendsLayout, noInternet;
     RecyclerView recyclerView;
+    TextView noFriendTextView;
     SwipeRefreshLayout swipeLayout;
     FriendsAdapter adapter;
     View.OnClickListener mOnClickListener;
@@ -66,7 +68,9 @@ public class MyFriendsFragment extends Fragment implements SwipeRefreshLayout.On
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         String token, base_url;
-        noFriends = view.findViewById(R.id.noFriends);
+        noFriendsLayout = view.findViewById(R.id.noFriends);
+        noFriendTextView = view.findViewById(R.id.noFriendTextView);
+        noFriendTextView.setText("You don't have friends yet.\\nPlease consider adding some.");
 
         token = prefs.getString("token", "null");
         base_url = prefs.getString("base_url", null);
@@ -100,10 +104,10 @@ public class MyFriendsFragment extends Fragment implements SwipeRefreshLayout.On
                             //converting the string to json array object
                             JSONArray array = new JSONArray(response);
 
-                            noFriends.setVisibility(View.GONE);
+                            noFriendsLayout.setVisibility(View.GONE);
 
                             if (array.length() == 0 ) {
-                                noFriends.setVisibility(View.VISIBLE);
+                                noFriendsLayout.setVisibility(View.VISIBLE);
                             }
 
                             friendList = new ArrayList<>();
@@ -212,7 +216,7 @@ public class MyFriendsFragment extends Fragment implements SwipeRefreshLayout.On
             if(resultCode == Activity.RESULT_OK){
                 adapter.removeItemFromFriendsList(data.getIntExtra("removeIndex", Constants.INVALID_POSITION));
                 if (adapter.getItemCount() == 0) {
-                    noFriends.setVisibility(View.VISIBLE);
+                    noFriendsLayout.setVisibility(View.VISIBLE);
                 }
             }
             if (resultCode == Activity.RESULT_CANCELED) {

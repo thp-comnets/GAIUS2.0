@@ -22,9 +22,11 @@
                 android:id="@+id/lonely_animation"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
                 android:src="@drawable/ic_lonely" />
 
             <TextView
+                android:id="@+id/noFriendTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/lonely_animation"
@@ -32,7 +34,7 @@
                 android:paddingEnd="50dp"
                 android:layout_centerHorizontal="true"
                 android:gravity="center"
-                android:text="You don't have friends yet.\nPlease consider adding some."
+                android:text="Nothing to show"
                 android:textColor="#000000"
                 android:textStyle="bold" />
         </RelativeLayout>

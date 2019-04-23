@@ -9,45 +9,29 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
+import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatButton;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.gaius.gaiusapp.adapters.NewsFeedAdapter;
-import com.gaius.gaiusapp.classes.NewsFeed;
+import com.gaius.gaiusapp.interfaces.OnFragmentInteractionListener;
 import com.gaius.gaiusapp.networking.GlideApp;
-import com.gaius.gaiusapp.networking.GlideImageLoadingService;
-import com.gaius.gaiusapp.utils.LogOut;
+import com.gaius.gaiusapp.utils.Constants;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import ss.com.bannerslider.Slider;
-
-import static com.gaius.gaiusapp.utils.ResourceHelper.convertImageURLBasedonFidelity;
-
-public class FriendPageActivity extends AppCompatActivity {
-    private static String URL = "";
-    List<NewsFeed> pagesList;
-    RecyclerView recyclerView;
+public class FriendPageActivity extends AppCompatActivity implements OnFragmentInteractionListener {
     SharedPreferences prefs;
     RelativeLayout noPages;
     ProgressBar mProgressBar;
@@ -61,21 +45,25 @@ public class FriendPageActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.fragment_user);
+        setContentView(R.layout.activity_userpage);
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+        CollapsingToolbarLayout collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
+
+        collapsingToolbarLayout.setExpandedTitleColor(getResources().getColor(android.R.color.transparent));
+        collapsingToolbarLayout.setContentScrimColor(getResources().getColor(R.color.colorPrimaryDark));
 
         mCtx = this;
 
-        Slider.init(new GlideImageLoadingService(this));
+//        Slider.init(new GlideImageLoadingService(this));
 
         String name="", avatar="None", status = "";
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
         base_url = prefs.getString("base_url", null);
-        URL = base_url + "listUserPages.py";
         noPages = findViewById(R.id.noPages);
-
-        recyclerView = findViewById(R.id.recylcerView);
-        recyclerView.setHasFixedSize(true);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         Bundle bundle = getIntent().getExtras();
         if (bundle != null) {
@@ -85,12 +73,14 @@ public class FriendPageActivity extends AppCompatActivity {
             status = bundle.getString("status", null);
             position = bundle.getInt("position", 1000);
 
-            if (userID != null) {
-                URL += "?userID="+userID;
-                URL += "&token=" + prefs.getString("token", "null");
+            collapsingToolbarLayout.setTitle(name);
+            collapsingToolbarLayout.setCollapsedTitleTextColor(getResources().getColor(R.color.white));
 
-                recyclerView.setTag("SubFriends");
-            }
+//            if (userID != null) {
+//                URL += "?userID="+userID;
+//                URL += "&token=" + prefs.getString("token", "null");
+//                recyclerView.setTag("SubFriends");
+//            }
             bundle.clear();
         }
         else{
@@ -116,16 +106,11 @@ public class FriendPageActivity extends AppCompatActivity {
                     .into(imageViewAvatar);
         }
 
-        mProgressBar = findViewById(R.id.friend_progress_bar);
-
-        mButton = findViewById(R.id.friend_button);
-        mButton.setSupportBackgroundTintList(this.getResources().getColorStateList(R.color.red_400));
-        mButton.setText("Remove");
+        mButton = findViewById(R.id.unfriend_button);
 
         mButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
-
 
                 AlertDialog.Builder builder = new AlertDialog.Builder(mCtx);
 
@@ -138,7 +123,6 @@ public class FriendPageActivity extends AppCompatActivity {
                         String token = prefs.getString("token", "null");
                         String URL = prefs.getString("base_url", null) + "modifyFriend.py?token=" + token + "&remove=" + userID;
                         v.setVisibility(View.INVISIBLE);
-                        mProgressBar.setVisibility(View.VISIBLE);
 
                         StringRequest stringRequest = new StringRequest(Request.Method.GET, URL,
                                 new Response.Listener<String>() {
@@ -153,7 +137,6 @@ public class FriendPageActivity extends AppCompatActivity {
                                 new Response.ErrorListener() {
                                     @Override
                                     public void onErrorResponse(VolleyError error) {
-                                        mProgressBar.setVisibility(View.INVISIBLE);
                                         mButton.setVisibility(View.VISIBLE);
                                         Log.d("Yasir","Error "+error);
                                     }
@@ -179,84 +162,23 @@ public class FriendPageActivity extends AppCompatActivity {
             }
         });
 
-        pagesList = new ArrayList<>();
-        loadPages();
+        Fragment fragment = NewsFeedFragment.newInstance(Constants.REQUEST_TYPE_FRIEND,Constants.REQUEST_CONTENT_ALL, userID);
+
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.fragment_container, fragment)
+                .commit();
     }
 
-    private void loadPages() {
+    //handle the back arrow press in the toolbar
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
+    }
 
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, URL,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        try {
-                            //converting the string to json array object
-                            JSONArray array = new JSONArray(response);
-
-                            if (array.length() == 0 ) {
-                                noPages.setVisibility(View.VISIBLE);
-                            }
-
-                            String fidelity = prefs.getString("fidelity_level", "high");
-
-                            //traversing through all the object
-                            for (int i = 0; i < array.length(); i++) {
-
-                                //getting product object from json array
-                                JSONObject newsFeed = array.getJSONObject(i);
-
-                                ArrayList<String> imagesList = new ArrayList<String>();
-
-                                if (newsFeed.has("images")) {
-                                    String [] tmp = newsFeed.getString("images").split(";");
-                                    for (int j=0; j<tmp.length; j++) {
-                                        imagesList.add(convertImageURLBasedonFidelity(base_url+newsFeed.getString("url")+tmp[j], fidelity));
-                                    }
-                                }
-
-                                pagesList.add(new NewsFeed(
-                                        newsFeed.getInt("id"),
-                                        newsFeed.getString("name"),
-                                        newsFeed.getString("uploadTime"),
-                                        newsFeed.getString("avatar"),
-                                        newsFeed.getString("thumbnail"),
-                                        newsFeed.getString("title"),
-                                        newsFeed.getString("description"),
-                                        newsFeed.getString("url"),
-                                        newsFeed.getString("userID"),
-                                        newsFeed.getString("type"),
-                                        newsFeed.getString("liked"),
-                                        false,
-                                        imagesList
-                                ));
-                            }
-
-                            //creating adapter object and setting it to recyclerview
-                            NewsFeedAdapter adapter = new NewsFeedAdapter(mCtx, pagesList);
-                            recyclerView.setAdapter(adapter);
-
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                            Log.d("Yasir","Json error "+e);
-
-                            if (response.contains("invalid token")) {
-                                LogOut.logout(getApplicationContext());
-                                Toast.makeText(getApplicationContext(), "You have logged in from another device. Please login again.",
-                                        Toast.LENGTH_LONG).show();
-                                finish();
-                            }
-                        }
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        Log.d("Yasir","Error "+error);
-                    }
-                });
-
-        Log.d("Yasir","added request "+stringRequest);
-
-        Volley.newRequestQueue(getApplicationContext()).add(stringRequest);
+    @Override
+    public void onFragmentInteraction(Integer action) {
+        //do nothing
     }
 }

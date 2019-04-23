@@ -4,7 +4,6 @@ import android.content.Context;
 import android.graphics.Matrix;
 import android.support.v7.widget.AppCompatImageView;
 import android.util.AttributeSet;
-import android.util.Log;
 
 public class TopCropImageView extends AppCompatImageView {
     public TopCropImageView(Context context, AttributeSet attrs) {
@@ -24,12 +23,10 @@ public class TopCropImageView extends AppCompatImageView {
     @Override
     protected boolean setFrame(int l, int t, int r, int b)
     {
-        Log.d("thp", "enter");
         Matrix matrix = getImageMatrix();
         float scaleFactor = getWidth()/(float)getDrawable().getIntrinsicWidth();
         matrix.setScale(scaleFactor, scaleFactor, 0, 0);
         setImageMatrix(matrix);
-        Log.d("thp", "exit");
         return super.setFrame(l, t, r, b);
     }
 

@@ -46,7 +46,7 @@ public class NewsFeedFragment extends Fragment implements SwipeRefreshLayout.OnR
     SwipeRefreshLayout swipeLayout;
     RecyclerView recyclerView;
     SharedPreferences prefs;
-    RelativeLayout noContent, noInternet, error500;
+    RelativeLayout noContentLayout, noInternet, error500;
     TextView noContentTextView;
     ShimmerFrameLayout mShimmerViewContainer;
     Button buttonReturnToTop;
@@ -107,7 +107,7 @@ public class NewsFeedFragment extends Fragment implements SwipeRefreshLayout.OnR
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
 
-        noContent = view.findViewById(R.id.noContent);
+        noContentLayout = view.findViewById(R.id.noContent);
         noContentTextView = view.findViewById(R.id.noContentTextView);
 
         mShimmerViewContainer = view.findViewById(R.id.shimmer_view_container);
@@ -162,7 +162,7 @@ public class NewsFeedFragment extends Fragment implements SwipeRefreshLayout.OnR
         recyclerView.setAdapter(adapter);
 
         //if this instance is the newsfeed, load content right away
-        if (typeParam.equals(Constants.REQUEST_TYPE_NEWSFEED)) {
+        if (typeParam.equals(Constants.REQUEST_TYPE_NEWSFEED) || typeParam.equals(Constants.REQUEST_TYPE_FRIEND)) {
             this.fragmentBecameVisible();
         }
 
@@ -172,7 +172,7 @@ public class NewsFeedFragment extends Fragment implements SwipeRefreshLayout.OnR
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        Log.d("thp", "attach NewsFeedFragment");
+//        Log.d("thp", "attach NewsFeedFragment");
 
         if (context instanceof OnFragmentInteractionListener) {
             mListener = (OnFragmentInteractionListener) context;
@@ -185,7 +185,7 @@ public class NewsFeedFragment extends Fragment implements SwipeRefreshLayout.OnR
     @Override
     public void onDetach() {
         super.onDetach();
-        Log.d("thp", "detach NewsFeedFragment " + contentParam + " " + typeParam);
+//        Log.d("thp", "detach NewsFeedFragment " + contentParam + " " + typeParam);
         mListener = null;
     }
 
@@ -208,17 +208,33 @@ public class NewsFeedFragment extends Fragment implements SwipeRefreshLayout.OnR
         and set the corresponding URL. If type == 0, then its a newsfeed request
          */
         String query, url;
-        if (typeParam.equals(Constants.REQUEST_TYPE_NEWSFEED)) {
-             query = prefs.getString("token", "null");
-             url = base_URL+"listPages.py";
-             noContentTextView.setText("You don't have added friends yet.\\nPlease consider adding some.");
-        } else {
-            query = typeParam + "" + contentParam + prefs.getString("token", "null") + userIDParam;
-            url = base_URL+"listContents.py";
-            noContentTextView.setText("You haven't created content yet.");
-        }
+        switch (typeParam) {
+            case Constants.REQUEST_TYPE_NEWSFEED:
+                query = prefs.getString("token", "null");
+                url = base_URL+"listPages.py";
+                noContentTextView.setText("You don't have added friends yet.\\nPlease consider adding some.");
+                break;
+            case Constants.REQUEST_TYPE_FRIEND:
+                query = typeParam + "" + contentParam + prefs.getString("token", "null") + userIDParam;
+                url = base_URL+"listContents.py";
+                noContentTextView.setText("This user hasn't created content yet." + query);
+                break;
+            default:
+                query = typeParam + "" + contentParam + prefs.getString("token", "null");
+                url = base_URL+"listContents.py";
+                noContentTextView.setText("You haven't created content yet." + query);
 
-        Log.d("thp", prefs.getString("cm-token", "null"));
+        }
+//        if (typeParam.equals(Constants.REQUEST_TYPE_NEWSFEED)) {
+//             query = prefs.getString("token", "null");
+//             url = base_URL+"listPages.py";
+//             noContentTextView.setText("You don't have added friends yet.\\nPlease consider adding some.");
+//        } else {
+//            query = typeParam + "" + contentParam + prefs.getString("token", "null") + userIDParam;
+//            url = base_URL+"listContents.py";
+//            noContentTextView.setText("You haven't created content yet." + query);
+//        }
+
         AndroidNetworking.get(url)
                 .addQueryParameter("token", prefs.getString("token", "null")) //TODO remove this later
                 .addQueryParameter("req", query)
@@ -234,10 +250,10 @@ public class NewsFeedFragment extends Fragment implements SwipeRefreshLayout.OnR
                         Log.d("thp", "Response as JSON " + response);
 
                         try {
-                            noContent.setVisibility(View.GONE);
+                            noContentLayout.setVisibility(View.GONE);
 
                             if (response.length() == 0 ) {
-                                noContent.setVisibility(View.VISIBLE);
+                                noContentLayout.setVisibility(View.VISIBLE);
                                 mShimmerViewContainer.stopShimmer();
                                 mShimmerViewContainer.setVisibility(View.GONE);
                             }

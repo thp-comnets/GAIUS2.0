@@ -74,30 +74,28 @@ public class FriendsAdapter extends RecyclerView.Adapter<FriendsAdapter.FriendVi
                     .into(holder.imageView);
         }
 
-
         holder.textViewName.setText(friend.getName());
-//        holder.textViewPhoneNumber.setText(friend.getPhoneNumber());
         holder.textViewPhoneNumber.setText("I'm using Gaius");
 
-        if (friend.getClickable()) {
+//        if (friend.getClickable()) { FIXME is this still being used?
             holder.layout.setTag(position);
             holder.layout.setOnClickListener(friendOnClickListener);
-        }
+//        }
 
         switch (friend.getButtonType()) {
             case "connect":
                 holder.mButton.setVisibility(View.VISIBLE);
-                holder.mButton.setSupportBackgroundTintList(mCtx.getResources().getColorStateList(R.color.amber_600));
+                holder.mButton.setBackgroundDrawable(mCtx.getResources().getDrawable(R.drawable.friend_connect_button));
                 holder.mButton.setText("Connect");
                 break;
             case "accept":
                 holder.mButton.setVisibility(View.VISIBLE);
-                holder.mButton.setSupportBackgroundTintList(mCtx.getResources().getColorStateList(R.color.green));
+                holder.mButton.setBackgroundDrawable(mCtx.getResources().getDrawable(R.drawable.friend_accept_button));
                 holder.mButton.setText("Accept");
                 break;
             case "withdraw":
                 holder.mButton.setVisibility(View.VISIBLE);
-                holder.mButton.setSupportBackgroundTintList(mCtx.getResources().getColorStateList(R.color.blue_800));
+                holder.mButton.setBackgroundDrawable(mCtx.getResources().getDrawable(R.drawable.friend_withdraw_button));
                 holder.mButton.setText("Withdraw");
                 break;
         }

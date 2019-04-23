@@ -37,7 +37,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MyFriendsRequestsFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener, FragmentVisibleInterface, OnAdapterInteractionListener {
+public class MyFriendsRequestsFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener, View.OnClickListener, FragmentVisibleInterface, OnAdapterInteractionListener {
     private static String URL = "";
     List<Friend> friendList;
     SharedPreferences prefs;
@@ -45,6 +45,7 @@ public class MyFriendsRequestsFragment extends Fragment implements SwipeRefreshL
     RecyclerView recyclerView;
     SwipeRefreshLayout swipeLayout;
     FriendsAdapter adapter;
+    View.OnClickListener mOnClickListener;
     private OnFragmentInteractionListener mListener;
     private OnAdapterInteractionListener mAdapterListener;
 
@@ -55,6 +56,7 @@ public class MyFriendsRequestsFragment extends Fragment implements SwipeRefreshL
         swipeLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_container);
         swipeLayout.setOnRefreshListener(this);
         swipeLayout.setEnabled(true);
+        mOnClickListener = this;
         mAdapterListener = this;
         return view;
     }
@@ -80,7 +82,7 @@ public class MyFriendsRequestsFragment extends Fragment implements SwipeRefreshL
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setVisibility(View.GONE);
-        adapter = new FriendsAdapter(getContext(), friendList, mAdapterListener);
+        adapter = new FriendsAdapter(getContext(), friendList, mOnClickListener, mAdapterListener);
         recyclerView.setAdapter(adapter);
     }
 
@@ -159,7 +161,7 @@ public class MyFriendsRequestsFragment extends Fragment implements SwipeRefreshL
                             }
 
                             //creating adapter object and setting it to recyclerview
-                            adapter = new FriendsAdapter(getContext(), friendList, mAdapterListener);
+                            adapter = new FriendsAdapter(getContext(), friendList, mOnClickListener, mAdapterListener);
                             recyclerView.setAdapter(adapter);
                             noInternet.setVisibility(View.GONE);
                             recyclerView.setVisibility(View.VISIBLE);
@@ -191,6 +193,21 @@ public class MyFriendsRequestsFragment extends Fragment implements SwipeRefreshL
 
         //adding our stringrequest to queue
         Volley.newRequestQueue(getContext()).add(stringRequest);
+    }
+
+    @Override
+    public void onClick(View v) {
+        Log.d("prefs", "onclick " + v.getTag());
+        Friend friend = adapter.getItemFromFriendsList((Integer) v.getTag());
+        Intent intent = new Intent(getContext(), FriendPageActivity.class);
+        Bundle bundle = new Bundle();
+        bundle.putString("userID", friend.getUserID());
+        bundle.putString("name", friend.getName());
+        bundle.putInt("position",(Integer) v.getTag());
+        bundle.putString("status", "I'm using Gaius");
+        bundle.putString("avatar", prefs.getString("base_url", null) + friend.getImage());
+        intent.putExtras(bundle);
+        startActivityForResult(intent, 0);
     }
 
     @Override

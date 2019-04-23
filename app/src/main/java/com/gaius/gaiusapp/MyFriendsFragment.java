@@ -223,7 +223,6 @@ public class MyFriendsFragment extends Fragment implements SwipeRefreshLayout.On
 
     @Override
     public void onClick(View v) {
-        Log.d("prefs", "onclick " + v.getTag());
         Friend friend = adapter.getItemFromFriendsList((Integer) v.getTag());
         Intent intent = new Intent(getContext(), FriendPageActivity.class);
         Bundle bundle = new Bundle();

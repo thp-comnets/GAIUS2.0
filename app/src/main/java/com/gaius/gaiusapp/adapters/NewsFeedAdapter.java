@@ -23,6 +23,7 @@ import com.android.volley.toolbox.Volley;
 import com.bumptech.glide.Priority;
 import com.gaius.gaiusapp.AlbumViewActivity;
 import com.gaius.gaiusapp.BrowseWebFragment;
+import com.gaius.gaiusapp.FriendPageActivity;
 import com.gaius.gaiusapp.R;
 import com.gaius.gaiusapp.RenderMAMLActivity;
 import com.gaius.gaiusapp.classes.NewsFeed;
@@ -207,6 +208,22 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.newsFe
         holder.textViewTitle.setText(newsfeed.getTitle());
         holder.textViewDescription.setText(newsfeed.getDescription());
 
+        holder.textViewName.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                NewsFeed n = newsFeedList.get((Integer) v.getTag());
+                Intent intent = new Intent(mCtx, FriendPageActivity.class);
+                Bundle bundle = new Bundle();
+                bundle.putString("userID", n.getUserID());
+                bundle.putString("name", n.getName());
+                bundle.putInt("position",(Integer) v.getTag());
+                bundle.putString("status", "I'm using Gaius");
+                bundle.putString("avatar", prefs.getString("base_url", null) + n.getAvatar());
+                intent.putExtras(bundle);
+                mCtx.startActivity(intent);
+            }
+        });
+
         //FIXME: thp: Yasir, why is all of this here and not in the if statements above?
         if (newsfeed.getType().contains("page")) {
             holder.imageView.setTag(R.id.imageView, position); //we need the key here, otherwise Glide will complain
@@ -240,6 +257,8 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.newsFe
         if (newsfeed.getLiked().equals("true")) {
             holder.likeButton.setImageResource(R.drawable.icon_liked);
         }
+
+        holder.textViewName.setTag(position); //set the tag to handle clicks properly
 
         holder.likeButton.setTag(position);
         holder.likeButton.setOnClickListener(new View.OnClickListener() {

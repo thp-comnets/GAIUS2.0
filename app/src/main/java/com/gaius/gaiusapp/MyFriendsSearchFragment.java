@@ -50,6 +50,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+//TODO: implement onclicklistener. this needs a change in the two adapaters we are using in case we want the user to be clickable
+
 public class MyFriendsSearchFragment extends Fragment implements FragmentVisibleInterface, OnAdapterInteractionListener {
     SharedPreferences prefs;
     public static File path;

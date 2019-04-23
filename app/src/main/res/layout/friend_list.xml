@@ -59,11 +59,15 @@
 
             <android.support.v7.widget.AppCompatButton
                 android:id="@+id/friend_button"
-                android:minHeight="40dp"
-                android:minWidth="40dp"
+                android:minHeight="35dp"
+                android:minWidth="60dp"
+                android:paddingEnd="10dp"
+                android:paddingStart="10dp"
                 android:textColor="@color/white"
-                android:textSize="10sp"
+                android:textSize="15sp"
+                android:textAllCaps="false"
                 android:visibility="gone"
+                android:background="@drawable/friend_connect_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
 

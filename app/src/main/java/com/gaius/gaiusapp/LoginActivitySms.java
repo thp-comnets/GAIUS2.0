@@ -153,8 +153,6 @@ public class LoginActivitySms extends AppCompatActivity implements OTPListener {
     }
 
     void validateOTP () {
-        final String baseURL = prefs.getString("base_url", "http://192.169.152.158/test/");
-
         AndroidNetworking.get("http://192.169.152.158/test/OTP.py")
                 .addQueryParameter("number", "00"+phoneInputView.getNumber().substring(1))
                 .addQueryParameter("OTP", otp_view.getText().toString())
@@ -167,21 +165,34 @@ public class LoginActivitySms extends AppCompatActivity implements OTPListener {
                             JSONObject user_info;
                             user_info = response.getJSONObject(0);
 
-                            SharedPreferences.Editor editor = prefs.edit();
-                            editor.putString("token", user_info.getString("token"));
-                            editor.putString("name", user_info.getString("name"));
-                            editor.putString("channel", user_info.getString("channel"));
-                            editor.putString("gender", user_info.getString("gender"));
-                            editor.putString("age", user_info.getString("age"));
-                            editor.putString("userID", user_info.getString("userID"));
-                            editor.putString("number", user_info.getString("phoneNumber"));
-                            editor.putString("base_url", baseURL);
-                            editor.putString("admin", user_info.getString("admin"));
-                            editor.apply();
+                            if (user_info.has("token")) {
+                                SharedPreferences.Editor editor = prefs.edit();
+                                editor.putString("name", user_info.getString("name"));
+                                editor.putString("token", user_info.getString("token"));
+                                editor.putString("channel", user_info.getString("channel"));
+                                editor.putString("gender", user_info.getString("gender"));
+                                editor.putString("age", user_info.getString("age"));
+                                editor.putString("email", user_info.getString("email"));
+                                editor.putString("userID", user_info.getString("userID"));
+                                editor.putString("number", user_info.getString("phoneNumber"));
+                                editor.putString("admin", user_info.getString("admin"));
+                                editor.commit();
 
-                            Intent i = new Intent(getApplicationContext(), MainActivity.class);
-                            startActivity(i);
-                            finish();
+                                Intent i = new Intent(getApplicationContext(), MainActivity.class);
+                                startActivity(i);
+
+                                finish();
+                            }
+                            else {
+                                SharedPreferences.Editor editor = prefs.edit();
+                                editor.putString("OTP", user_info.getString("OTP"));
+                                editor.putString("number", "00"+phoneInputView.getNumber().substring(1));
+                                editor.apply();
+
+                                Intent i = new Intent(getApplicationContext(), SignUpSMS.class);
+                                startActivity(i);
+                                finish();
+                            }
                         }
                         catch (JSONException e) {
                         e.printStackTrace();

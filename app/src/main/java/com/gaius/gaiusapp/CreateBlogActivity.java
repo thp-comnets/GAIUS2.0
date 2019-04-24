@@ -66,7 +66,7 @@ import okhttp3.Response;
 
 import static com.gaius.gaiusapp.utils.ResourceHelper.getResizedBitmap;
 
-public class SimpleWebCreation extends AppCompatActivity implements OnStartDragListener {
+public class CreateBlogActivity extends AppCompatActivity implements OnStartDragListener {
     List<Item> itemList;
     RecyclerView recyclerView;
     CardView imageButton, videoButton, textHeaderButton, textParagrahButton;
@@ -93,7 +93,7 @@ public class SimpleWebCreation extends AppCompatActivity implements OnStartDragL
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.simple_content_creation);
+        setContentView(R.layout.activity_blog);
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
 
         recyclerView = findViewById(R.id.simple_recylcerView);
@@ -474,7 +474,7 @@ public class SimpleWebCreation extends AppCompatActivity implements OnStartDragL
         compressTask = VideoCompress.compressVideoLow(videoPath.first, videoPath.second, new VideoCompress.CompressListener() {
             @Override
             public void onStart() {
-                progress = new ProgressDialog(SimpleWebCreation.this);
+                progress = new ProgressDialog(CreateBlogActivity.this);
                 progress.setMessage("Compressing video (" + (numVideos - videoPaths.size()) + "/" + numVideos + ")...");
                 progress.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
                 progress.setCancelable(false);

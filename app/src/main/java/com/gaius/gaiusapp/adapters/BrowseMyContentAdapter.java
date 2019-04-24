@@ -34,6 +34,8 @@ import java.util.List;
 
 import static com.gaius.gaiusapp.utils.ResourceHelper.convertImageURLBasedonFidelity;
 
+//this is no longer needed, but I keep it here for reference
+
 public class BrowseMyContentAdapter extends RecyclerView.Adapter<BrowseMyContentAdapter.ContentlViewHolder> {
     private Context mCtx;
     private List<Content> contentsList;
@@ -86,13 +88,13 @@ public class BrowseMyContentAdapter extends RecyclerView.Adapter<BrowseMyContent
         holder.imageView.setOnClickListener(null);
 
         if (content.getType().equals("video")) {
-            holder.typeView.setImageResource(R.drawable.ic_video_create);
+//            holder.typeView.setImageResource(R.drawable.ic_video_create);
             holder.editButton.setVisibility(View.GONE);
         }
         else if (content.getType().equals("page")) {
 
             holder.editButton.setVisibility(View.VISIBLE);
-            holder.typeView.setImageResource(R.drawable.ic_simple_creation);
+//            holder.typeView.setImageResource(R.drawable.ic_simple_creation);
 
             holder.editButton.setTag(position);
             holder.editButton.setOnClickListener(new View.OnClickListener() {
@@ -117,7 +119,7 @@ public class BrowseMyContentAdapter extends RecyclerView.Adapter<BrowseMyContent
             holder.editButton.setVisibility(View.GONE);
         }
         else if (content.getType().equals("ad")) {
-            holder.typeView.setImageResource(R.drawable.ic_ad_create);
+//            holder.typeView.setImageResource(R.drawable.ic_ad_create);
             holder.editButton.setVisibility(View.GONE);
 
             holder.imageStats.setVisibility(View.VISIBLE);

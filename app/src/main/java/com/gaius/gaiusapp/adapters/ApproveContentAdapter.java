@@ -86,14 +86,15 @@ public class ApproveContentAdapter extends RecyclerView.Adapter<ApproveContentAd
         holder.editButton.setImageResource(R.drawable.ic_approve);
         holder.deleteButton.setImageResource(R.drawable.ic_reject);
 
+        //TODO the icons need to be properly aligned
         if (content.getType().equals("video")) {
-            holder.typeView.setImageResource(R.drawable.ic_video_create);
+            holder.typeView.setImageResource(R.drawable.create_content_video);
         } else if (content.getType().equals("page")) {
-            holder.typeView.setImageResource(R.drawable.ic_simple_creation);
+            holder.typeView.setImageResource(R.drawable.create_content_web);
         } else if (content.getType().equals("image")) {
-            holder.typeView.setImageResource(R.drawable.images_app);
+            holder.typeView.setImageResource(R.drawable.create_content_image);
         } else if (content.getType().equals("ad")) {
-                holder.typeView.setImageResource(R.drawable.ic_ad_create);
+                holder.typeView.setImageResource(R.drawable.create_content_ad);
 
                 holder.imageStats.setVisibility(View.VISIBLE);
                 holder.textStats.setVisibility(View.VISIBLE);

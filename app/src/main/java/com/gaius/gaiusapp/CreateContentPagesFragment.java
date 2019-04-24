@@ -27,7 +27,7 @@ public class CreateContentPagesFragment extends Fragment {
         captureImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent i = new Intent(getContext(), SimpleWebCreation.class);
+                Intent i = new Intent(getContext(), CreateBlogActivity.class);
                 getContext().startActivity(i);
             }
         });

@@ -166,7 +166,7 @@ public class ForgotPassword extends AppCompatActivity {
                 hideDialog();
 
                 if (response.contains("Success")) {
-                    Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+                    Intent intent = new Intent(getApplicationContext(), LoginSMSActivity.class);
                     intent.putExtra("REF", getIntent().getIntExtra("REF", -1));
                     startActivity(intent);
                 } else {

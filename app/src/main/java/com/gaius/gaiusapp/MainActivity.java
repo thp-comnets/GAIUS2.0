@@ -72,7 +72,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
 
         if (prefs.getString("token", null) == null) {
-            Intent i = new Intent(this, LoginActivity.class);
+            Intent i = new Intent(this, LoginSMSActivity.class);
             startActivity(i);
             finish();
             return;
@@ -281,7 +281,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
         if (id == R.id.logoutButton) {
             LogOut.logout(getApplicationContext());
-            Intent i = new Intent(this, LoginActivity.class);
+            Intent i = new Intent(this, LoginSMSActivity.class);
             startActivity(i);
             finish();
         } else if (id == R.id.settingsButton) {

@@ -158,7 +158,7 @@ public class MyFriendsFragment extends Fragment implements SwipeRefreshLayout.On
                                 LogOut.logout(getContext());
                                 Toast.makeText(getContext(), "You have logged in from another device. Please login again.",
                                         Toast.LENGTH_LONG).show();
-                                Intent i = new Intent(getContext(), LoginActivity.class);
+                                Intent i = new Intent(getContext(), LoginSMSActivity.class);
                                 startActivity(i);
                                 getActivity().finish();
                             }

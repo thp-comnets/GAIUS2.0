@@ -174,7 +174,7 @@ public class CreateContentAdActivity extends AppCompatActivity {
                                 LogOut.logout(getApplicationContext());
                                 Toast.makeText(getApplicationContext(), "You have logged in from another device. Please login again.",
                                         Toast.LENGTH_LONG).show();
-                                Intent i = new Intent(getApplicationContext(), LoginActivity.class);
+                                Intent i = new Intent(getApplicationContext(), LoginSMSActivity.class);
                                 startActivity(i);
                                 finish();
                                 break;

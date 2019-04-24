@@ -40,18 +40,17 @@
             android:layout_height="wrap_content"
             android:src="@drawable/gaius_logo"
             android:layout_marginStart="130dp"
-            android:layout_marginTop="65dp"/>
+            android:layout_marginTop="65dp" />
 
 
-        <RelativeLayout
-            xmlns:android="http://schemas.android.com/apk/res/android"
+        <LinearLayout
             xmlns:app="http://schemas.android.com/apk/res-auto"
             android:layout_width="fill_parent"
             android:layout_height="match_parent"
             android:layout_below="@+id/logo"
             android:layout_marginTop="120dp"
             android:gravity="center_vertical"
-            android:fitsSystemWindows="true">
+            android:orientation="vertical" >
 
             <TextView
                 android:id="@+id/message"
@@ -62,8 +61,7 @@
                 android:layout_marginBottom="10dp"
                 android:text="Enter your mobile number"
                 android:textSize="18dp"
-                android:textStyle="bold"
-                />
+                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/message2"
@@ -72,14 +70,11 @@
                 android:layout_marginStart="20dp"
                 android:layout_marginEnd="20dp"
                 android:layout_marginBottom="10dp"
-                android:text="Did you enter the correct mobile number?"
+                android:text="Didn't receive an SMS? Change the mobile number and try again"
                 android:textColor="@color/orange_200"
                 android:textSize="18dp"
                 android:textStyle="bold"
-                android:visibility="invisible"
-                android:layout_below="@+id/message"
-                />
-
+                android:visibility="gone" />
 
             <android.support.v7.widget.CardView
                 android:id="@+id/phoneCard"
@@ -87,8 +82,7 @@
                 android:layout_height="match_parent"
                 android:layout_marginStart="20dp"
                 android:layout_marginEnd="20dp"
-                android:backgroundTint="@color/grey_50"
-                android:layout_below="@+id/message">
+                android:backgroundTint="@color/grey_50">
 
                 <net.rimoto.intlphoneinput.IntlPhoneInput
                     android:id="@+id/my_phone_input"
@@ -99,8 +93,7 @@
                     android:layout_marginTop="10dp"
                     android:layout_marginBottom="10dp"
                     app:textSize="18sp"
-                    app:flagPaddingEnd="10dp"
-                    />
+                    app:flagPaddingEnd="10dp" />
 
             </android.support.v7.widget.CardView>
 
@@ -114,8 +107,7 @@
                 android:textSize="18sp"
                 android:layout_marginTop="20dp"
                 android:text="Server:"
-                android:visibility="gone"
-                android:layout_below="@+id/phoneCard"/>
+                android:visibility="gone"/>
 
             <Spinner
                 android:id="@+id/server_selection"
@@ -124,8 +116,7 @@
                 android:layout_marginStart="30dp"
                 android:layout_marginEnd="30dp"
                 android:spinnerMode="dropdown"
-                android:visibility="gone"
-                android:layout_below="@+id/switch_server"/>
+                android:visibility="gone"/>
 
             <com.mukesh.OtpView
                 android:id="@+id/otp_view"
@@ -139,9 +130,7 @@
                 app:itemCount="4"
                 app:lineColor="@color/colorPrimary"
                 app:viewType="rectangle"
-                android:visibility="invisible"
-                android:layout_below="@+id/message2"
-                />
+                android:visibility="gone" />
 
             <TextView
                 android:id="@+id/resend_otp_message"
@@ -155,22 +144,18 @@
                 android:text="Resend OTP"
                 android:textSize="18dp"
                 android:textStyle="bold"
-                android:visibility="invisible"
-                android:layout_below="@+id/otp_view"
-                />
+                android:visibility="gone" />
 
             <android.support.v7.widget.AppCompatButton
                 android:id="@+id/custom_signin_button"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:tag="custom_login_button"
                 android:text="Next"
                 android:textSize="16sp"
                 android:textColor="@color/white"
                 android:backgroundTint="@color/colorAccent"
-                android:layout_marginTop="200dp"
-                />
-        </RelativeLayout>
+                android:layout_marginTop="20dp" />
+        </LinearLayout>
 
     </RelativeLayout>
 

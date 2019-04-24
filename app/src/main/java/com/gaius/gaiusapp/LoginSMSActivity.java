@@ -221,17 +221,17 @@ public class LoginSMSActivity extends AppCompatActivity implements OTPListener {
                         message2.setVisibility(View.VISIBLE);
                         message3.setVisibility(View.VISIBLE);
                         otp_view.setVisibility(View.VISIBLE);
-                        spinner.setVisibility(View.INVISIBLE);
-                        serverList.setVisibility(View.INVISIBLE);
+                        spinner.setVisibility(View.GONE);
+                        serverList.setVisibility(View.GONE);
 
                         message2.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
                                 message.setText("Enter your mobile number");
-                                message2.setVisibility(View.INVISIBLE);
-                                message3.setVisibility(View.INVISIBLE);
+                                message2.setVisibility(View.GONE);
+                                message3.setVisibility(View.GONE);
                                 phoneCard.setVisibility(View.VISIBLE);
-                                otp_view.setVisibility(View.INVISIBLE);
+                                otp_view.setVisibility(View.GONE);
                                 if (prefs.getString("admin", "0").equals("1")) {
                                     spinner.setVisibility(View.VISIBLE);
                                     serverList.setVisibility(View.VISIBLE);
@@ -254,8 +254,7 @@ public class LoginSMSActivity extends AppCompatActivity implements OTPListener {
                             }
                         });
 
-                        phoneCard.setVisibility(View.INVISIBLE);
-                        Log.d("SMS", "all ok");
+                        phoneCard.setVisibility(View.GONE);
                     }
 
                     @Override
@@ -276,7 +275,15 @@ public class LoginSMSActivity extends AppCompatActivity implements OTPListener {
     }
 
     void validateOTP () {
-        AndroidNetworking.get("http://192.169.152.158/test/OTP.py")
+        if (prefs.getString("admin", "0").equals("1")) {
+            ServerInfo server = serversArrayList.get(spinner.getSelectedItemPosition());
+
+            SharedPreferences.Editor editor = prefs.edit();
+            editor.putString("base_url", "http://" + server.getIp() + ":" + server.getPort() + "/" + server.getPath() + "/");
+            editor.commit();
+        }
+
+        AndroidNetworking.get(prefs.getString("base_url","http://192.169.152.158/test/") + "OTP.py")
                 .addQueryParameter("number", "00"+phoneInputView.getNumber().substring(1))
                 .addQueryParameter("OTP", otp_view.getText().toString())
                 .setPriority(Priority.HIGH)

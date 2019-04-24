@@ -29,7 +29,10 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.gaius.gaiusapp.interfaces.OnFragmentInteractionListener;
 import com.gaius.gaiusapp.networking.GlideApp;
+import com.gaius.gaiusapp.networking.GlideImageLoadingService;
 import com.gaius.gaiusapp.utils.Constants;
+
+import ss.com.bannerslider.Slider;
 
 public class FriendPageActivity extends AppCompatActivity implements OnFragmentInteractionListener {
     SharedPreferences prefs;
@@ -58,7 +61,7 @@ public class FriendPageActivity extends AppCompatActivity implements OnFragmentI
 
         mCtx = this;
 
-//        Slider.init(new GlideImageLoadingService(this));
+        Slider.init(new GlideImageLoadingService(this));
 
         String name="", avatar="None", status = "";
         prefs = PreferenceManager.getDefaultSharedPreferences(this);

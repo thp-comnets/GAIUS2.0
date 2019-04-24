@@ -212,7 +212,7 @@ public class NewsFeedFragment extends Fragment implements SwipeRefreshLayout.OnR
             case Constants.REQUEST_TYPE_NEWSFEED:
                 query = prefs.getString("token", "null");
                 url = base_URL+"listPages.py";
-                noContentTextView.setText("You don't have added friends yet.\\nPlease consider adding some.");
+                noContentTextView.setText("You haven't added any friends yet.\nPlease consider adding some.");
                 break;
             case Constants.REQUEST_TYPE_FRIEND:
                 query = typeParam + "" + contentParam + prefs.getString("token", "null") + userIDParam;

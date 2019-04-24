@@ -70,7 +70,7 @@ public class MyFriendsFragment extends Fragment implements SwipeRefreshLayout.On
         String token, base_url;
         noFriendsLayout = view.findViewById(R.id.noFriends);
         noFriendTextView = view.findViewById(R.id.noFriendTextView);
-        noFriendTextView.setText("You don't have friends yet.\\nPlease consider adding some.");
+        noFriendTextView.setText("You don't have friends yet.\nPlease consider adding some.");
 
         token = prefs.getString("token", "null");
         base_url = prefs.getString("base_url", null);

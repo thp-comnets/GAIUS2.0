@@ -379,9 +379,9 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
     @Override
     public void onFragmentInteraction(Integer action) {
 
-        Log.d("thp", "interaction " + action);
-        //update the notification badge in the friendsfragment
-        if (action == Constants.UPDATE_BADGE_NOTIFICATION_FRIENDS) {
+        // update the notification badge in the FriendsFragment
+        // check for FriendsFragment instance in case the user switched to another fragment before the FriendsFragment was fully loaded and not detached/destroyed
+        if (action == Constants.UPDATE_BADGE_NOTIFICATION_FRIENDS && getSupportFragmentManager().findFragmentById(R.id.fragment_container) instanceof FriendsFragment) {
             FriendsFragment fragment = (FriendsFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_container);
             fragment.updateNotificationBadge();
         }

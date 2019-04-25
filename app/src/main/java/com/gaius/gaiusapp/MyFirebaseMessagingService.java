@@ -112,7 +112,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         SharedPreferences.Editor editor = prefs.edit();
         editor.putString("cm-token", token);
-        editor.apply();
+        editor.commit();
 
         if (prefs.getString("token", null) != null) {
             AndroidNetworking.get(prefs.getString("base_url", null)+"updateCmToken.py")

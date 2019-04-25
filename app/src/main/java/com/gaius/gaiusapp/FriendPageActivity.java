@@ -6,9 +6,13 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.TypedArray;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
+import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
@@ -18,7 +22,6 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -37,11 +40,11 @@ import ss.com.bannerslider.Slider;
 public class FriendPageActivity extends AppCompatActivity implements OnFragmentInteractionListener {
     SharedPreferences prefs;
     RelativeLayout noPages;
-    ProgressBar mProgressBar;
     AppCompatButton mButton;
     String base_url, userID;
     Integer position;
     Context mCtx;
+    Toolbar toolbar;
 
     @SuppressLint("RestrictedApi")
     @Override
@@ -49,7 +52,7 @@ public class FriendPageActivity extends AppCompatActivity implements OnFragmentI
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_userpage);
-        Toolbar toolbar = findViewById(R.id.toolbar);
+        toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
@@ -58,6 +61,25 @@ public class FriendPageActivity extends AppCompatActivity implements OnFragmentI
 
         collapsingToolbarLayout.setExpandedTitleColor(getResources().getColor(android.R.color.transparent));
         collapsingToolbarLayout.setContentScrimColor(getResources().getColor(R.color.colorPrimary));
+
+        //change the color of the back arrow
+        AppBarLayout appBarLayout = (AppBarLayout) findViewById(R.id.appbar);
+        appBarLayout.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
+            @Override
+            public void onOffsetChanged(AppBarLayout appBarLayout, int offset) {
+                TypedArray a = getTheme().obtainStyledAttributes(R.style.AppTheme, new int[] {android.R.attr.homeAsUpIndicator});
+                int attributeResourceId = a.getResourceId(0, 0);
+                Drawable upArrow = getResources().getDrawable(attributeResourceId);
+
+                if (offset < -450) {
+                    upArrow.setColorFilter(getResources().getColor(R.color.white), PorterDuff.Mode.SRC_ATOP);
+                } else {
+                    upArrow.setColorFilter(getResources().getColor(R.color.black), PorterDuff.Mode.SRC_ATOP);
+
+                }
+                getSupportActionBar().setHomeAsUpIndicator(upArrow);
+            }
+        });
 
         mCtx = this;
 

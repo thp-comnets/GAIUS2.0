@@ -19,6 +19,7 @@ import com.androidnetworking.common.Priority;
 import com.androidnetworking.error.ANError;
 import com.androidnetworking.interfaces.JSONArrayRequestListener;
 import com.gaius.gaiusapp.utils.ServerInfo;
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.mukesh.OtpView;
 
 import net.rimoto.intlphoneinput.IntlPhoneInput;
@@ -27,6 +28,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 import swarajsaaj.smscodereader.interfaces.OTPListener;
@@ -87,7 +89,18 @@ public class LoginSMSActivity extends AppCompatActivity implements OTPListener {
             serverList.setVisibility(View.VISIBLE);
             loadServers();
         }
-
+        // request a new firebase token
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    FirebaseInstanceId.getInstance().deleteInstanceId();
+                    FirebaseInstanceId.getInstance().getToken();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
     }
 
     private void loadServers() {

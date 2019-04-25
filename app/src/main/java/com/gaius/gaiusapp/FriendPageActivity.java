@@ -57,7 +57,7 @@ public class FriendPageActivity extends AppCompatActivity implements OnFragmentI
         CollapsingToolbarLayout collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
 
         collapsingToolbarLayout.setExpandedTitleColor(getResources().getColor(android.R.color.transparent));
-        collapsingToolbarLayout.setContentScrimColor(getResources().getColor(R.color.colorPrimaryDark));
+        collapsingToolbarLayout.setContentScrimColor(getResources().getColor(R.color.colorPrimary));
 
         mCtx = this;
 

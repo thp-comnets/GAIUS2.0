@@ -28,6 +28,7 @@ import com.gaius.gaiusapp.adapters.NewsFeedAdapter;
 import com.gaius.gaiusapp.classes.NewsFeed;
 import com.gaius.gaiusapp.interfaces.FragmentVisibleInterface;
 import com.gaius.gaiusapp.interfaces.OnFragmentInteractionListener;
+import com.gaius.gaiusapp.networking.GlideImageLoadingService;
 import com.gaius.gaiusapp.utils.Constants;
 import com.gaius.gaiusapp.utils.LogOut;
 
@@ -37,6 +38,8 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import ss.com.bannerslider.Slider;
 
 import static com.gaius.gaiusapp.utils.ResourceHelper.convertImageURLBasedonFidelity;
 
@@ -158,10 +161,10 @@ public class NewsFeedFragment extends Fragment implements SwipeRefreshLayout.OnR
         });
 
         newsFeedList = new ArrayList<>();
-        adapter = new NewsFeedAdapter(getContext(), newsFeedList);
+        adapter = new NewsFeedAdapter(getContext(), newsFeedList, typeParam);
         recyclerView.setAdapter(adapter);
 
-        //if this instance is the newsfeed, load content right away
+        //if this instance is the newsfeed or friends page, load content right away
         if (typeParam.equals(Constants.REQUEST_TYPE_NEWSFEED) || typeParam.equals(Constants.REQUEST_TYPE_FRIEND)) {
             this.fragmentBecameVisible();
         }
@@ -192,14 +195,8 @@ public class NewsFeedFragment extends Fragment implements SwipeRefreshLayout.OnR
     @Override
     public void onResume() {
         super.onResume();
-
-//        thp: disabled this to disable refreshing when activity brought to foreground
-//        newsFeedList = new ArrayList<>();
-//        loadPages();
+        Slider.init(new GlideImageLoadingService(mCtx));
     }
-
-
-//
 
     private void loadPages() {
 
@@ -300,13 +297,14 @@ public class NewsFeedFragment extends Fragment implements SwipeRefreshLayout.OnR
                                         newsFeed.getString("userID"),
                                         newsFeed.getString("type"),
                                         newsFeed.getString("liked"),
+                                        newsFeed.getString("published"),
                                         true,
                                         imagesList
 
                                 ));
                             }
                             //FIXME check context, might be null
-                            adapter = new NewsFeedAdapter(getContext(), newsFeedList);
+                            adapter = new NewsFeedAdapter(getContext(), newsFeedList, typeParam);
                             recyclerView.setAdapter(adapter);
                             noInternet.setVisibility(View.GONE);
                             error500.setVisibility(View.GONE);

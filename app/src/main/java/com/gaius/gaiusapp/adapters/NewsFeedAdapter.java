@@ -28,6 +28,7 @@ import com.gaius.gaiusapp.R;
 import com.gaius.gaiusapp.RenderMAMLActivity;
 import com.gaius.gaiusapp.classes.NewsFeed;
 import com.gaius.gaiusapp.networking.GlideApp;
+import com.gaius.gaiusapp.utils.Constants;
 import com.gaius.gaiusapp.utils.TopCropImageView;
 
 import java.util.ArrayList;
@@ -47,10 +48,12 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.newsFe
     private List<NewsFeed> newsFeedList;
     private SharedPreferences prefs;
     private float scale;
+    private Integer requestType;
 
-    public NewsFeedAdapter(Context mCtx, List<NewsFeed> newsFeedList) {
+    public NewsFeedAdapter(Context mCtx, List<NewsFeed> newsFeedList, int requestType) {
         this.mCtx = mCtx;
         this.newsFeedList = newsFeedList;
+        this.requestType = requestType;
     }
 
     @Override
@@ -85,10 +88,19 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.newsFe
 
         String fidelity = prefs.getString("fidelity_level", "high");
 
-        if (newsfeed.getType().contains("page")) {
+        if (newsfeed.getType().equals("page") || newsfeed.getType().equals("channel")) {
             holder.imageView.setVisibility(View.VISIBLE);
             holder.videoView.setVisibility(View.GONE);
             holder.slider.setVisibility(View.GONE);
+
+            holder.imageView.setTag(R.id.imageView, position); //we need the key here, otherwise Glide will complain
+            holder.shareButton.setTag(position);
+            holder.shareButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    shareItem(v, "Check this page on GAIUS");
+                }
+            });
 
             GlideApp.with(mCtx)
                     .load(convertImageURLBasedonFidelity(prefs.getString("base_url", null) + newsfeed.getImage(), fidelity))
@@ -104,7 +116,7 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.newsFe
                     Bundle bundle = new Bundle();
 
                     // we distinguish here between simple pages and channels
-                    if (!n.getUserID().equals("null")) {
+                    if (n.getType().equals("channel")) {
                         // this is a channel, inflate the browse fragme
                         Fragment fragment = new BrowseWebFragment();
                         bundle.putString("userID", n.getUserID());
@@ -137,6 +149,13 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.newsFe
                     .into(holder.videoView.thumbImageView);
 
             holder.videoView.setUp(prefs.getString("base_url", null) + newsfeed.getUrl(), "", Jzvd.SCREEN_WINDOW_NORMAL);
+            holder.shareButton.setTag(position);
+            holder.shareButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    shareItem(v, "Check this video on GAIUS");
+                }
+            });
         }
         else if (newsfeed.getType().equals("image")) {
             holder.videoView.setVisibility(View.GONE);
@@ -172,35 +191,13 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.newsFe
                 }
             });
 
-//            for (int i=0; i<holder.multiImageViewBitmaps.size(); i++) {
-//                url_maps.put(i+"", holder.multiImageViewBitmaps.get(i));
-//            }
-//
-//            for(String name : url_maps.keySet()){
-//                final TextSliderView textSliderView = new TextSliderView(mCtx);
-//                // initialize a SliderLayout
-//                textSliderView
-////                        .description(name)
-//                        .image(url_maps.get(name))
-//                        .setScaleType(BaseSliderView.ScaleType.CenterCrop)
-//                        .setOnSliderClickListener(new BaseSliderView.OnSliderClickListener() {
-//                            @Override public void onSliderClick(BaseSliderView slider) {
-//                                Bundle bundle = new Bundle();
-//                                Intent i = new Intent(mCtx, AlbumViewActivity.class);
-//                                bundle.putStringArrayList("imagesURLs", holder.multiImageViewBitmaps);
-//                                i.putExtras(bundle);
-//                                mCtx.startActivity(i);
-//
-////                                 Intent target = new Intent(Intent.ACTION_VIEW);
-////                                 target.setDataAndType(Uri.parse(slider.getUrl()), "image/*");
-////                                 target.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
-////                                 mCtx.startActivity(target);
-//                                Log.d("Thomas", "hello hello");
-//                            }
-//                        });
-//
-//                holder.mDemoSlider.addSlider(textSliderView);
-//            }
+            holder.shareButton.setTag(position);
+            holder.shareButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    shareItem(v, "Check this image album on GAIUS");
+                }
+            });
         }
 
         holder.textViewName.setText(newsfeed.getName());
@@ -223,36 +220,6 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.newsFe
                 mCtx.startActivity(intent);
             }
         });
-
-        //FIXME: thp: Yasir, why is all of this here and not in the if statements above?
-        if (newsfeed.getType().contains("page")) {
-            holder.imageView.setTag(R.id.imageView, position); //we need the key here, otherwise Glide will complain
-            holder.shareButton.setTag(position);
-            holder.shareButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    shareItem(v, "Check this page on GAIUS");
-                }
-            });
-        }
-        else if (newsfeed.getType().contains("video")) {
-            holder.shareButton.setTag(position);
-            holder.shareButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    shareItem(v, "Check this video on GAIUS");
-                }
-            });
-        }
-        else if (newsfeed.getType().contains("image")) {
-            holder.shareButton.setTag(position);
-            holder.shareButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    shareItem(v, "Check this image album on GAIUS");
-                }
-            });
-        }
 
         if (newsfeed.getLiked().equals("true")) {
             holder.likeButton.setImageResource(R.drawable.icon_liked);
@@ -295,6 +262,24 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.newsFe
             }
         });
 
+        // this is only shown if we are in My Content
+        if (requestType.equals(Constants.REQUEST_TYPE_MYOWN)) {
+            holder.textViewStatus.setVisibility(View.VISIBLE);
+            switch (newsfeed.getPublished()) {
+                case "0":
+                    holder.textViewStatus.setText("Saved");
+                    holder.textViewStatus.setTextColor(mCtx.getResources().getColor(R.color.blue_500));
+                    break;
+                case "1":
+                    holder.textViewStatus.setText("Published");
+                    holder.textViewStatus.setTextColor(mCtx.getResources().getColor(R.color.green_500));
+                    break;
+                case "-1":
+                    holder.textViewStatus.setText("Pending approval");
+                    holder.textViewStatus.setTextColor(mCtx.getResources().getColor(R.color.orange_500));
+                    break;
+            }
+        }
     }
 
     public void shareItem (View v, String shareSub) {
@@ -328,7 +313,7 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.newsFe
 
     public class newsFeedViewHolder extends RecyclerView.ViewHolder {
 
-        TextView textViewName, textViewUpdateTime, textViewTitle, textViewDescription;
+        TextView textViewName, textViewUpdateTime, textViewTitle, textViewDescription, textViewStatus;
         ImageView avatarView, likeButton, shareButton;
         TopCropImageView imageView;
         JzvdStd videoView;
@@ -347,7 +332,7 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.newsFe
             slider = itemView.findViewById(R.id.slider);
             textViewTitle = itemView.findViewById(R.id.textViewTitle);
             textViewDescription = itemView.findViewById(R.id.textViewDescription);
-//            newsFeedCard =  itemView.findViewById(R.id.imageViewCardView);
+            textViewStatus =  itemView.findViewById(R.id.testViewStatus);
             likeButton = itemView.findViewById(R.id.like);
             shareButton = itemView.findViewById(R.id.share);
         }

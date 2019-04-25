@@ -30,7 +30,6 @@ import android.widget.TextView;
 import com.androidnetworking.AndroidNetworking;
 import com.gaius.gaiusapp.interfaces.OnFragmentInteractionListener;
 import com.gaius.gaiusapp.networking.GlideApp;
-import com.gaius.gaiusapp.networking.GlideImageLoadingService;
 import com.gaius.gaiusapp.utils.Constants;
 import com.gaius.gaiusapp.utils.LogOut;
 
@@ -39,7 +38,6 @@ import java.util.List;
 
 import cn.jzvd.Jzvd;
 import me.leolin.shortcutbadger.ShortcutBadger;
-import ss.com.bannerslider.Slider;
 
 import static com.gaius.gaiusapp.utils.Constants.MULTIPLE_PERMISSIONS;
 
@@ -81,7 +79,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         // asking the user for all required permissions
         checkPermissions ();
 
-        Slider.init(new GlideImageLoadingService(this));
+//        Slider.init(new GlideImageLoadingService(this));
 
         setContentView(R.layout.activity_main);
 

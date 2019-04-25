@@ -14,10 +14,11 @@ public class NewsFeed {
     private String userID;
     private String type;
     private Boolean showAvatar;
+    private String published;
     private ArrayList<String> imagesGallery;
     private String liked;
 
-    public NewsFeed (int id, String name, String updateTime, String avatar, String image, String title, String description, String url, String userID, String type, String liked, Boolean showAvatar, ArrayList<String> imagesGallery) {
+    public NewsFeed (int id, String name, String updateTime, String avatar, String image, String title, String description, String url, String userID, String type, String liked, String published, Boolean showAvatar, ArrayList<String> imagesGallery) {
         this.id = id;
         this.name = name;
         this.updateTime = updateTime;
@@ -29,6 +30,7 @@ public class NewsFeed {
         this.userID = userID;
         this.type = type;
         this.showAvatar = showAvatar;
+        this.published = published;
         this.liked = liked;
         this.imagesGallery = imagesGallery;
     }
@@ -69,6 +71,15 @@ public class NewsFeed {
     public void setUserID(String userID) { this.userID = userID; }
 
     public String getType() {return type; }
+
+    public String getPublished() {
+        return published;
+    }
+
+    public void setPublished(String published) {
+        this.published = published;
+    }
+
 
     public Boolean getShowAvatar() {
         return showAvatar;

@@ -1,11 +1,13 @@
 package com.gaius.gaiusapp.adapters;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -13,6 +15,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.android.volley.Request;
@@ -23,6 +26,7 @@ import com.android.volley.toolbox.Volley;
 import com.bumptech.glide.Priority;
 import com.gaius.gaiusapp.AlbumViewActivity;
 import com.gaius.gaiusapp.BrowseWebFragment;
+import com.gaius.gaiusapp.CreativeWebCreation;
 import com.gaius.gaiusapp.FriendPageActivity;
 import com.gaius.gaiusapp.R;
 import com.gaius.gaiusapp.RenderMAMLActivity;
@@ -68,7 +72,7 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.newsFe
 
     @Override
     public void onBindViewHolder(final newsFeedViewHolder holder, int position) {
-        NewsFeed newsfeed = newsFeedList.get(position);
+        final NewsFeed newsfeed = newsFeedList.get(position);
 
         if (newsfeed.getShowAvatar() == true) {
             if (newsfeed.getAvatar().contains("None")) {
@@ -265,6 +269,9 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.newsFe
         // this is only shown if we are in My Content
         if (requestType.equals(Constants.REQUEST_TYPE_MYOWN)) {
             holder.textViewStatus.setVisibility(View.VISIBLE);
+            holder.editButton.setTag(position);
+            holder.deleteButton.setTag(position);
+
             switch (newsfeed.getPublished()) {
                 case "0":
                     holder.textViewStatus.setText("Saved");
@@ -278,6 +285,96 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.newsFe
                     holder.textViewStatus.setText("Pending approval");
                     holder.textViewStatus.setTextColor(mCtx.getResources().getColor(R.color.orange_500));
                     break;
+            }
+
+            holder.shareButton.setVisibility(View.GONE);
+
+            holder.editDeleteLayout.setVisibility(View.VISIBLE);
+
+            //only pages can be edited right now
+            if (newsfeed.getType().equals("page")) {
+                holder.editButton.setVisibility(View.VISIBLE);
+                holder.editButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        NewsFeed n = newsFeedList.get((Integer) v.getTag());
+
+                        Intent intent = new Intent(mCtx, CreativeWebCreation.class);
+                        Bundle bundle = new Bundle();
+                        bundle.putSerializable("PAGE_URL", n.getUrl());
+                        bundle.putSerializable("EDIT_MODE", true);
+                        bundle.putSerializable("PAGE_NAME", n.getTitle());
+                        bundle.putSerializable("PAGE_DESCRIPTION", n.getDescription());
+                        intent.putExtras(bundle);
+
+                        mCtx.startActivity(intent);
+                    }
+                });
+                holder.deleteButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        final NewsFeed n = newsFeedList.get((Integer) v.getTag());
+
+                        AlertDialog.Builder builder = new AlertDialog.Builder(mCtx);
+
+                        builder.setTitle("Delete Content");
+                        builder.setMessage("Do you want to delete this "+n.getType()+"?");
+
+                        builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+
+                            public void onClick(DialogInterface dialog, int which) {
+                                String URL;
+
+                                // Do nothing but close the dialog
+                                dialog.dismiss();
+
+                                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mCtx);
+                                String token = prefs.getString("token", "null");
+
+//                                if (n.getType().equals("ad")) {
+//                                    URL = prefs.getString("base_url", null) + "deleteContent.py?token=" + token + "&" + n.getType() + "=" + n.getAdCampaign();
+//                                }
+//                                else {
+                                URL = prefs.getString("base_url", null) + "deleteContent.py?token=" + token + "&" + n.getType() + "=" + n.getUrl();
+//                                }
+
+                                StringRequest stringRequest = new StringRequest(Request.Method.GET, URL,
+                                        new Response.Listener<String>() {
+                                            @Override
+                                            public void onResponse(String response) {
+                                                Log.d("yasir", response);
+
+                                                if (response.contains("Success")) {
+                                                    newsFeedList.remove(n);
+                                                    notifyDataSetChanged();
+                                                }
+                                            }
+                                        },
+                                        new Response.ErrorListener() {
+                                            @Override
+                                            public void onErrorResponse(VolleyError error) {
+                                                Log.d("Yasir","Error "+error);
+                                            }
+                                        });
+                                Log.d("Yasir","added request "+stringRequest);
+
+                                Volley.newRequestQueue(mCtx).add(stringRequest);
+                            }
+                        });
+
+                        builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                // Do nothing
+                                dialog.dismiss();
+                            }
+                        });
+
+                        AlertDialog alert = builder.create();
+                        alert.show();
+                    }
+                });
             }
         }
     }
@@ -313,8 +410,9 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.newsFe
 
     public class newsFeedViewHolder extends RecyclerView.ViewHolder {
 
+        LinearLayout editDeleteLayout;
         TextView textViewName, textViewUpdateTime, textViewTitle, textViewDescription, textViewStatus;
-        ImageView avatarView, likeButton, shareButton;
+        ImageView avatarView, likeButton, shareButton, editButton, deleteButton;
         TopCropImageView imageView;
         JzvdStd videoView;
         Slider slider;
@@ -323,6 +421,7 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.newsFe
         public newsFeedViewHolder(View itemView) {
             super(itemView);
 
+            editDeleteLayout = itemView.findViewById(R.id.editDeleteLayout);
             textViewName = itemView.findViewById(R.id.textViewName);
             textViewUpdateTime = itemView.findViewById(R.id.textViewUpdateTime);
             avatarView = itemView.findViewById(R.id.avatarView);
@@ -335,6 +434,8 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.newsFe
             textViewStatus =  itemView.findViewById(R.id.testViewStatus);
             likeButton = itemView.findViewById(R.id.like);
             shareButton = itemView.findViewById(R.id.share);
+            editButton = itemView.findViewById(R.id.edit);
+            deleteButton = itemView.findViewById(R.id.delete);
         }
     }
 }

@@ -20,6 +20,7 @@ import com.androidnetworking.error.ANError;
 import com.androidnetworking.interfaces.JSONArrayRequestListener;
 import com.gaius.gaiusapp.utils.ServerInfo;
 import com.google.firebase.iid.FirebaseInstanceId;
+import com.mukesh.OnOtpCompletionListener;
 import com.mukesh.OtpView;
 
 import net.rimoto.intlphoneinput.IntlPhoneInput;
@@ -65,6 +66,12 @@ public class LoginSMSActivity extends AppCompatActivity implements OTPListener {
         message3 = findViewById(R.id.resend_otp_message);
 
         otp_view = findViewById(R.id.otp_view);
+        otp_view.setOtpCompletionListener(new OnOtpCompletionListener() {
+            @Override
+            public void onOtpCompleted(String otp) {
+                validateOTP();
+            }
+        });
 
         customSigninButton = (Button) findViewById(R.id.custom_signin_button);
         customSigninButton.setOnClickListener(new View.OnClickListener() {
@@ -230,6 +237,7 @@ public class LoginSMSActivity extends AppCompatActivity implements OTPListener {
                             }
                         });
 
+                        customSigninButton.setVisibility(View.GONE);
                         message.setText("Enter the 4-digit code sent to you");
                         message2.setVisibility(View.VISIBLE);
                         message3.setVisibility(View.VISIBLE);
@@ -245,6 +253,7 @@ public class LoginSMSActivity extends AppCompatActivity implements OTPListener {
                                 message3.setVisibility(View.GONE);
                                 phoneCard.setVisibility(View.VISIBLE);
                                 otp_view.setVisibility(View.GONE);
+                                customSigninButton.setVisibility(View.VISIBLE);
                                 if (prefs.getString("admin", "0").equals("1")) {
                                     spinner.setVisibility(View.VISIBLE);
                                     serverList.setVisibility(View.VISIBLE);

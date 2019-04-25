@@ -50,7 +50,7 @@ public class FontProvider {
         fontNameToTypefaceFile.put("Caviar Bold Italic", "CaviarDreams_BoldItalic.ttf");
         fontNameToTypefaceFile.put("Caviar Italic", "CaviarDreams_Italic.ttf");
         fontNameToTypefaceFile.put("Caviar", "CaviarDreams.ttf");
-        fontNameToTypefaceFile.put("FFF Tusji", "FFF_Tusj.ttf");
+//        fontNameToTypefaceFile.put("FFF Tusji", "FFF_Tusj.ttf");
         fontNameToTypefaceFile.put("Grand Hotel", "GrandHotel-Regular.otf");
         fontNameToTypefaceFile.put("Great Vibes", "GreatVibes-Regular.otf");
         fontNameToTypefaceFile.put("Kaushan Script", "KaushanScript-Regular.otf");

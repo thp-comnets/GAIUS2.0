@@ -26,8 +26,10 @@ import android.widget.Toast;
 
 import com.androidnetworking.AndroidNetworking;
 import com.androidnetworking.common.ANRequest;
+import com.androidnetworking.common.Priority;
 import com.androidnetworking.error.ANError;
 import com.androidnetworking.interfaces.AnalyticsListener;
+import com.androidnetworking.interfaces.JSONArrayRequestListener;
 import com.androidnetworking.interfaces.OkHttpResponseListener;
 import com.androidnetworking.interfaces.UploadProgressListener;
 import com.gaius.gaiusapp.networking.GlideApp;
@@ -37,6 +39,7 @@ import com.theartofdev.edmodo.cropper.CropImageView;
 
 import net.rimoto.intlphoneinput.IntlPhoneInput;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -79,7 +82,7 @@ public class ProfileUpdateActivity extends AppCompatActivity {
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
         base_url = prefs.getString("base_url", null);
-        URL_FOR_REGISTRATION = base_url + "register.php";
+        URL_FOR_REGISTRATION = base_url + "updateUserInfo.py";
 
         // Progress dialog
         progressDialog = new ProgressDialog(this);
@@ -266,112 +269,124 @@ public class ProfileUpdateActivity extends AppCompatActivity {
                             final String gender, final String dob, final String phoneNumber) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
 
-        progress = new ProgressDialog(this);
-        progress.setMessage("Uploading...");
-        progress.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-        progress.setCancelable(false);
-        progress.setProgress(0);
-        progress.setButton(ProgressDialog.BUTTON_NEUTRAL, "Cancel upload",
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        AndroidNetworking.cancelAll();
-                    }
-                });
-        progress.show();
-
-
-        ANRequest.MultiPartBuilder multiPartBuilder = new ANRequest.MultiPartBuilder(URL_FOR_REGISTRATION);
-
+        final SharedPreferences.Editor editor = prefs.edit();
         if (filePath != null) {
-            multiPartBuilder.addMultipartFile("avatar", new File (filePath));
-            SharedPreferences.Editor editor = prefs.edit();
             editor.putString("account_avatar", filePath);
             editor.commit();
-        }
 
-        multiPartBuilder.addMultipartParameter("name", name);
-        multiPartBuilder.addMultipartParameter("channel", channel);
-        multiPartBuilder.addMultipartParameter("phoneNumber", phoneNumber);
-        multiPartBuilder.addMultipartParameter("email", email);
-        multiPartBuilder.addMultipartParameter("password", prefs.getString("password", "null"));
-        multiPartBuilder.addMultipartParameter("gender", gender);
-        multiPartBuilder.addMultipartParameter("age", dob);
-        multiPartBuilder.addMultipartParameter("type", "Update");
-
-        multiPartBuilder.build()
-                .setUploadProgressListener(new UploadProgressListener() {
-                    @Override
-                    public void onProgress(long bytesUploaded, long totalBytes) {
-                        progress.setProgress((int)((float)bytesUploaded/totalBytes * 100.0));
-                    }
-                })
-                .setAnalyticsListener(new AnalyticsListener() {
-                    @Override
-                    public void onReceived(long timeTakenInMillis, long bytesSent,
-                                           long bytesReceived, boolean isFromCache) {
-                        Log.d("thp", " timeTakenInMillis : " + timeTakenInMillis);
-                        Log.d("thp", " bytesSent : " + bytesSent);
-                        Log.d("thp", " bytesReceived : " + bytesReceived);
-                        Log.d("thp", " isFromCache : " + isFromCache);
-                    }
-                })
-                .getAsOkHttpResponse(new OkHttpResponseListener() {
-                    @Override
-                    public void onResponse(Response response) {
-                        Log.d("thp", "OnResponse " + response.code());
-                        if (response.code() == 200) {
-                            progress.dismiss();
-
-                            JSONObject jObj = null;
+            AndroidNetworking.upload(URL_FOR_REGISTRATION)
+                    .addMultipartFile("avatar",new File (filePath))
+                    .addMultipartParameter("token", prefs.getString("token", null))
+                    .addMultipartParameter("name", name)
+                    .addMultipartParameter("channel", channel)
+                    .addMultipartParameter("phoneNumber", phoneNumber)
+                    .addMultipartParameter("email", email)
+                    .addMultipartParameter("gender", gender)
+                    .addMultipartParameter("age", dob)
+                    .setTag("uploadTest")
+                    .setPriority(Priority.HIGH)
+                    .build()
+                    .getAsJSONArray(new JSONArrayRequestListener() {
+                        @Override
+                        public void onResponse(JSONArray response) {
                             try {
-                                jObj = new JSONObject(response.body().string());
-                                boolean error = jObj.getBoolean("error");
+                                JSONObject user_info;
+                                user_info = response.getJSONObject(0);
 
-                                if (!error) {
-                                    String user = jObj.getJSONObject("user").getString("name");
-                                    Log.d("GAIUS","RegisterActivity: Received token: " + jObj.getJSONObject("user").getString("token"));
+                                editor.putString("name", user_info.getString("name"));
+                                editor.putString("email", user_info.getString("email"));
+                                editor.putString("token", user_info.getString("token"));
+                                editor.putString("channel", user_info.getString("channel"));
+                                editor.putString("gender", user_info.getString("gender"));
+                                editor.putString("age", user_info.getString("age"));
+                                editor.putString("userID", user_info.getString("userID"));
+                                editor.putString("number", user_info.getString("phoneNumber"));
+                                editor.putString("admin", user_info.getString("admin"));
+                                editor.commit();
 
-                                    Toast.makeText(getApplicationContext(), getString(R.string.toast_update_success), Toast.LENGTH_SHORT).show();
+                                Intent i = new Intent(getApplicationContext(), MainActivity.class);
+                                startActivity(i);
 
-                                    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
-                                    SharedPreferences.Editor editor = prefs.edit();
-
-                                    editor.putString("name", jObj.getJSONObject("user").getString("name"));
-                                    editor.putString("channel", jObj.getJSONObject("user").getString("channel"));
-                                    editor.putString("email", jObj.getJSONObject("user").getString("email"));
-                                    editor.putString("gender", jObj.getJSONObject("user").getString("gender"));
-                                    editor.putString("age", jObj.getJSONObject("user").getString("age"));
-                                    editor.putString("token", jObj.getJSONObject("user").getString("token"));
-                                    editor.putString("userID", jObj.getJSONObject("user").getString("userID"));
-                                    editor.putString("number", jObj.getJSONObject("user").getString("phoneNumber"));
-                                    editor.commit();
-
-                                    finish();
-
-                                } else {
-                                    String errorMsg = jObj.getString("error_msg");
-                                    Toast.makeText(getApplicationContext(),
-                                            errorMsg, Toast.LENGTH_LONG).show();
-                                }
+                                finish();
 
                             } catch (JSONException e) {
                                 e.printStackTrace();
-                            } catch (IOException e) {
+                            }
+                        }
+
+                        @Override
+                        public void onError(ANError error) {
+
+                            switch (error.getErrorCode()) {
+                                case 401:
+                                    break;
+                                case 500:
+                                    Log.d("profile", "Error 500" + error);
+                                    Toast.makeText(getApplicationContext(), "Error updating the profile info", Toast.LENGTH_SHORT).show();
+
+                                    break;
+                                default:
+                                    Log.d("profile", "Error no Internet " + error);
+                            }
+                        }
+                    });
+
+        }
+        else {
+            AndroidNetworking.get(URL_FOR_REGISTRATION)
+                    .addQueryParameter("token", prefs.getString("token", null))
+                    .addQueryParameter("name", name)
+                    .addQueryParameter("channel", channel)
+                    .addQueryParameter("phoneNumber", phoneNumber)
+                    .addQueryParameter("email", email)
+                    .addQueryParameter("gender", gender)
+                    .addQueryParameter("age", dob)
+                    .setPriority(Priority.HIGH)
+                    .build()
+                    .getAsJSONArray(new JSONArrayRequestListener() {
+                        @Override
+                        public void onResponse(JSONArray response) {
+                            try {
+                                JSONObject user_info;
+                                user_info = response.getJSONObject(0);
+
+                                editor.putString("name", user_info.getString("name"));
+                                editor.putString("email", user_info.getString("email"));
+                                editor.putString("token", user_info.getString("token"));
+                                editor.putString("channel", user_info.getString("channel"));
+                                editor.putString("gender", user_info.getString("gender"));
+                                editor.putString("age", user_info.getString("age"));
+                                editor.putString("userID", user_info.getString("userID"));
+                                editor.putString("number", user_info.getString("phoneNumber"));
+                                editor.putString("admin", user_info.getString("admin"));
+                                editor.commit();
+
+                                Intent i = new Intent(getApplicationContext(), MainActivity.class);
+                                startActivity(i);
+
+                                finish();
+
+                            } catch (JSONException e) {
                                 e.printStackTrace();
                             }
-
-
-                        } else {
-                            Toast.makeText(getApplicationContext(), "Something went wrong with the upload ("+ response.code()+")", Toast.LENGTH_LONG).show();
                         }
-                    }
 
-                    @Override
-                    public void onError(ANError anError) {
-                        Toast.makeText(getApplicationContext(), "Something went wrong with the upload ("+ anError.getErrorDetail()+")", Toast.LENGTH_LONG).show();
-                        progress.dismiss();
-                    }
-                });
+                        @Override
+                        public void onError(ANError error) {
 
+                            switch (error.getErrorCode()) {
+                                case 401:
+                                    break;
+                                case 500:
+                                    Log.d("profile", "Error 500" + error);
+                                    Toast.makeText(getApplicationContext(), "Error updating the profile info", Toast.LENGTH_SHORT).show();
+
+                                    break;
+                                default:
+                                    Log.d("profile", "Error no Internet " + error);
+                            }
+                        }
+                    });
+        }
     }
 }

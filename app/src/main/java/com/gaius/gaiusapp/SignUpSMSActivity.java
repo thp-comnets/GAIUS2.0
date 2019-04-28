@@ -42,7 +42,7 @@ public class SignUpSMSActivity extends AppCompatActivity {
     private String filePath, URL_FOR_REGISTRATION;
     private Uri avatarUri;
     private ImageView avatarImageView, loadingImageView;
-    private EditText signupInputName, signupInputPassword, signupInputPassword2;
+    private EditText signupInputName, signupInputChannel;
     SharedPreferences prefs;
 
     @Override
@@ -54,8 +54,7 @@ public class SignUpSMSActivity extends AppCompatActivity {
         URL_FOR_REGISTRATION = prefs.getString("base_url", null)+"OTP.py";
 
         signupInputName = findViewById(R.id.name_edittext);
-        signupInputPassword = findViewById(R.id.password_edittext);
-        signupInputPassword2 = findViewById(R.id.verify_password_edittext);
+        signupInputChannel = findViewById(R.id.channel_edittext);
 
         Button customSignupButton = (Button) findViewById(R.id.custom_signup_button);
         customSignupButton.setOnClickListener(new View.OnClickListener() {
@@ -92,18 +91,8 @@ public class SignUpSMSActivity extends AppCompatActivity {
             error =true;
         }
 
-        if (signupInputPassword.getText().toString().length() < 5) {
-            signupInputPassword.setError("Password must be longer than 5 characters");
-            error =true;
-        }
-
-        if (signupInputPassword2.getText().toString().length() < 5) {
-            signupInputPassword2.setError("Password must be longer than 5 characters");
-            error =true;
-        }
-
-        if (!signupInputPassword.getText().toString().equals(signupInputPassword2.getText().toString())) {
-            signupInputPassword2.setError("Passwords don't match");
+        if (signupInputChannel.getText().toString().matches("")) {
+            signupInputChannel.setError("Channel can't be empty");
             error =true;
         }
 
@@ -112,8 +101,7 @@ public class SignUpSMSActivity extends AppCompatActivity {
         }
 
         registerUser(signupInputName.getText().toString(),
-                signupInputName.getText().toString()+"'s Channel",
-                signupInputPassword.getText().toString()
+                signupInputChannel.getText().toString()
               );
     }
 
@@ -157,7 +145,7 @@ public class SignUpSMSActivity extends AppCompatActivity {
                 .start(this);
     }
 
-    private void registerUser(final String name, final String channel, final String password) {
+    private void registerUser(final String name, final String channel) {
         loadingImageView.setVisibility(View.VISIBLE);
 
         if (filePath != null) {
@@ -168,7 +156,7 @@ public class SignUpSMSActivity extends AppCompatActivity {
                     .addMultipartParameter("OTP", prefs.getString("OTP", ""))
                     .addMultipartParameter("name", name)
                     .addMultipartParameter("channel", channel)
-                    .addMultipartParameter("password", password)
+                    .addMultipartParameter("password", "test")
                     .setTag("uploadTest")
                     .setPriority(Priority.HIGH)
                     .build()
@@ -190,7 +178,7 @@ public class SignUpSMSActivity extends AppCompatActivity {
                                         SharedPreferences.Editor editor = prefs.edit();
                                         editor.putString("name", jObj.getJSONObject("user").getString("name"));
                                         editor.putString("email", jObj.getJSONObject("user").getString("email"));
-                                        editor.putString("password", password);
+                                        editor.putString("password", "test");
                                         editor.putString("token", jObj.getJSONObject("user").getString("token"));
                                         editor.putString("channel", jObj.getJSONObject("user").getString("channel"));
                                         editor.putString("gender", jObj.getJSONObject("user").getString("gender"));
@@ -250,7 +238,7 @@ public class SignUpSMSActivity extends AppCompatActivity {
                     .addQueryParameter("OTP", prefs.getString("OTP", ""))
                     .addQueryParameter("name", name)
                     .addQueryParameter("channel", channel)
-                    .addQueryParameter("password", password)
+                    .addQueryParameter("password", "test")
                     .setPriority(Priority.HIGH)
                     .build()
                     .getAsOkHttpResponse(new OkHttpResponseListener() {
@@ -271,7 +259,7 @@ public class SignUpSMSActivity extends AppCompatActivity {
                                         SharedPreferences.Editor editor = prefs.edit();
                                         editor.putString("name", jObj.getJSONObject("user").getString("name"));
                                         editor.putString("email", jObj.getJSONObject("user").getString("email"));
-                                        editor.putString("password", password);
+                                        editor.putString("password", "test");
                                         editor.putString("token", jObj.getJSONObject("user").getString("token"));
                                         editor.putString("channel", jObj.getJSONObject("user").getString("channel"));
                                         editor.putString("gender", jObj.getJSONObject("user").getString("gender"));

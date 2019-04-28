@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -59,6 +60,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
     private SharedPreferences prefs;
     Bundle contentBundle;
     private ActionBar actionBar;
+    private String userID=null;
 
 
     @Override
@@ -122,6 +124,26 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
             contentBundle.putBoolean("approval", true);
         } else {
             mBottomNavigationView.setSelectedItemId(R.id.navigation_home);
+        }
+
+        // yasir: handlign sharing of a channel
+        Uri data = getIntent().getData();
+        if (data != null && data.toString().contains("http://gaiusnetworks.com/channel/")) {
+            actionBar.setTitle("Viewing shared channel");
+
+            Intent intent = this.getIntent();
+            Bundle bundle = intent.getExtras();
+            userID =  data.toString().replace("http://gaiusnetworks.com/channel/","");
+
+            Log.d("yasir","channel user id "+userID);
+
+            Fragment fragment = new BrowseWebFragment();
+            bundle.putString("userID", userID);
+            fragment.setArguments(bundle);
+
+            ((AppCompatActivity) this).getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.fragment_container, fragment)
+                    .commit();
         }
     }
 
@@ -294,6 +316,11 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
     public void onBackPressed()
     {
         Jzvd.releaseAllVideos();
+
+        if (userID!=null) {
+            finish();
+            return;
+        }
 
         BottomNavigationView navigation = findViewById(R.id.navigation);
         RecyclerView recycler = findViewById(R.id.recylcerView);

@@ -380,10 +380,17 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.newsFe
     }
 
     public void shareItem (View v, String shareSub) {
+        String shareBody;
         NewsFeed n = newsFeedList.get((Integer) v.getTag());
         Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
         sharingIntent.setType("text/plain");
-        String shareBody = "http://gaiusnetworks.com/"+n.getUrl().replace("./","");
+        if (n.getType().equals("channel")) {
+            shareBody = "http://gaiusnetworks.com/channel/"+n.getUserID();
+        }
+        else {
+            shareBody = "http://gaiusnetworks.com/"+n.getUrl().replace("./","");
+        }
+
         sharingIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, shareSub);
         sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, shareBody);
         mCtx.startActivity(Intent.createChooser(sharingIntent, "Share using"));

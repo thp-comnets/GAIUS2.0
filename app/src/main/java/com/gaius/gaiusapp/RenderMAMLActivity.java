@@ -234,7 +234,7 @@ public class RenderMAMLActivity extends AppCompatActivity {
 
                                     Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
                                     sharingIntent.setType("text/plain");
-                                    String shareBody = "http://gaiusnetworks.com/page/"+mPageUrl.replace("./content/","");
+                                    String shareBody = "http://gaiusnetworks.com/"+mPageUrl.replace("./","");
                                     String shareSub = "Check this page on GAIUS";
                                     sharingIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, shareSub);
                                     sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, shareBody);

@@ -3,7 +3,6 @@ package com.gaius.gaiusapp;
 
 import android.Manifest;
 import android.app.ProgressDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
@@ -28,10 +27,8 @@ import com.androidnetworking.AndroidNetworking;
 import com.androidnetworking.common.ANRequest;
 import com.androidnetworking.common.Priority;
 import com.androidnetworking.error.ANError;
-import com.androidnetworking.interfaces.AnalyticsListener;
 import com.androidnetworking.interfaces.JSONArrayRequestListener;
 import com.androidnetworking.interfaces.OkHttpResponseListener;
-import com.androidnetworking.interfaces.UploadProgressListener;
 import com.gaius.gaiusapp.networking.GlideApp;
 import com.gaius.gaiusapp.utils.ResourceHelper;
 import com.theartofdev.edmodo.cropper.CropImage;
@@ -44,24 +41,24 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import okhttp3.Response;
 
 public class ProfileUpdateActivity extends AppCompatActivity {
 
     private static final int PICK_ICON_REQUEST = 1;
     private static final int CROP_ICON_REQUEST = 2;
+    private static final int PICK_CHANNEL_THUMB_REQUEST = 3;
+
+    private String croppedImage;
 
     private TextInputEditText signupInputName, signupInputChannel, signupInputEmail, signupInputPassword, signupInputPassword2, signupInputAge;
     private RadioGroup genderRadioGroup;
-    private ImageView avatarImageView;
-    private Uri avatarUri;
+    private ImageView avatarImageView, channelImageView;
+    private Uri avatarUri, channelThumbUri;
     private String URL_FOR_REGISTRATION;
     private ProgressDialog progressDialog;
-    private String filePath;
+    private String iconPath, channelThumbPath;
     private String myInternationalNumber=null;
     private IntlPhoneInput phoneInputView;
     private String base_url;
@@ -94,6 +91,7 @@ public class ProfileUpdateActivity extends AppCompatActivity {
         signupInputAge = findViewById(R.id.signup_input_age);
 
         avatarImageView = findViewById(R.id.imageViewAvatar);
+        channelImageView = findViewById(R.id.channel_thumbnail);
 
         phoneInputView = (IntlPhoneInput) findViewById(R.id.my_phone_input);
 
@@ -125,6 +123,10 @@ public class ProfileUpdateActivity extends AppCompatActivity {
                 .content()
                 .into(avatarImageView);
 
+        GlideApp.with(getBaseContext())
+                .load(base_url + "/content/channelsIcons/"+prefs.getString("userID","None")+".png")
+                .content()
+                .into(channelImageView);
 
         if (prefs.getString("gender", "null").equals("female")) {
             genderRadioGroup.check(R.id.female_radio_btn);
@@ -151,6 +153,14 @@ public class ProfileUpdateActivity extends AppCompatActivity {
             }
         });
 
+        channelImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent galleryIntent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                startActivityForResult(galleryIntent, PICK_CHANNEL_THUMB_REQUEST);
+            }
+        });
+
         btnSignUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -166,6 +176,7 @@ public class ProfileUpdateActivity extends AppCompatActivity {
         if (resultCode == RESULT_OK) {
 
             if (requestCode == PICK_ICON_REQUEST) {
+                croppedImage = "icon";
                 avatarUri = data.getData();
 
                 Uri imageUri = CropImage.getPickImageResultUri(this, data);
@@ -183,22 +194,59 @@ public class ProfileUpdateActivity extends AppCompatActivity {
                 }
             }
 
-            if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
-                CropImage.ActivityResult result = CropImage.getActivityResult(data);
-                Bitmap bitmap = BitmapFactory.decodeFile(result.getUri().getPath());
+            if (requestCode == PICK_CHANNEL_THUMB_REQUEST) {
+                croppedImage = "channelThumb";
+                channelThumbUri = data.getData();
 
-                filePath = ResourceHelper.saveBitmapCompressed(getApplicationContext(), avatarUri, bitmap);
-                avatarImageView.setImageBitmap(bitmap);
+                Uri imageUri = CropImage.getPickImageResultUri(this, data);
+
+//                // For API >= 23 we need to check specifically that we have permissions to read external storage.
+                if (CropImage.isReadExternalStoragePermissionsRequired(this, imageUri)) {
+                    // request permissions and handle the result in onRequestPermissionsResult()
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                        requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, CropImage.PICK_IMAGE_PERMISSIONS_REQUEST_CODE);
+                    }
+
+                } else {
+                    // no permissions required or already granted, can start crop image activity
+                    startCropImageActivity(imageUri);
+                }
+            }
+
+
+            if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
+                if (croppedImage.equals("icon")) {
+                    CropImage.ActivityResult result = CropImage.getActivityResult(data);
+                    Bitmap bitmap = BitmapFactory.decodeFile(result.getUri().getPath());
+
+                    iconPath = ResourceHelper.saveBitmapCompressed(getApplicationContext(), avatarUri, bitmap);
+                    avatarImageView.setImageBitmap(bitmap);
+                }
+                else if (croppedImage.equals("channelThumb")) {
+                    CropImage.ActivityResult result = CropImage.getActivityResult(data);
+                    Bitmap bitmap = BitmapFactory.decodeFile(result.getUri().getPath());
+
+                    channelThumbPath = ResourceHelper.saveBitmapCompressed(getApplicationContext(), channelThumbUri, bitmap);
+                    channelImageView.setImageBitmap(bitmap);
+                }
+
             }
 
         }
     }
 
     private void startCropImageActivity(Uri imageUri) {
-        CropImage.activity(imageUri)
-                .setGuidelines(CropImageView.Guidelines.ON)
-                .setAspectRatio(1,1)
-                .start(this);
+        if (croppedImage.equals("icon")) {
+            CropImage.activity(imageUri)
+                    .setGuidelines(CropImageView.Guidelines.ON)
+                    .setAspectRatio(1,1)
+                    .start(this);
+        }
+        else {
+            CropImage.activity(imageUri)
+                    .setGuidelines(CropImageView.Guidelines.ON)
+                    .start(this);
+        }
     }
 
     private void submitForm() {
@@ -270,123 +318,73 @@ public class ProfileUpdateActivity extends AppCompatActivity {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
 
         final SharedPreferences.Editor editor = prefs.edit();
-        if (filePath != null) {
-            editor.putString("account_avatar", filePath);
-            editor.commit();
 
-            AndroidNetworking.upload(URL_FOR_REGISTRATION)
-                    .addMultipartFile("avatar",new File (filePath))
-                    .addMultipartParameter("token", prefs.getString("token", null))
-                    .addMultipartParameter("name", name)
-                    .addMultipartParameter("channel", channel)
-                    .addMultipartParameter("phoneNumber", phoneNumber)
-                    .addMultipartParameter("email", email)
-                    .addMultipartParameter("gender", gender)
-                    .addMultipartParameter("age", dob)
-                    .setTag("uploadTest")
-                    .setPriority(Priority.HIGH)
-                    .build()
-                    .getAsJSONArray(new JSONArrayRequestListener() {
-                        @Override
-                        public void onResponse(JSONArray response) {
-                            try {
-                                JSONObject user_info;
-                                user_info = response.getJSONObject(0);
 
-                                editor.putString("name", user_info.getString("name"));
-                                editor.putString("email", user_info.getString("email"));
-                                editor.putString("token", user_info.getString("token"));
-                                editor.putString("channel", user_info.getString("channel"));
-                                editor.putString("gender", user_info.getString("gender"));
-                                editor.putString("age", user_info.getString("age"));
-                                editor.putString("userID", user_info.getString("userID"));
-                                editor.putString("number", user_info.getString("phoneNumber"));
-                                editor.putString("admin", user_info.getString("admin"));
-                                editor.commit();
+        ANRequest.MultiPartBuilder request = new ANRequest.MultiPartBuilder(URL_FOR_REGISTRATION);
 
-                                Intent i = new Intent(getApplicationContext(), MainActivity.class);
-                                startActivity(i);
-
-                                finish();
-
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-                        }
-
-                        @Override
-                        public void onError(ANError error) {
-
-                            switch (error.getErrorCode()) {
-                                case 401:
-                                    break;
-                                case 500:
-                                    Log.d("profile", "Error 500" + error);
-                                    Toast.makeText(getApplicationContext(), "Error updating the profile info", Toast.LENGTH_SHORT).show();
-
-                                    break;
-                                default:
-                                    Log.d("profile", "Error no Internet " + error);
-                            }
-                        }
-                    });
-
+        if (iconPath != null) {
+            request.addMultipartFile("avatar",new File (iconPath));
         }
-        else {
-            AndroidNetworking.get(URL_FOR_REGISTRATION)
-                    .addQueryParameter("token", prefs.getString("token", null))
-                    .addQueryParameter("name", name)
-                    .addQueryParameter("channel", channel)
-                    .addQueryParameter("phoneNumber", phoneNumber)
-                    .addQueryParameter("email", email)
-                    .addQueryParameter("gender", gender)
-                    .addQueryParameter("age", dob)
-                    .setPriority(Priority.HIGH)
-                    .build()
-                    .getAsJSONArray(new JSONArrayRequestListener() {
-                        @Override
-                        public void onResponse(JSONArray response) {
-                            try {
-                                JSONObject user_info;
-                                user_info = response.getJSONObject(0);
 
-                                editor.putString("name", user_info.getString("name"));
-                                editor.putString("email", user_info.getString("email"));
-                                editor.putString("token", user_info.getString("token"));
-                                editor.putString("channel", user_info.getString("channel"));
-                                editor.putString("gender", user_info.getString("gender"));
-                                editor.putString("age", user_info.getString("age"));
-                                editor.putString("userID", user_info.getString("userID"));
-                                editor.putString("number", user_info.getString("phoneNumber"));
-                                editor.putString("admin", user_info.getString("admin"));
-                                editor.commit();
-
-                                Intent i = new Intent(getApplicationContext(), MainActivity.class);
-                                startActivity(i);
-
-                                finish();
-
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-                        }
-
-                        @Override
-                        public void onError(ANError error) {
-
-                            switch (error.getErrorCode()) {
-                                case 401:
-                                    break;
-                                case 500:
-                                    Log.d("profile", "Error 500" + error);
-                                    Toast.makeText(getApplicationContext(), "Error updating the profile info", Toast.LENGTH_SHORT).show();
-
-                                    break;
-                                default:
-                                    Log.d("profile", "Error no Internet " + error);
-                            }
-                        }
-                    });
+        if (channelThumbPath != null) {
+            request.addMultipartFile("channelThumbnail",new File (channelThumbPath));
         }
+
+        request.addMultipartParameter("token", prefs.getString("token", null))
+                .addMultipartParameter("name", name)
+                .addMultipartParameter("channel", channel)
+                .addMultipartParameter("phoneNumber", phoneNumber)
+                .addMultipartParameter("email", email)
+                .addMultipartParameter("gender", gender)
+                .addMultipartParameter("age", dob)
+                .setTag("uploadTest")
+                .setPriority(Priority.HIGH);
+
+        ANRequest anRequest = request.build();
+
+        anRequest.getAsJSONArray(new JSONArrayRequestListener() {
+            @Override
+            public void onResponse(JSONArray response) {
+                try {
+                    JSONObject user_info;
+                    user_info = response.getJSONObject(0);
+
+                    editor.putString("name", user_info.getString("name"));
+                    editor.putString("email", user_info.getString("email"));
+                    editor.putString("token", user_info.getString("token"));
+                    editor.putString("channel", user_info.getString("channel"));
+                    editor.putString("gender", user_info.getString("gender"));
+                    editor.putString("age", user_info.getString("age"));
+                    editor.putString("userID", user_info.getString("userID"));
+                    editor.putString("number", user_info.getString("phoneNumber"));
+                    editor.putString("admin", user_info.getString("admin"));
+                    editor.commit();
+
+                    Intent i = new Intent(getApplicationContext(), MainActivity.class);
+                    startActivity(i);
+
+                    finish();
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onError(ANError error) {
+
+                switch (error.getErrorCode()) {
+                    case 401:
+                        break;
+                    case 500:
+                        Log.d("profile", "Error 500" + error);
+                        Toast.makeText(getApplicationContext(), "Error updating the profile info", Toast.LENGTH_SHORT).show();
+
+                        break;
+                    default:
+                        Log.d("profile", "Error no Internet " + error);
+                }
+            }
+        });
     }
 }

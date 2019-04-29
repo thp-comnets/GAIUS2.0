@@ -184,12 +184,15 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.newsFe
 
             holder.slider.setSelectedSlide(0);
 //            holder.slider.setInterval(2000);
+            holder.slider.setTag(position);
             holder.slider.setOnSlideClickListener(new OnSlideClickListener() {
                 @Override
                 public void onSlideClick(int position) {
                     Bundle bundle = new Bundle();
                     Intent i = new Intent(mCtx, AlbumViewActivity.class);
                     bundle.putStringArrayList("imagesURLs", holder.multiImageViewBitmaps);
+                    NewsFeed n = newsFeedList.get((Integer) holder.slider.getTag());
+                    bundle.putString("description", n.getDescription());
                     i.putExtras(bundle);
                     mCtx.startActivity(i);
                 }

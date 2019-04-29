@@ -1,13 +1,20 @@
 package com.gaius.gaiusapp;
 
 import android.content.SharedPreferences;
+import android.content.res.TypedArray;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.widget.TextView;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
@@ -15,6 +22,11 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.gaius.gaiusapp.adapters.AlbumAdapter;
+import com.gaius.gaiusapp.utils.StringHelper;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 
@@ -22,16 +34,45 @@ import static com.gaius.gaiusapp.utils.ResourceHelper.convertImageURLBasedonFide
 
 
 public class AlbumViewActivity extends AppCompatActivity {
+    Toolbar toolbar;
+    CollapsingToolbarLayout collapsingToolbarLayout;
     RecyclerView recyclerView;
     ArrayList<String> imagesURLs;
     private SharedPreferences prefs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
         setContentView(R.layout.album_view_activity);
+        toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+        collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
 
-        super.onCreate(savedInstanceState);
+        collapsingToolbarLayout.setExpandedTitleColor(getResources().getColor(android.R.color.transparent));
+        collapsingToolbarLayout.setContentScrimColor(getResources().getColor(R.color.colorPrimary));
+
+        //change the color of the back arrow
+        AppBarLayout appBarLayout = (AppBarLayout) findViewById(R.id.appbar);
+        appBarLayout.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
+            @Override
+            public void onOffsetChanged(AppBarLayout appBarLayout, int offset) {
+                TypedArray a = getTheme().obtainStyledAttributes(R.style.AppTheme, new int[] {android.R.attr.homeAsUpIndicator});
+                int attributeResourceId = a.getResourceId(0, 0);
+                Drawable upArrow = getResources().getDrawable(attributeResourceId);
+
+                if (offset < -50) {
+                    upArrow.setColorFilter(getResources().getColor(R.color.white), PorterDuff.Mode.SRC_ATOP);
+                } else {
+                    upArrow.setColorFilter(getResources().getColor(R.color.black), PorterDuff.Mode.SRC_ATOP);
+
+                }
+                getSupportActionBar().setHomeAsUpIndicator(upArrow);
+            }
+        });
 
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
 
@@ -47,16 +88,26 @@ public class AlbumViewActivity extends AppCompatActivity {
             String url = bundle.getString("URL");
             if (url != null) {
                 String mPageUrl = prefs.getString("base_url", null) + "getAlbum.py?albumID="+url;
+                Log.d("thp", "album " + mPageUrl);
                 loadAlbum(mPageUrl, url);
             }
             else {
+                String description = bundle.getString("description", "No title");
                 imagesURLs = bundle.getStringArrayList("imagesURLs");
-                renderAlbum();
+                renderAlbum(description);
             }
         }
     }
 
-    private void renderAlbum () {
+    private void renderAlbum (String description) {
+
+        TextView descriptionTextView = findViewById(R.id.description);
+        descriptionTextView.setText(description);
+
+        // use only the first 3 words of the description
+        collapsingToolbarLayout.setTitle(StringHelper.getFirstNWords(description, 3));
+        collapsingToolbarLayout.setCollapsedTitleTextColor(getResources().getColor(R.color.white));
+
         recyclerView = findViewById(R.id.images_recyclerview);
         recyclerView.setHasFixedSize(false);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -75,26 +126,41 @@ public class AlbumViewActivity extends AppCompatActivity {
     }
 
     private void loadAlbum(final String URL, final String albumURL) {
-        /*
-         * Creating a String Request
-         * The request type is GET defined by first parameter
-         * The URL is defined in the second parameter
-         * Then we have a Response Listener and a Error Listener
-         * In response listener we will get the JSON response as a String
-         * */
+
         final StringRequest stringRequest = new StringRequest(Request.Method.GET, URL,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        imagesURLs = new ArrayList<String>();
-                        String [] tmp = response.replace("\n", "").split(";");
+                        try {
 
-                        String fidelity = prefs.getString("fidelity_level", "high");
+                            //converting the string to json array object
+                            JSONArray array = new JSONArray(response);
 
-                        for (int j=0; j<tmp.length; j++) {
-                            imagesURLs.add(convertImageURLBasedonFidelity(prefs.getString("base_url", null) + albumURL+tmp[j], fidelity));
+                            if (array.length() == 0) {
+                                Log.d("Yasir", "JSON is empty ");
+                            }
+
+                            //there should be only one entry
+                            for (int i = 0; i < array.length(); i++) {
+
+                                //getting product object from json array
+                                JSONObject item = array.getJSONObject(i);
+
+                                imagesURLs = new ArrayList<String>();
+                                String[] tmp = item.getString("images").split(";");
+
+                                String fidelity = prefs.getString("fidelity_level", "high");
+
+                                for (int j = 0; j < tmp.length; j++) {
+                                    imagesURLs.add(convertImageURLBasedonFidelity(prefs.getString("base_url", null) + albumURL + tmp[j], fidelity));
+                                }
+
+                                renderAlbum(item.getString("description"));
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                            Log.d("Yasir", "Json error " + e);
                         }
-                        renderAlbum();
                     }
                 },
                 new Response.ErrorListener() {
@@ -108,5 +174,12 @@ public class AlbumViewActivity extends AppCompatActivity {
 
         //adding our stringrequest to queue
         Volley.newRequestQueue(this).add(stringRequest);
+    }
+
+    //handle the back arrow press in the toolbar
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
     }
 }

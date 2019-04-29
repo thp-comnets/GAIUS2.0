@@ -18,7 +18,7 @@ public class CreateContentPagesFragment extends Fragment {
         uploadImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent i = new Intent(getContext(), CreativeWebCreation.class);
+                Intent i = new Intent(getContext(), CreatePageActivity.class);
                 getContext().startActivity(i);
             }
         });

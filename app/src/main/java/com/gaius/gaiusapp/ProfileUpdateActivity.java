@@ -77,8 +77,54 @@ public class ProfileUpdateActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile_update);
 
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
         base_url = prefs.getString("base_url", null);
+
+        AndroidNetworking.get(base_url + "getUserThumbs.py")
+                .addQueryParameter("token", prefs.getString("token","null"))
+                .setPriority(Priority.HIGH)
+                .build()
+                .getAsJSONArray(new JSONArrayRequestListener() {
+                    @Override
+                    public void onResponse(JSONArray response) {
+                        try {
+                            JSONObject user_info;
+                            user_info = response.getJSONObject(0);
+
+                            GlideApp.with(getBaseContext())
+                                    .load(base_url + user_info.getString("avatar"))
+                                    .content()
+                                    .into(avatarImageView);
+
+                            GlideApp.with(getBaseContext())
+                                    .load(base_url + user_info.getString("channelThumbnail"))
+                                    .content()
+                                    .into(channelImageView);
+                        }
+                        catch (JSONException e) {
+                            e.printStackTrace();
+                            Log.d("Yasir", "Json error " + e);
+                        }
+                    }
+
+                    @Override
+                    public void onError(ANError error) {
+
+                        switch (error.getErrorCode()) {
+                            case 401:
+                                break;
+                            case 500:
+                                Log.d("SMS", "Error 500" + error);
+                                Toast.makeText(getApplicationContext(), "Invalid OTP, please correct it", Toast.LENGTH_SHORT).show();
+
+                                break;
+                            default:
+                                Log.d("SMS", "Error no Internet " + error);
+                        }
+                    }
+                });
+
+
         URL_FOR_REGISTRATION = base_url + "updateUserInfo.py";
 
         // Progress dialog
@@ -117,16 +163,6 @@ public class ProfileUpdateActivity extends AppCompatActivity {
         } else {
             signupInputAge.setText(prefs.getString("age", "null"));
         }
-
-        GlideApp.with(getBaseContext())
-                .load(base_url + "/content/usersIcons/"+prefs.getString("userID","None")+".png")
-                .content()
-                .into(avatarImageView);
-
-        GlideApp.with(getBaseContext())
-                .load(base_url + "/content/channelsIcons/"+prefs.getString("userID","None")+".png")
-                .content()
-                .into(channelImageView);
 
         if (prefs.getString("gender", "null").equals("female")) {
             genderRadioGroup.check(R.id.female_radio_btn);

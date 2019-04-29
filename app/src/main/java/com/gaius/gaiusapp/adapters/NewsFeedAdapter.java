@@ -26,7 +26,7 @@ import com.android.volley.toolbox.Volley;
 import com.bumptech.glide.Priority;
 import com.gaius.gaiusapp.AlbumViewActivity;
 import com.gaius.gaiusapp.BrowseWebFragment;
-import com.gaius.gaiusapp.CreativeWebCreation;
+import com.gaius.gaiusapp.CreatePageActivity;
 import com.gaius.gaiusapp.FriendPageActivity;
 import com.gaius.gaiusapp.R;
 import com.gaius.gaiusapp.RenderMAMLActivity;
@@ -302,7 +302,7 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.newsFe
                     public void onClick(View v) {
                         NewsFeed n = newsFeedList.get((Integer) v.getTag());
 
-                        Intent intent = new Intent(mCtx, CreativeWebCreation.class);
+                        Intent intent = new Intent(mCtx, CreatePageActivity.class);
                         Bundle bundle = new Bundle();
                         bundle.putSerializable("PAGE_URL", n.getUrl());
                         bundle.putSerializable("EDIT_MODE", true);

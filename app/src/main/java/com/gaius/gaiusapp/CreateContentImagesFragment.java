@@ -126,7 +126,7 @@ public class CreateContentImagesFragment extends Fragment {
                         Bitmap bitmap = null;
                         try {
                             bitmap = MediaStore.Images.Media.getBitmap(getContext().getContentResolver(), imageUri);
-                            bitmap = getResizedBitmap(bitmap, 800);
+                            bitmap = getResizedBitmap(bitmap, 1600);
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
@@ -140,7 +140,7 @@ public class CreateContentImagesFragment extends Fragment {
                     Bitmap bitmap = null;
                     try {
                         bitmap = MediaStore.Images.Media.getBitmap(getContext().getContentResolver(), imageUri);
-                        bitmap = getResizedBitmap(bitmap, 800);
+                        bitmap = getResizedBitmap(bitmap, 1600);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }

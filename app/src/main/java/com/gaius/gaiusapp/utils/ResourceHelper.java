@@ -196,7 +196,7 @@ public class ResourceHelper {
 
 //          write the compressed bitmap at the destination specified by filename.
 //            scaledBitmap.compress(Bitmap.CompressFormat.JPEG, 99, out);
-            scaledBitmap.compress(Bitmap.CompressFormat.JPEG, 30, out);
+            scaledBitmap.compress(Bitmap.CompressFormat.JPEG, 90, out);
 
 
         } catch (FileNotFoundException e) {

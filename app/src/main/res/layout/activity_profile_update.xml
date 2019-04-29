@@ -61,6 +61,21 @@
                     android:hint="@string/channel" />
             </android.support.design.widget.TextInputLayout>
 
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="16dp"
+                android:id="@+id/channel_image_input_layout"
+                android:theme="@style/TextLabel">
+
+                <ImageView
+                    android:id="@+id/channel_thumbnail"
+                    android:layout_width="match_parent"
+                    android:layout_height="150dp"
+                    android:src="@drawable/placeholder"/>
+            </android.support.design.widget.TextInputLayout>
+
             <net.rimoto.intlphoneinput.IntlPhoneInput
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

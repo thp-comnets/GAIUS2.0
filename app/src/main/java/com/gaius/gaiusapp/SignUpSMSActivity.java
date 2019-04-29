@@ -189,7 +189,6 @@ public class SignUpSMSActivity extends AppCompatActivity {
                     .setGuidelines(CropImageView.Guidelines.ON)
                     .start(this);
         }
-
     }
 
     private void registerUser(final String name, final String channel) {

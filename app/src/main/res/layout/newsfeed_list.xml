@@ -171,7 +171,7 @@
                 android:layout_width="23dp"
                 android:layout_height="23dp"
                 android:layout_marginEnd="20dp"
-                app:srcCompat="@android:drawable/ic_menu_edit"
+                app:srcCompat="@drawable/icon_edit"
                 android:visibility="gone" />
 
             <ImageView
@@ -179,7 +179,7 @@
                 android:layout_width="23dp"
                 android:layout_height="23dp"
                 android:layout_marginEnd="20dp"
-                app:srcCompat="@android:drawable/ic_menu_delete" />
+                app:srcCompat="@drawable/icon_delete" />
         </LinearLayout>
 
     </RelativeLayout>

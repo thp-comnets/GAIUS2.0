@@ -6,13 +6,13 @@
     android:layout_height="wrap_content"
     android:orientation="horizontal">
 
-    <pl.droidsonroids.gif.GifImageView
+    <ImageView
         android:id="@+id/imageViewViews"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:src="@drawable/ic_seen">
-    </pl.droidsonroids.gif.GifImageView>
+        android:src="@drawable/icon_view_big">
+    </ImageView>
 
     <TextView
         android:id="@+id/views"

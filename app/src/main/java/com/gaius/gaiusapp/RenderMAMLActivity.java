@@ -312,7 +312,7 @@ public class RenderMAMLActivity extends AppCompatActivity {
 
                             if (requestsCounter.get() == 0) {
                                 Long endTime = System.currentTimeMillis();
-                                String mUrl="http://91.230.41.34:8080/test/stats.py?PLT="+(endTime-startTime)+"&page="+mPageUrl;
+                                String mUrl=prefs.getString("base_url", "192.169.152.158:60001") + "stats.py?PLT="+(endTime-startTime)+"&page="+mPageUrl;
                                 SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
 
                                 String f = prefs.getString("fidelity_level", "high");

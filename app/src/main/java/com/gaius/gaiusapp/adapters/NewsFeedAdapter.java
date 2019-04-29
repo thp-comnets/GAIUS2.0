@@ -310,72 +310,73 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.newsFe
                         mCtx.startActivity(intent);
                     }
                 });
-                holder.deleteButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        final NewsFeed n = newsFeedList.get((Integer) v.getTag());
+            }
 
-                        AlertDialog.Builder builder = new AlertDialog.Builder(mCtx);
+            holder.deleteButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    final NewsFeed n = newsFeedList.get((Integer) v.getTag());
 
-                        builder.setTitle("Delete Content");
-                        builder.setMessage("Do you want to delete this "+n.getType()+"?");
+                    AlertDialog.Builder builder = new AlertDialog.Builder(mCtx);
 
-                        builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+                    builder.setTitle("Delete Content");
+                    builder.setMessage("Do you want to delete this "+n.getType()+"?");
 
-                            public void onClick(DialogInterface dialog, int which) {
-                                String URL;
+                    builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
 
-                                // Do nothing but close the dialog
-                                dialog.dismiss();
+                        public void onClick(DialogInterface dialog, int which) {
+                            String URL;
 
-                                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mCtx);
-                                String token = prefs.getString("token", "null");
+                            // Do nothing but close the dialog
+                            dialog.dismiss();
+
+                            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mCtx);
+                            String token = prefs.getString("token", "null");
 
 //                                if (n.getType().equals("ad")) {
 //                                    URL = prefs.getString("base_url", null) + "deleteContent.py?token=" + token + "&" + n.getType() + "=" + n.getAdCampaign();
 //                                }
 //                                else {
-                                URL = prefs.getString("base_url", null) + "deleteContent.py?token=" + token + "&" + n.getType() + "=" + n.getUrl();
+                            URL = prefs.getString("base_url", null) + "deleteContent.py?token=" + token + "&" + n.getType() + "=" + n.getUrl();
 //                                }
 
-                                StringRequest stringRequest = new StringRequest(Request.Method.GET, URL,
-                                        new Response.Listener<String>() {
-                                            @Override
-                                            public void onResponse(String response) {
-                                                Log.d("yasir", response);
+                            StringRequest stringRequest = new StringRequest(Request.Method.GET, URL,
+                                    new Response.Listener<String>() {
+                                        @Override
+                                        public void onResponse(String response) {
+                                            Log.d("yasir", response);
 
-                                                if (response.contains("Success")) {
-                                                    newsFeedList.remove(n);
-                                                    notifyDataSetChanged();
-                                                }
+                                            if (response.contains("Success")) {
+                                                newsFeedList.remove(n);
+                                                notifyDataSetChanged();
                                             }
-                                        },
-                                        new Response.ErrorListener() {
-                                            @Override
-                                            public void onErrorResponse(VolleyError error) {
-                                                Log.d("Yasir","Error "+error);
-                                            }
-                                        });
-                                Log.d("Yasir","added request "+stringRequest);
+                                        }
+                                    },
+                                    new Response.ErrorListener() {
+                                        @Override
+                                        public void onErrorResponse(VolleyError error) {
+                                            Log.d("Yasir","Error "+error);
+                                        }
+                                    });
+                            Log.d("Yasir","added request "+stringRequest);
 
-                                Volley.newRequestQueue(mCtx).add(stringRequest);
-                            }
-                        });
+                            Volley.newRequestQueue(mCtx).add(stringRequest);
+                        }
+                    });
 
-                        builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                    builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
 
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                // Do nothing
-                                dialog.dismiss();
-                            }
-                        });
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            // Do nothing
+                            dialog.dismiss();
+                        }
+                    });
 
-                        AlertDialog alert = builder.create();
-                        alert.show();
-                    }
-                });
-            }
+                    AlertDialog alert = builder.create();
+                    alert.show();
+                }
+            });
         }
     }
 

@@ -98,7 +98,7 @@ import static com.gaius.gaiusapp.utils.ResourceHelper.getResizedBitmap;
 //import ly.kite.instagramphotopicker.InstagramPhotoPicker;
 
 
-public class CreativeWebCreation extends AppCompatActivity implements TextEditorDialogFragment.OnTextLayerCallback {
+public class CreatePageActivity extends AppCompatActivity implements TextEditorDialogFragment.OnTextLayerCallback {
 
     public static final int IMAGE_BITMAP =0;
     public static final int VIDEO_BITMAP =1;
@@ -360,7 +360,7 @@ public class CreativeWebCreation extends AppCompatActivity implements TextEditor
                         color = ((ColorDrawable) background).getColor();
                     }
                     ColorPickerDialogBuilder
-                            .with(CreativeWebCreation.this)
+                            .with(CreatePageActivity.this)
                             .setTitle(R.string.select_color)
                             .initialColor(color)
                             .showAlphaSlider(false)
@@ -392,7 +392,7 @@ public class CreativeWebCreation extends AppCompatActivity implements TextEditor
 ////                }
 //                Toast.makeText (getApplicationContext(), "This feature might not work. Currently its by invite only!", Toast.LENGTH_LONG).show ();
 //                if (!motionView.disableMovement) {
-//                    InstagramPhotoPicker.startPhotoPickerForResult(CreativeWebCreation.this, CLIENT_ID, REDIRECT_URI, REQUEST_CODE_INSTAGRAM_PICKER);
+//                    InstagramPhotoPicker.startPhotoPickerForResult(CreatePageActivity.this, CLIENT_ID, REDIRECT_URI, REQUEST_CODE_INSTAGRAM_PICKER);
 //                }
 //            }
 //        });
@@ -802,7 +802,7 @@ public class CreativeWebCreation extends AppCompatActivity implements TextEditor
         }
 
         ColorPickerDialogBuilder
-                .with(CreativeWebCreation.this)
+                .with(CreatePageActivity.this)
                 .setTitle(R.string.select_color)
                 .initialColor(rectEntity.getColor())
                 .wheelType(ColorPickerView.WHEEL_TYPE.CIRCLE)
@@ -949,7 +949,7 @@ public class CreativeWebCreation extends AppCompatActivity implements TextEditor
         int initialColor = textEntity.getLayer().getFont().getColor();
 
         ColorPickerDialogBuilder
-                .with(CreativeWebCreation.this)
+                .with(CreatePageActivity.this)
                 .setTitle(R.string.select_color)
                 .initialColor(initialColor)
                 .wheelType(ColorPickerView.WHEEL_TYPE.CIRCLE)
@@ -1200,7 +1200,7 @@ public class CreativeWebCreation extends AppCompatActivity implements TextEditor
         }
 
 //        if (requestCode == REQUEST_CODE_INSTAGRAM_PICKER) {
-//            if (resultCode == CreativeWebCreation.RESULT_OK) {
+//            if (resultCode == CreatePageActivity.RESULT_OK) {
 //                InstagramPhoto[] instagramPhotos = InstagramPhotoPicker.getResultPhotos(data);
 //
 //                for (int i = 0; i < instagramPhotos.length; ++i) {
@@ -1422,7 +1422,7 @@ public class CreativeWebCreation extends AppCompatActivity implements TextEditor
         compressTask = VideoCompress.compressVideoLow(videoPath.first, videoPath.second, new VideoCompress.CompressListener() {
             @Override
             public void onStart() {
-                progress = new ProgressDialog(CreativeWebCreation.this);
+                progress = new ProgressDialog(CreatePageActivity.this);
                 progress.setMessage("Compressing video (" + (numVideos - videoPaths.size()) + "/" + numVideos + ")...");
                 progress.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
                 progress.setCancelable(false);

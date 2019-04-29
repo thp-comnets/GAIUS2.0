@@ -22,7 +22,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.gaius.gaiusapp.CreativeWebCreation;
+import com.gaius.gaiusapp.CreatePageActivity;
 import com.gaius.gaiusapp.ImageViewActivity;
 import com.gaius.gaiusapp.R;
 import com.gaius.gaiusapp.VideoViewActivity;
@@ -102,7 +102,7 @@ public class BrowseMyContentAdapter extends RecyclerView.Adapter<BrowseMyContent
                 public void onClick(View v) {
                     final Content c = contentsList.get((Integer) v.getTag());
 
-                    Intent intent = new Intent(mCtx, CreativeWebCreation.class);
+                    Intent intent = new Intent(mCtx, CreatePageActivity.class);
                     Bundle bundle = new Bundle();
                     bundle.putSerializable("PAGE_URL", c.getUrl());
                     bundle.putSerializable("EDIT_MODE", true);

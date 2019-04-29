@@ -33,7 +33,7 @@
                 android:orientation="vertical" >
 
                 <TextView
-                    android:id="@+id/description"
+                    android:id="@+id/name"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:paddingStart="10dp"
@@ -41,10 +41,38 @@
                     android:textSize="16sp"
                     android:fontFamily="sans-serif"
                     android:textStyle="normal"
-                    android:textColor="@color/black_57"
+                    android:textColor="@color/black_87"
                     android:layout_gravity="center"
                     android:layout_marginTop="30dp"
-                    android:layout_marginBottom="5dp"
+                    tools:text="Test"/>
+
+                <TextView
+                    android:id="@+id/description"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingStart="10dp"
+                    android:paddingEnd="10dp"
+                    android:textSize="14sp"
+                    android:fontFamily="sans-serif"
+                    android:textStyle="normal"
+                    android:textColor="@color/black_57"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="12dp"
+                    tools:text="Test"/>
+
+                <TextView
+                    android:id="@+id/date"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingStart="10dp"
+                    android:paddingEnd="10dp"
+                    android:textSize="14sp"
+                    android:fontFamily="sans-serif"
+                    android:textStyle="normal"
+                    android:textColor="@color/black_57"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="7dp"
+                    android:layout_marginBottom="4dp"
                     tools:text="Test"/>
             </LinearLayout>
 

@@ -1,5 +1,6 @@
 package com.gaius.gaiusapp;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.TypedArray;
 import android.graphics.PorterDuff;
@@ -9,6 +10,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -39,12 +41,16 @@ public class AlbumViewActivity extends AppCompatActivity {
     RecyclerView recyclerView;
     ArrayList<String> imagesURLs;
     private SharedPreferences prefs;
+    Context mCtx;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.album_view_activity);
+
+        mCtx = this;
+
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -62,7 +68,7 @@ public class AlbumViewActivity extends AppCompatActivity {
             public void onOffsetChanged(AppBarLayout appBarLayout, int offset) {
                 TypedArray a = getTheme().obtainStyledAttributes(R.style.AppTheme, new int[] {android.R.attr.homeAsUpIndicator});
                 int attributeResourceId = a.getResourceId(0, 0);
-                Drawable upArrow = getResources().getDrawable(attributeResourceId);
+                Drawable upArrow = ContextCompat.getDrawable(mCtx, attributeResourceId);
 
                 if (offset < -50) {
                     upArrow.setColorFilter(getResources().getColor(R.color.white), PorterDuff.Mode.SRC_ATOP);
@@ -92,17 +98,25 @@ public class AlbumViewActivity extends AppCompatActivity {
                 loadAlbum(mPageUrl, url);
             }
             else {
+                String name = bundle.getString("name", "No name");
                 String description = bundle.getString("description", "No title");
+                String uploadtime = bundle.getString("uploadtime", "");
                 imagesURLs = bundle.getStringArrayList("imagesURLs");
-                renderAlbum(description);
+                renderAlbum(name, description, uploadtime);
             }
         }
     }
 
-    private void renderAlbum (String description) {
+    private void renderAlbum (String name, String description, String uploadtime) {
+
+        TextView nameTextView = findViewById(R.id.name);
+        nameTextView.setText(name);
 
         TextView descriptionTextView = findViewById(R.id.description);
         descriptionTextView.setText(description);
+
+        TextView dateTextView = findViewById(R.id.date);
+        dateTextView.setText(uploadtime);
 
         // use only the first 3 words of the description
         collapsingToolbarLayout.setTitle(StringHelper.getFirstNWords(description, 3));
@@ -127,6 +141,7 @@ public class AlbumViewActivity extends AppCompatActivity {
 
     private void loadAlbum(final String URL, final String albumURL) {
 
+        Log.d("thp", "Requesting album " + URL);
         final StringRequest stringRequest = new StringRequest(Request.Method.GET, URL,
                 new Response.Listener<String>() {
                     @Override
@@ -155,7 +170,7 @@ public class AlbumViewActivity extends AppCompatActivity {
                                     imagesURLs.add(convertImageURLBasedonFidelity(prefs.getString("base_url", null) + albumURL + tmp[j], fidelity));
                                 }
 
-                                renderAlbum(item.getString("description"));
+                                renderAlbum(item.getString("name"), item.getString("description"), item.getString("uploadTime"));
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();

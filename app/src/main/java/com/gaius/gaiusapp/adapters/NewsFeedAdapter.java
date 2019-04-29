@@ -192,7 +192,9 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.newsFe
                     Intent i = new Intent(mCtx, AlbumViewActivity.class);
                     bundle.putStringArrayList("imagesURLs", holder.multiImageViewBitmaps);
                     NewsFeed n = newsFeedList.get((Integer) holder.slider.getTag());
+                    bundle.putString("name", n.getName());
                     bundle.putString("description", n.getDescription());
+                    bundle.putString("uploadtime", n.getUpdateTime());
                     i.putExtras(bundle);
                     mCtx.startActivity(i);
                 }

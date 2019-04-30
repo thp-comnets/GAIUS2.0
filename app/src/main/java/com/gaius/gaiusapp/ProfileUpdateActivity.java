@@ -48,8 +48,11 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static com.gaius.gaiusapp.utils.ResourceHelper.getResizedBitmap;
 
 public class ProfileUpdateActivity extends AppCompatActivity {
 
@@ -294,6 +297,7 @@ public class ProfileUpdateActivity extends AppCompatActivity {
                 if (croppedImage.equals("icon")) {
                     CropImage.ActivityResult result = CropImage.getActivityResult(data);
                     Bitmap bitmap = BitmapFactory.decodeFile(result.getUri().getPath());
+                    bitmap = getResizedBitmap(bitmap, 200);
 
                     iconPath = ResourceHelper.saveBitmapCompressed(getApplicationContext(), avatarUri, bitmap);
                     avatarImageView.setImageBitmap(bitmap);
@@ -301,6 +305,7 @@ public class ProfileUpdateActivity extends AppCompatActivity {
                 else if (croppedImage.equals("channelThumb")) {
                     CropImage.ActivityResult result = CropImage.getActivityResult(data);
                     Bitmap bitmap = BitmapFactory.decodeFile(result.getUri().getPath());
+                    bitmap = getResizedBitmap(bitmap, 1080);
 
                     channelThumbPath = ResourceHelper.saveBitmapCompressed(getApplicationContext(), channelThumbUri, bitmap);
                     channelImageView.setImageBitmap(bitmap);

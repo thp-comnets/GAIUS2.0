@@ -151,4 +151,7 @@
     <string name="upload_advertisement">Upload Advertisement</string>
     <string name="unfriend">Unfriend</string>
 
+    <string name="about_description">Gaius is a community based Internet browser. It can be used to create and distribute local content within the community.</string>
+
+
 </resources>

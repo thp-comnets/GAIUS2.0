@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -17,6 +18,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -39,6 +41,8 @@ import java.util.List;
 
 import cn.jzvd.Jzvd;
 import me.leolin.shortcutbadger.ShortcutBadger;
+import mehdi.sakout.aboutpage.AboutPage;
+import mehdi.sakout.aboutpage.Element;
 
 import static com.gaius.gaiusapp.utils.Constants.MULTIPLE_PERMISSIONS;
 
@@ -299,17 +303,57 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        if (id == R.id.logoutButton) {
-            LogOut.logout(getApplicationContext());
-            Intent i = new Intent(this, LoginSMSActivity.class);
-            startActivity(i);
-            finish();
-        } else if (id == R.id.settingsButton) {
-            startActivity(new Intent(MainActivity.this, PreferencesActivity.class));
-        } else if (id == R.id.clearCacheButton) {
-            clearGlideCache(this);
+        switch (id) {
+            case R.id.logoutButton:
+                LogOut.logout(getApplicationContext());
+                Intent i = new Intent(this, LoginSMSActivity.class);
+                startActivity(i);
+                finish();
+                break;
+            case  R.id.settingsButton:
+                startActivity(new Intent(MainActivity.this, PreferencesActivity.class));
+                break;
+            case R.id.clearCacheButton:
+                clearGlideCache(this);
+                break;
+            case R.id.aboutButton:
+                createAbout();
+                break;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void createAbout() {
+        String version = "";
+        int versionCode = -1;
+        try {
+            PackageInfo pInfo = this.getPackageManager().getPackageInfo(getPackageName(), 0);
+            version = pInfo.versionName;
+            versionCode = pInfo.versionCode;
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        View aboutPage = new AboutPage(this)
+                .setDescription(this.getResources().getString(R.string.about_description))
+                .isRTL(false)
+                .setImage(R.drawable.gaius_logo)
+                .addItem(new Element().setTitle("Version " + version + " (" +versionCode+ ")"))
+                .addGroup("Connect with us")
+                .addEmail("info@gaiusnetworks.com")
+                .addWebsite("http://gaiusnetworks.com")
+                .addTwitter("GAIUSNetworks")
+                .addPlayStore("https://play.google.com/store/apps/details?id=com.gaius.gaiusapp")
+                .addGroup("Advertise with us")
+                .addEmail("advertise@gaiusnetworks.com")
+                .create();
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setIcon(R.drawable.gaius_logo);
+        builder.setTitle("Gaius Networks");
+        builder.setView(aboutPage);
+        builder.create();
+        builder.show();
     }
 
     @Override

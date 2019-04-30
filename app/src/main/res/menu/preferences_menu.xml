@@ -30,6 +30,11 @@
                 android:id="@+id/clearCacheButton"
                 android:title="Clear Cache"
                 app:showAsAction="always"/>
+
+            <item
+                android:id="@+id/aboutButton"
+                android:title="About"
+                app:showAsAction="always"/>
         </menu>
     </item>
 

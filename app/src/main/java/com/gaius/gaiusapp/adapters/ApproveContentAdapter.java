@@ -82,10 +82,6 @@ public class ApproveContentAdapter extends RecyclerView.Adapter<ApproveContentAd
         holder.status.setText(content.getName() + " " + content.getUploadTime());
         holder.status.setTextColor(mCtx.getResources().getColor(R.color.blue_500));
 
-
-        holder.editButton.setImageResource(R.drawable.ic_approve);
-        holder.deleteButton.setImageResource(R.drawable.ic_reject);
-
         //TODO the icons need to be properly aligned
         if (content.getType().equals("video")) {
             holder.typeView.setImageResource(R.drawable.create_content_video);
@@ -172,8 +168,8 @@ public class ApproveContentAdapter extends RecyclerView.Adapter<ApproveContentAd
         });
 
 
-        holder.deleteButton.setTag(position);
-        holder.deleteButton.setOnClickListener(new View.OnClickListener() {
+        holder.rejectButton.setTag(position);
+        holder.rejectButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 final Content c = contentsList.get((Integer) v.getTag());
@@ -236,8 +232,8 @@ public class ApproveContentAdapter extends RecyclerView.Adapter<ApproveContentAd
             }
         });
 
-        holder.editButton.setTag(position);
-        holder.editButton.setOnClickListener(new View.OnClickListener() {
+        holder.approveButton.setTag(position);
+        holder.approveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 final Content c = contentsList.get((Integer) v.getTag());
@@ -309,7 +305,7 @@ public class ApproveContentAdapter extends RecyclerView.Adapter<ApproveContentAd
     class ApproveContentViewHolder extends RecyclerView.ViewHolder {
 
         TextView textViewTitle, getTextViewDescription, status;
-        ImageView imageView, typeView, deleteButton, editButton, videoView;
+        ImageView imageView, typeView, rejectButton, approveButton, videoView;
         CardView videoCardView;
         LinearLayout linearLayout, imageStats, videoStats, textStats;
         TextView textViewed, imageViewed, videoViewed, textClicked, imageClicked, videoClicked;
@@ -323,8 +319,8 @@ public class ApproveContentAdapter extends RecyclerView.Adapter<ApproveContentAd
             getTextViewDescription = itemView.findViewById(R.id.textViewDescription);
             imageView = itemView.findViewById(R.id.imageView);
             typeView = itemView.findViewById(R.id.typeView);
-            deleteButton = itemView.findViewById(R.id.binButton);
-            editButton = itemView.findViewById(R.id.editButton);
+            rejectButton = itemView.findViewById(R.id.rejectButton);
+            approveButton = itemView.findViewById(R.id.approveButton);
             linearLayout = itemView.findViewById(R.id.channelItem);
 
             videoCardView = itemView.findViewById(R.id.cardview2);

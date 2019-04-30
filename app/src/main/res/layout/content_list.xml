@@ -50,13 +50,13 @@
 
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/typeView"
-            android:layout_width="25dp"
-            android:layout_height="25dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_marginStart="90dp"
             android:translationZ="2dp"
-            app:civ_border_color="#ffffff"
+            app:civ_border_color="@color/grey_500"
             app:civ_border_width="1dp"
-            app:civ_fill_color="@color/colorPrimary" />
+            app:civ_fill_color="@color/black" />
 
         <TextView
             android:id="@+id/textViewName"
@@ -87,22 +87,22 @@
             android:textColor="#000000" />
 
         <ImageView
-            android:id="@+id/binButton"
-            android:layout_width="24dp"
+            android:id="@+id/approveButton"
+            android:layout_width="22dp"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
             android:layout_marginTop="5dp"
             android:layout_marginEnd="10dp"
-            android:src="@drawable/ic_bin" />
+            android:src="@drawable/ic_approve" />
 
         <ImageView
-            android:id="@+id/editButton"
-            android:layout_width="24dp"
+            android:id="@+id/rejectButton"
+            android:layout_width="22dp"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
             android:layout_marginTop="50dp"
             android:layout_marginEnd="10dp"
-            android:src="@android:drawable/ic_menu_edit" />
+            android:src="@drawable/ic_reject" />
 
     </RelativeLayout>
 

@@ -367,7 +367,7 @@ public class CreateContentImagesFragment extends Fragment {
 
         AlertDialog alertDialog = new AlertDialog.Builder(getActivity()).create();
         alertDialog.setTitle("Upload successful");
-        alertDialog.setMessage("Your image ablbum has been successfully submitted. Someone from our team will approve it shortly.");
+        alertDialog.setMessage("Your image album has been successfully submitted. Someone from our team will approve it shortly.");
         alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {

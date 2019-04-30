@@ -4,6 +4,7 @@ package com.gaius.gaiusapp;
 import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.TypedArray;
@@ -36,6 +37,7 @@ import com.androidnetworking.common.ANRequest;
 import com.androidnetworking.common.Priority;
 import com.androidnetworking.error.ANError;
 import com.androidnetworking.interfaces.JSONArrayRequestListener;
+import com.androidnetworking.interfaces.UploadProgressListener;
 import com.gaius.gaiusapp.networking.GlideApp;
 import com.gaius.gaiusapp.utils.ResourceHelper;
 import com.theartofdev.edmodo.cropper.CropImage;
@@ -48,7 +50,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -400,6 +401,18 @@ public class ProfileUpdateActivity extends AppCompatActivity {
 
         final SharedPreferences.Editor editor = prefs.edit();
 
+        progress = new ProgressDialog(this);
+        progress.setMessage("Updating...");
+        progress.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+        progress.setCancelable(false);
+        progress.setProgress(0);
+        progress.setButton(ProgressDialog.BUTTON_NEUTRAL, "Cancel upload",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        AndroidNetworking.cancelAll();
+                    }
+                });
+        progress.show();
 
         ANRequest.MultiPartBuilder request = new ANRequest.MultiPartBuilder(URL_FOR_REGISTRATION);
 
@@ -422,11 +435,19 @@ public class ProfileUpdateActivity extends AppCompatActivity {
                 .setPriority(Priority.HIGH);
 
         ANRequest anRequest = request.build();
+        anRequest.setUploadProgressListener(new UploadProgressListener() {
+            @Override
+            public void onProgress(long bytesUploaded, long totalBytes) {
+                progress.setProgress((int) ((float) bytesUploaded / totalBytes * 100.0));
+            }
+        });
 
         anRequest.getAsJSONArray(new JSONArrayRequestListener() {
             @Override
             public void onResponse(JSONArray response) {
                 try {
+                    progress.dismiss();
+
                     JSONObject user_info;
                     user_info = response.getJSONObject(0);
 
@@ -442,6 +463,7 @@ public class ProfileUpdateActivity extends AppCompatActivity {
                     editor.commit();
 
                     Intent i = new Intent(getApplicationContext(), MainActivity.class);
+                    ResourceHelper.cleanupFiles();
                     startActivity(i);
 
                     finish();
@@ -453,6 +475,7 @@ public class ProfileUpdateActivity extends AppCompatActivity {
 
             @Override
             public void onError(ANError error) {
+                progress.dismiss();
 
                 switch (error.getErrorCode()) {
                     case 401:

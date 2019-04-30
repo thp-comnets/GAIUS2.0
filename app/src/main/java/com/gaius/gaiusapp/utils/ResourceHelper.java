@@ -79,10 +79,10 @@ public class ResourceHelper {
 
         float bitmapRatio = (float)width / (float) height;
         if (bitmapRatio > 1) {
-            width = maxSize;
+            width = Math.min(width, maxSize);
             height = (int) (width / bitmapRatio);
         } else {
-            height = maxSize;
+            height = Math.min(height, maxSize);
             width = (int) (height * bitmapRatio);
         }
         return Bitmap.createScaledBitmap(image, width, height, true);

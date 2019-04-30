@@ -37,6 +37,8 @@ import java.util.regex.Pattern;
 
 import okhttp3.Response;
 
+import static com.gaius.gaiusapp.utils.ResourceHelper.getResizedBitmap;
+
 
 public class SignUpSMSActivity extends AppCompatActivity {
     private static final int PICK_ICON_REQUEST = 1;
@@ -160,15 +162,19 @@ public class SignUpSMSActivity extends AppCompatActivity {
             }
 
             if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
-
-                CropImage.ActivityResult result = CropImage.getActivityResult(data);
-                Bitmap bitmap = BitmapFactory.decodeFile(result.getUri().getPath());
-
                 if (croppedImage.equals("iconCropping")) {
+                    CropImage.ActivityResult result = CropImage.getActivityResult(data);
+                    Bitmap bitmap = BitmapFactory.decodeFile(result.getUri().getPath());
+                    bitmap = getResizedBitmap(bitmap, 200);
+
                     iconPath = ResourceHelper.saveBitmapCompressed(getApplicationContext(), avatarUri, bitmap);
                     avatarImageView.setImageBitmap(bitmap);
                 }
                 else if (croppedImage.equals("channelThumbnailCropping")) {
+                    CropImage.ActivityResult result = CropImage.getActivityResult(data);
+                    Bitmap bitmap = BitmapFactory.decodeFile(result.getUri().getPath());
+                    bitmap = getResizedBitmap(bitmap, 1080);
+
                     channelThumbnailPath = ResourceHelper.saveBitmapCompressed(getApplicationContext(), channelThumbnailUri, bitmap);
                     channelImageView.setImageBitmap(bitmap);
 

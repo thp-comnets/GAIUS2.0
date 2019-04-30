@@ -15,6 +15,8 @@ public class PreferencesActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_preferences);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
     }
 
     @Override
@@ -74,4 +76,10 @@ public class PreferencesActivity extends AppCompatActivity {
         }
     }
 
+    //handle the back arrow press in the toolbar
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
+    }
 }

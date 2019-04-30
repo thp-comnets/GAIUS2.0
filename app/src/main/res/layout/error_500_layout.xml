@@ -23,7 +23,7 @@
         android:paddingEnd="50dp"
         android:layout_centerHorizontal="true"
         android:gravity="center"
-        android:text="You broke our servers :-(\nDon't worry, some internal error happend.\nWe are wroking on fixing it in no time ..."
+        android:text="You broke our servers :-(\nDon't worry, some internal error occured.\nWe are working on fixing it in no time ..."
         android:textColor="#000000"
         android:textStyle="bold" />
 </RelativeLayout>

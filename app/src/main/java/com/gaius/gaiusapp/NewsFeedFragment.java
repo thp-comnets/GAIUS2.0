@@ -297,6 +297,7 @@ public class NewsFeedFragment extends Fragment implements SwipeRefreshLayout.OnR
                                         newsFeed.getString("userID"),
                                         newsFeed.getString("type"),
                                         newsFeed.getString("liked"),
+                                        newsFeed.getString("views"),
                                         newsFeed.getString("published"),
                                         true,
                                         imagesList

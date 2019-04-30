@@ -205,8 +205,8 @@ public class ViewMyContentFragment extends Fragment {
                     fragment = PlaceholderFragment.newInstance(position);
                     break;
                 default:
-                    fragment = PlaceholderFragment.newInstance(position); //TODO there will be another tab for ads
-//                    fragment = NewsFeedFragment.newInstance(Constants.REQUEST_TYPE_MYOWN, Constants.REQUEST_CONTENT_ADS);
+//                    fragment = PlaceholderFragment.newInstance(position); //TODO there will be another tab for ads
+                    fragment = NewsFeedFragment.newInstance(Constants.REQUEST_TYPE_MYOWN, Constants.REQUEST_CONTENT_ADS);
             }
             return fragment;
         }

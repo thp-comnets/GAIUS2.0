@@ -136,7 +136,6 @@
                 android:id="@+id/textViewDescription"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/textViewTitle"
                 android:textSize="13sp"
                 android:layout_marginStart="21dp"
                 android:layout_marginTop="2dp"
@@ -146,6 +145,53 @@
                 android:maxLines="1"
                 tools:text="\ufeff@ Al Wahda mall"
                 />
+
+            <LinearLayout
+                android:id="@+id/adStats"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="5dp"
+                android:orientation="horizontal"
+                android:visibility="gone">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/ic_seen"/>
+
+                    <TextView
+                        android:id="@+id/textViewAdViewed"
+                        android:layout_marginStart="10dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="20dp"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/ic_click"/>
+
+                    <TextView
+                        android:id="@+id/textViewAdLiked"
+                        android:layout_marginStart="10dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
+                </LinearLayout>
+            </LinearLayout>
         </LinearLayout>
 
         <ImageView

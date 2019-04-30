@@ -161,7 +161,7 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.newsFe
                 }
             });
         }
-        else if (newsfeed.getType().equals("image")) {
+        else if (newsfeed.getType().equals("image") || newsfeed.getType().equals("ad")) {
             holder.videoView.setVisibility(View.GONE);
             holder.imageView.setVisibility(View.GONE);
             holder.slider.setVisibility(View.VISIBLE);
@@ -214,6 +214,7 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.newsFe
         holder.textViewName.setText(newsfeed.getName());
         holder.textViewUpdateTime.setText(newsfeed.getUpdateTime());
         holder.textViewTitle.setText(newsfeed.getTitle());
+
         holder.textViewDescription.setText(newsfeed.getDescription());
 
         holder.textViewName.setOnClickListener(new View.OnClickListener() {
@@ -298,6 +299,14 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.newsFe
 
             holder.editDeleteLayout.setVisibility(View.VISIBLE);
 
+            //don't show description for ads since its the adCampaign
+            if (newsfeed.getType().equals("ad")) {
+                holder.textViewDescription.setVisibility(View.GONE);
+                holder.adStatsLayout.setVisibility(View.VISIBLE);
+                holder.textViewAdViewed.setText(newsfeed.getViewed());
+                holder.textViewAdLiked.setText(newsfeed.getLiked());
+            }
+
             //only pages can be edited right now
             if (newsfeed.getType().equals("page")) {
                 holder.editButton.setVisibility(View.VISIBLE);
@@ -340,12 +349,12 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.newsFe
                             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mCtx);
                             String token = prefs.getString("token", "null");
 
-//                                if (n.getType().equals("ad")) {
-//                                    URL = prefs.getString("base_url", null) + "deleteContent.py?token=" + token + "&" + n.getType() + "=" + n.getAdCampaign();
-//                                }
-//                                else {
-                            URL = prefs.getString("base_url", null) + "deleteContent.py?token=" + token + "&" + n.getType() + "=" + n.getUrl();
-//                                }
+                            if (n.getType().equals("ad")) {
+                                //use the description as adCampaign
+                                URL = prefs.getString("base_url", null) + "deleteContent.py?token=" + token + "&" + n.getType() + "=" + n.getDescription();
+                            } else {
+                                URL = prefs.getString("base_url", null) + "deleteContent.py?token=" + token + "&" + n.getType() + "=" + n.getUrl();
+                            }
 
                             StringRequest stringRequest = new StringRequest(Request.Method.GET, URL,
                                     new Response.Listener<String>() {
@@ -425,8 +434,8 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.newsFe
 
     public class newsFeedViewHolder extends RecyclerView.ViewHolder {
 
-        LinearLayout editDeleteLayout;
-        TextView textViewName, textViewUpdateTime, textViewTitle, textViewDescription, textViewStatus;
+        LinearLayout editDeleteLayout, adStatsLayout;
+        TextView textViewName, textViewUpdateTime, textViewTitle, textViewDescription, textViewStatus, textViewAdLiked, textViewAdViewed;
         ImageView avatarView, likeButton, shareButton, editButton, deleteButton;
         TopCropImageView imageView;
         JzvdStd videoView;
@@ -451,6 +460,9 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.newsFe
             shareButton = itemView.findViewById(R.id.share);
             editButton = itemView.findViewById(R.id.edit);
             deleteButton = itemView.findViewById(R.id.delete);
+            adStatsLayout = itemView.findViewById(R.id.adStats);
+            textViewAdLiked = itemView.findViewById(R.id.textViewAdLiked);
+            textViewAdViewed = itemView.findViewById(R.id.textViewAdViewed);
         }
     }
 }

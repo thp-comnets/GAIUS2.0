@@ -17,8 +17,9 @@ public class NewsFeed {
     private String published;
     private ArrayList<String> imagesGallery;
     private String liked;
+    private String viewed;
 
-    public NewsFeed (int id, String name, String updateTime, String avatar, String image, String title, String description, String url, String userID, String type, String liked, String published, Boolean showAvatar, ArrayList<String> imagesGallery) {
+    public NewsFeed (int id, String name, String updateTime, String avatar, String image, String title, String description, String url, String userID, String type, String liked, String viewed, String published, Boolean showAvatar, ArrayList<String> imagesGallery) {
         this.id = id;
         this.name = name;
         this.updateTime = updateTime;
@@ -32,6 +33,7 @@ public class NewsFeed {
         this.showAvatar = showAvatar;
         this.published = published;
         this.liked = liked;
+        this.viewed = viewed;
         this.imagesGallery = imagesGallery;
     }
 
@@ -80,13 +82,20 @@ public class NewsFeed {
         this.published = published;
     }
 
-
     public Boolean getShowAvatar() {
         return showAvatar;
     }
 
     public String getLiked() {
         return liked;
+    }
+
+    public String getViewed() {
+        return viewed;
+    }
+
+    public void setViewed(String viewed) {
+        this.viewed = viewed;
     }
 
     public ArrayList<String> getImagesGallery() {

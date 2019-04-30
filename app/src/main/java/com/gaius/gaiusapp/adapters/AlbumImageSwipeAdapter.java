@@ -52,7 +52,7 @@ public class AlbumImageSwipeAdapter extends PagerAdapter {
         GestureFrameLayout gestureFrameLayout = new GestureFrameLayout(mCtx);
         gestureFrameLayout.setLayoutParams(new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT,
                 FrameLayout.LayoutParams.MATCH_PARENT));
-        gestureFrameLayout.setBackgroundColor(mCtx.getResources().getColor(R.color.black));
+        gestureFrameLayout.setBackgroundColor(mCtx.getResources().getColor(R.color.white));
 
         imageView.setLayoutParams(new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT));
         GlideApp.with(mCtx)

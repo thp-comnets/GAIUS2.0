@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -16,17 +17,21 @@ import com.gaius.gaiusapp.utils.ResourceHelper;
 import java.util.ArrayList;
 
 public class ImageViewActivity extends AppCompatActivity {
+    Toolbar toolbar;
     ViewPager viewPager;
     AlbumImageSwipeAdapter imageSwipeAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
 
-        ((AppCompatActivity)this).getSupportActionBar().setTitle("");
-
         setContentView(R.layout.image_view_layout);
+
+        toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
 
         Bundle bundle = getIntent().getExtras();
         ArrayList<String> imageURLs = bundle.getStringArrayList("URLs");
@@ -62,5 +67,12 @@ public class ImageViewActivity extends AppCompatActivity {
                 break;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    //handle the back arrow press in the toolbar
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
     }
 }

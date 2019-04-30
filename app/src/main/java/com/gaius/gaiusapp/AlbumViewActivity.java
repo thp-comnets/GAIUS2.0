@@ -16,6 +16,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.android.volley.Request;
@@ -24,6 +25,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.gaius.gaiusapp.adapters.AlbumAdapter;
+import com.gaius.gaiusapp.networking.GlideApp;
 import com.gaius.gaiusapp.utils.StringHelper;
 
 import org.json.JSONArray;
@@ -47,7 +49,7 @@ public class AlbumViewActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.album_view_activity);
+        setContentView(R.layout.activity_album_view);
 
         mCtx = this;
 
@@ -70,7 +72,7 @@ public class AlbumViewActivity extends AppCompatActivity {
                 int attributeResourceId = a.getResourceId(0, 0);
                 Drawable upArrow = ContextCompat.getDrawable(mCtx, attributeResourceId);
 
-                if (offset < -50) {
+                if (offset < -450) {
                     upArrow.setColorFilter(getResources().getColor(R.color.white), PorterDuff.Mode.SRC_ATOP);
                 } else {
                     upArrow.setColorFilter(getResources().getColor(R.color.black), PorterDuff.Mode.SRC_ATOP);
@@ -94,20 +96,20 @@ public class AlbumViewActivity extends AppCompatActivity {
             String url = bundle.getString("URL");
             if (url != null) {
                 String mPageUrl = prefs.getString("base_url", null) + "getAlbum.py?albumID="+url;
-                Log.d("thp", "album " + mPageUrl);
                 loadAlbum(mPageUrl, url);
             }
             else {
                 String name = bundle.getString("name", "No name");
                 String description = bundle.getString("description", "No title");
                 String uploadtime = bundle.getString("uploadtime", "");
+                String avatar = bundle.getString("avatar", "None");
                 imagesURLs = bundle.getStringArrayList("imagesURLs");
-                renderAlbum(name, description, uploadtime);
+                renderAlbum(name, description, uploadtime, avatar);
             }
         }
     }
 
-    private void renderAlbum (String name, String description, String uploadtime) {
+    private void renderAlbum (String name, String description, String uploadtime, String avatar) {
 
         TextView nameTextView = findViewById(R.id.name);
         nameTextView.setText(name);
@@ -117,6 +119,18 @@ public class AlbumViewActivity extends AppCompatActivity {
 
         TextView dateTextView = findViewById(R.id.date);
         dateTextView.setText(uploadtime);
+
+        ImageView imageViewAvatar = findViewById(R.id.avatarView);
+
+        if (avatar.contains("None")) {
+            imageViewAvatar.setImageDrawable(this.getResources().getDrawable(R.drawable.ic_avatar));
+        }
+        else {
+            GlideApp.with(this)
+                    .load(prefs.getString("base_url", null) + avatar)
+                    .avatar()
+                    .into(imageViewAvatar);
+        }
 
         // use only the first 3 words of the description
         collapsingToolbarLayout.setTitle(StringHelper.getFirstNWords(description, 3));
@@ -170,7 +184,7 @@ public class AlbumViewActivity extends AppCompatActivity {
                                     imagesURLs.add(convertImageURLBasedonFidelity(prefs.getString("base_url", null) + albumURL + tmp[j], fidelity));
                                 }
 
-                                renderAlbum(item.getString("name"), item.getString("description"), item.getString("uploadTime"));
+                                renderAlbum(item.getString("name"), item.getString("description"), item.getString("uploadTime"), item.getString("avatar"));
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();

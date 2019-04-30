@@ -195,6 +195,8 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.newsFe
                     bundle.putString("name", n.getName());
                     bundle.putString("description", n.getDescription());
                     bundle.putString("uploadtime", n.getUpdateTime());
+                    Log.d("thp", "load album " + n.getAvatar());
+                    bundle.putString("avatar", n.getAvatar());
                     i.putExtras(bundle);
                     mCtx.startActivity(i);
                 }

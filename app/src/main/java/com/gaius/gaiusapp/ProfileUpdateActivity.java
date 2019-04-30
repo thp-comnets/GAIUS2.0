@@ -3,18 +3,26 @@ package com.gaius.gaiusapp;
 
 import android.Manifest;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
+import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.TextInputEditText;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -28,7 +36,6 @@ import com.androidnetworking.common.ANRequest;
 import com.androidnetworking.common.Priority;
 import com.androidnetworking.error.ANError;
 import com.androidnetworking.interfaces.JSONArrayRequestListener;
-import com.androidnetworking.interfaces.OkHttpResponseListener;
 import com.gaius.gaiusapp.networking.GlideApp;
 import com.gaius.gaiusapp.utils.ResourceHelper;
 import com.theartofdev.edmodo.cropper.CropImage;
@@ -63,7 +70,9 @@ public class ProfileUpdateActivity extends AppCompatActivity {
     private IntlPhoneInput phoneInputView;
     private String base_url;
     private ProgressDialog progress;
-
+    Toolbar toolbar;
+    CollapsingToolbarLayout collapsingToolbarLayout;
+    Context mCtx;
 
     private static boolean isEmailValid(String email) {
         String expression = "^[\\w\\.-]+@([\\w\\-]+\\.)+[A-Z]{2,4}$";
@@ -76,6 +85,37 @@ public class ProfileUpdateActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile_update);
+
+        mCtx = this;
+
+        toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+        collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
+
+        collapsingToolbarLayout.setExpandedTitleColor(getResources().getColor(android.R.color.transparent));
+        collapsingToolbarLayout.setContentScrimColor(getResources().getColor(R.color.colorPrimary));
+
+        //change the color of the back arrow
+        AppBarLayout appBarLayout = (AppBarLayout) findViewById(R.id.appbar);
+        appBarLayout.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
+            @Override
+            public void onOffsetChanged(AppBarLayout appBarLayout, int offset) {
+                TypedArray a = getTheme().obtainStyledAttributes(R.style.AppTheme, new int[] {android.R.attr.homeAsUpIndicator});
+                int attributeResourceId = a.getResourceId(0, 0);
+                Drawable upArrow = ContextCompat.getDrawable(mCtx, attributeResourceId);
+
+                if (offset < -100) {
+                    upArrow.setColorFilter(getResources().getColor(R.color.white), PorterDuff.Mode.SRC_ATOP);
+                } else {
+                    upArrow.setColorFilter(getResources().getColor(R.color.black), PorterDuff.Mode.SRC_ATOP);
+
+                }
+                getSupportActionBar().setHomeAsUpIndicator(upArrow);
+            }
+        });
 
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
         base_url = prefs.getString("base_url", null);
@@ -422,5 +462,12 @@ public class ProfileUpdateActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    //handle the back arrow press in the toolbar
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
     }
 }

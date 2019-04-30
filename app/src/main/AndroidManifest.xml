@@ -140,7 +140,7 @@
         <activity
             android:name=".ProfileUpdateActivity"
             android:launchMode="singleTask"
-            android:theme="@style/AppTheme" />
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".CreateContentAdActivity"
             android:configChanges="orientation|screenSize|screenLayout|keyboardHidden"

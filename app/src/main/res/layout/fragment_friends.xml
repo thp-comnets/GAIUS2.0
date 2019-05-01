@@ -41,8 +41,7 @@
         android:id="@+id/viewpager"
         android:layout_below="@+id/tabs"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginBottom="?attr/actionBarSize"/>
+        android:layout_height="match_parent"/>
 
     <!--<FrameLayout-->
         <!--android:id="@+id/tab_container"-->

@@ -185,6 +185,7 @@ public class LoginSMSActivity extends AppCompatActivity implements OTPListener {
                             servers = response.getJSONObject(0);
                             SharedPreferences.Editor editor = prefs.edit();
                             editor.putString("base_url", "http://" + servers.getString("server_ip") + ":" + servers.getString("server_port") + "/" + servers.getString("server_path") + "/");
+                            editor.putString("server_name", servers.getString("server_name"));
                             editor.commit();
 
                             doLogin();
@@ -219,6 +220,7 @@ public class LoginSMSActivity extends AppCompatActivity implements OTPListener {
 
             SharedPreferences.Editor editor = prefs.edit();
             editor.putString("base_url", "http://" + server.getIp() + ":" + server.getPort() + "/" + server.getPath() + "/");
+            editor.putString("server_name", names.get(spinner.getSelectedItemPosition()));
             editor.commit();
         }
 
@@ -302,6 +304,7 @@ public class LoginSMSActivity extends AppCompatActivity implements OTPListener {
 
             SharedPreferences.Editor editor = prefs.edit();
             editor.putString("base_url", "http://" + server.getIp() + ":" + server.getPort() + "/" + server.getPath() + "/");
+            editor.putString("server_name", names.get(spinner.getSelectedItemPosition()));
             editor.commit();
         }
 

@@ -334,6 +334,14 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
             e.printStackTrace();
         }
 
+        Element serverInfoElement = new Element();
+        if (prefs.getString("admin", "0").equals("1")) {
+            Uri uri = Uri.parse(prefs.getString("base_url", "NA"));
+            serverInfoElement.setTitle(uri.getHost() + " (" +prefs.getString("server_name", "NA") +  ")");
+        } else {
+            serverInfoElement.setTitle(prefs.getString("server_name", "NA"));
+        }
+
         View aboutPage = new AboutPage(this)
                 .setDescription(this.getResources().getString(R.string.about_description))
                 .isRTL(false)
@@ -346,6 +354,8 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                 .addPlayStore("https://play.google.com/store/apps/details?id=com.gaius.gaiusapp")
                 .addGroup("Advertise with us")
                 .addEmail("advertise@gaiusnetworks.com")
+                .addGroup("Server info")
+                .addItem(serverInfoElement)
                 .create();
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);

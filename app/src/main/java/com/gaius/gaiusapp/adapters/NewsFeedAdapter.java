@@ -1,9 +1,11 @@
 package com.gaius.gaiusapp.adapters;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
@@ -11,11 +13,15 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.android.volley.Request;
@@ -89,6 +95,13 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.newsFe
             holder.avatarView.setVisibility(View.GONE);
             holder.textViewName.setVisibility(View.GONE);
         }
+
+        holder.avatarView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showAvatarPopup((ImageView) v);
+            }
+        });
 
         String fidelity = prefs.getString("fidelity_level", "high");
 
@@ -416,6 +429,31 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.newsFe
     @Override
     public int getItemCount() {
         return newsFeedList.size();
+    }
+
+    private void showAvatarPopup(ImageView avatarView) {
+
+        float scale = mCtx.getResources().getDisplayMetrics().density;
+
+        Dialog builder = new Dialog(mCtx);
+        builder.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        builder.getWindow().setBackgroundDrawable(
+                new ColorDrawable(android.graphics.Color.TRANSPARENT));
+
+        ImageView imageView = new ImageView(mCtx);
+        imageView.setImageDrawable(avatarView.getDrawable());
+
+        RelativeLayout.LayoutParams relativeParams = new RelativeLayout.LayoutParams(
+                (int) (300 * scale),
+                (int) (300 * scale));
+        builder.addContentView(imageView, relativeParams);
+        builder.requestWindowFeature(Window.FEATURE_NO_TITLE);
+
+        WindowManager.LayoutParams wmlp = builder.getWindow().getAttributes();
+        wmlp.gravity = Gravity.TOP;
+        wmlp.y = (int) (150 * scale);
+
+        builder.show();
     }
 
     public NewsFeed getItem(int pos) {

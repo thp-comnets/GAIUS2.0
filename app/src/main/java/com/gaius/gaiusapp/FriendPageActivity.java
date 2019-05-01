@@ -2,12 +2,14 @@ package com.gaius.gaiusapp;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.TypedArray;
 import android.graphics.PorterDuff;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -20,7 +22,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatButton;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -41,7 +46,7 @@ public class FriendPageActivity extends AppCompatActivity implements OnFragmentI
     SharedPreferences prefs;
     RelativeLayout noPages;
     AppCompatButton mButton;
-    String base_url, userID;
+    String base_url, userID, avatar="None";
     Integer position;
     Context mCtx;
     Toolbar toolbar;
@@ -85,7 +90,7 @@ public class FriendPageActivity extends AppCompatActivity implements OnFragmentI
 
         Slider.init(new GlideImageLoadingService(this));
 
-        String name="", avatar="None", status = "";
+        String name="", status = "";
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
         base_url = prefs.getString("base_url", null);
         noPages = findViewById(R.id.noPages);
@@ -130,6 +135,13 @@ public class FriendPageActivity extends AppCompatActivity implements OnFragmentI
                     .avatar()
                     .into(imageViewAvatar);
         }
+
+        imageViewAvatar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showAvatarPopup((ImageView) v);
+            }
+        });
 
         mButton = findViewById(R.id.unfriend_button);
 
@@ -193,6 +205,31 @@ public class FriendPageActivity extends AppCompatActivity implements OnFragmentI
                 .beginTransaction()
                 .replace(R.id.fragment_container, fragment)
                 .commit();
+    }
+
+    private void showAvatarPopup(ImageView avatarView) {
+
+        float scale = mCtx.getResources().getDisplayMetrics().density;
+
+        Dialog builder = new Dialog(this);
+        builder.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        builder.getWindow().setBackgroundDrawable(
+                new ColorDrawable(android.graphics.Color.TRANSPARENT));
+
+        ImageView imageView = new ImageView(this);
+        imageView.setImageDrawable(avatarView.getDrawable());
+
+        RelativeLayout.LayoutParams relativeParams = new RelativeLayout.LayoutParams(
+                (int) (300 * scale),
+                (int) (300 * scale));
+        builder.addContentView(imageView, relativeParams);
+        builder.requestWindowFeature(Window.FEATURE_NO_TITLE);
+
+        WindowManager.LayoutParams wmlp = builder.getWindow().getAttributes();
+        wmlp.gravity = Gravity.TOP;
+        wmlp.y = (int) (150 * scale);
+
+        builder.show();
     }
 
     //handle the back arrow press in the toolbar

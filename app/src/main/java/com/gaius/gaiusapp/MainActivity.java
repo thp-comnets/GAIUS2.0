@@ -183,7 +183,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
         switch (item.getItemId()) {
             case R.id.navigation_home:
-                fragment = NewsFeedFragment.newInstance(Constants.REQUEST_TYPE_NEWSFEED,0);
+                fragment = NewsFeedFragment.newInstance(Constants.REQUEST_TYPE_NEWSFEED, Constants.REQUEST_CONTENT_ALL);
                 disableTitleDropdownMenu();
                 getSupportActionBar().setTitle("Home");
                 break;

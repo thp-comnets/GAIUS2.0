@@ -64,34 +64,28 @@
                     android:textColor="@color/black_57"
                     android:layout_gravity="center"
                     android:layout_marginTop="18dp"
+                    android:layout_marginBottom="18dp"
                     tools:text="Please don’t forget to smile." />
 
                 <android.support.v7.widget.AppCompatButton
-                    android:id="@+id/unfriend_button"
+                    android:id="@+id/action_button"
                     android:layout_width="110dp"
                     android:layout_height="30dp"
-                    android:background="@drawable/friend_unfriend_button"
+                    android:background="@drawable/friend_connect_button"
                     android:textColor="@color/white"
                     android:textSize="14sp"
                     android:textAllCaps="false"
-                    android:layout_marginTop="18dp"
                     android:layout_marginBottom="18dp"
                     android:layout_gravity="center"
-                    android:text="@string/unfriend" />
+                    android:text="@string/connect" />
 
-                <!--<android.support.v7.widget.AppCompatButton-->
-                    <!--android:id="@+id/sendrequest_button"-->
-                    <!--android:layout_width="110dp"-->
-                    <!--android:layout_height="30dp"-->
-                    <!--android:background="@drawable/friend_connect_button"-->
-                    <!--android:textColor="@color/white"-->
-                    <!--android:textSize="18sp"-->
-                    <!--android:textAllCaps="false"-->
-                    <!--android:layout_marginTop="18dp"-->
-                    <!--android:layout_marginBottom="18dp"-->
-                    <!--android:layout_gravity="center"-->
-                    <!--android:visibility="gone"-->
-                    <!--android:text="@string/send_request" />-->
+                <ProgressBar
+                    android:id="@+id/action_progress_bar"
+                    android:layout_width="35dp"
+                    android:layout_height="35dp"
+                    android:layout_marginBottom="18dp"
+                    android:layout_gravity="center"
+                    android:visibility="gone" />
 
                 <RelativeLayout
                     android:id="@+id/noPages"

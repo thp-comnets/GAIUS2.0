@@ -33,10 +33,10 @@ import com.bumptech.glide.Priority;
 import com.gaius.gaiusapp.AlbumViewActivity;
 import com.gaius.gaiusapp.BrowseWebFragment;
 import com.gaius.gaiusapp.CreatePageActivity;
-import com.gaius.gaiusapp.FriendPageActivity;
 import com.gaius.gaiusapp.R;
 import com.gaius.gaiusapp.RenderMAMLActivity;
 import com.gaius.gaiusapp.classes.NewsFeed;
+import com.gaius.gaiusapp.interfaces.OnAdapterInteractionListener;
 import com.gaius.gaiusapp.networking.GlideApp;
 import com.gaius.gaiusapp.utils.Constants;
 import com.gaius.gaiusapp.utils.TopCropImageView;
@@ -59,11 +59,13 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.newsFe
     private SharedPreferences prefs;
     private float scale;
     private Integer requestType;
+    OnAdapterInteractionListener mAdapterListener;
 
-    public NewsFeedAdapter(Context mCtx, List<NewsFeed> newsFeedList, int requestType) {
+    public NewsFeedAdapter(Context mCtx, List<NewsFeed> newsFeedList, int requestType, OnAdapterInteractionListener mListener) {
         this.mCtx = mCtx;
         this.newsFeedList = newsFeedList;
         this.requestType = requestType;
+        this.mAdapterListener = mListener;
     }
 
     @Override
@@ -233,16 +235,7 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.newsFe
         holder.textViewName.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                NewsFeed n = newsFeedList.get((Integer) v.getTag());
-                Intent intent = new Intent(mCtx, FriendPageActivity.class);
-                Bundle bundle = new Bundle();
-                bundle.putString("userID", n.getUserID());
-                bundle.putString("name", n.getName());
-                bundle.putInt("position",(Integer) v.getTag());
-                bundle.putString("status", "I'm using Gaius");
-                bundle.putString("avatar", prefs.getString("base_url", null) + n.getAvatar());
-                intent.putExtras(bundle);
-                mCtx.startActivity(intent);
+                mAdapterListener.onAdapterInteraction((Integer) v.getTag());
             }
         });
 
@@ -429,6 +422,10 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.newsFe
     @Override
     public int getItemCount() {
         return newsFeedList.size();
+    }
+
+    public void updateItemFriendsStatus(Integer position, Integer friendStatus) {
+        newsFeedList.get(position).setFriendStatus(friendStatus);
     }
 
     private void showAvatarPopup(ImageView avatarView) {

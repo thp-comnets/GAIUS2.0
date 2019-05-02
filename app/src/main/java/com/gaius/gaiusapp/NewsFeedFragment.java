@@ -27,6 +27,7 @@ import com.facebook.shimmer.ShimmerFrameLayout;
 import com.gaius.gaiusapp.adapters.NewsFeedAdapter;
 import com.gaius.gaiusapp.classes.NewsFeed;
 import com.gaius.gaiusapp.interfaces.FragmentVisibleInterface;
+import com.gaius.gaiusapp.interfaces.OnAdapterInteractionListener;
 import com.gaius.gaiusapp.interfaces.OnFragmentInteractionListener;
 import com.gaius.gaiusapp.networking.GlideImageLoadingService;
 import com.gaius.gaiusapp.utils.Constants;
@@ -41,9 +42,10 @@ import java.util.List;
 
 import ss.com.bannerslider.Slider;
 
+import static android.app.Activity.RESULT_OK;
 import static com.gaius.gaiusapp.utils.ResourceHelper.convertImageURLBasedonFidelity;
 
-public class NewsFeedFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener, FragmentVisibleInterface {
+public class NewsFeedFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener, FragmentVisibleInterface, OnAdapterInteractionListener {
     String base_URL;
     List<NewsFeed> newsFeedList;
     SwipeRefreshLayout swipeLayout;
@@ -61,6 +63,7 @@ public class NewsFeedFragment extends Fragment implements SwipeRefreshLayout.OnR
     Integer contentParam, typeParam;
     String userIDParam;
     private OnFragmentInteractionListener mListener;
+    private OnAdapterInteractionListener mAdapterListener;
 
     /**
      * Use this factory method to create a new instance of
@@ -90,11 +93,26 @@ public class NewsFeedFragment extends Fragment implements SwipeRefreshLayout.OnR
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mCtx = getActivity();
+        mAdapterListener = this;
 
         if (getArguments() != null) {
             typeParam = getArguments().getInt(ARG_PARAM1);
             contentParam = getArguments().getInt(ARG_PARAM2);
             userIDParam = getArguments().getString(ARG_PARAM3, "");
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK) {
+            if (requestCode == 0) {
+                Integer pos = data.getIntExtra("position", -1);
+                Integer status = data.getIntExtra("friendstatus", -1);
+                if (pos != -1) {
+                    adapter.updateItemFriendsStatus(pos, status);
+                }
+            }
         }
     }
 
@@ -161,7 +179,7 @@ public class NewsFeedFragment extends Fragment implements SwipeRefreshLayout.OnR
         });
 
         newsFeedList = new ArrayList<>();
-        adapter = new NewsFeedAdapter(getContext(), newsFeedList, typeParam);
+        adapter = new NewsFeedAdapter(getContext(), newsFeedList, typeParam, this);
         recyclerView.setAdapter(adapter);
 
         //if this instance is the newsfeed or friends page, load content right away
@@ -200,15 +218,11 @@ public class NewsFeedFragment extends Fragment implements SwipeRefreshLayout.OnR
 
     private void loadPages() {
 
-        /*
-        Compose request parameter, using this format: |type|content|token|userID|
-        and set the corresponding URL. If type == 0, then its a newsfeed request
-         */
         String query, url;
         switch (typeParam) {
             case Constants.REQUEST_TYPE_NEWSFEED:
-                query = prefs.getString("token", "null");
-                url = base_URL+"listPages.py";
+                query = typeParam + "" + contentParam + prefs.getString("token", "null") + userIDParam;
+                url = base_URL+"listContents.py";
                 noContentTextView.setText("You haven't added any friends yet.\nPlease consider adding some.");
                 break;
             case Constants.REQUEST_TYPE_FRIEND:
@@ -299,13 +313,14 @@ public class NewsFeedFragment extends Fragment implements SwipeRefreshLayout.OnR
                                         newsFeed.getString("liked"),
                                         newsFeed.getString("views"),
                                         newsFeed.getString("published"),
+                                        Integer.parseInt(newsFeed.getString("friendStatus")),
                                         true,
                                         imagesList
 
                                 ));
                             }
                             //FIXME check context, might be null
-                            adapter = new NewsFeedAdapter(getContext(), newsFeedList, typeParam);
+                            adapter = new NewsFeedAdapter(getContext(), newsFeedList, typeParam, mAdapterListener);
                             recyclerView.setAdapter(adapter);
                             noInternet.setVisibility(View.GONE);
                             error500.setVisibility(View.GONE);
@@ -314,7 +329,16 @@ public class NewsFeedFragment extends Fragment implements SwipeRefreshLayout.OnR
                             mShimmerViewContainer.setVisibility(View.GONE);
                         } catch (JSONException e) {
                             e.printStackTrace();
-                            Log.d("Yasir","Json error "+e);
+                            Log.d("thp","Json error "+e);
+                        } catch (Exception e) {
+                            error500.setVisibility(View.VISIBLE);
+                            buttonReturnToTop.setVisibility(View.GONE);
+                            noInternet.setVisibility(View.GONE);
+                            recyclerView.setVisibility(View.GONE);
+                            mShimmerViewContainer.stopShimmer();
+                            mShimmerViewContainer.setVisibility(View.GONE);
+                            Toast.makeText(getContext(), "Exception in parsing the response", Toast.LENGTH_LONG).show();
+                            Log.d("thp","Exception " + e);
                         }
 
                     }
@@ -337,7 +361,7 @@ public class NewsFeedFragment extends Fragment implements SwipeRefreshLayout.OnR
                                 recyclerView.setVisibility(View.GONE);
                                 mShimmerViewContainer.stopShimmer();
                                 mShimmerViewContainer.setVisibility(View.GONE);
-                                Log.d("Yasir","Error 500"+error);
+                                Log.d("thp","Error 500"+error);
                                 break;
                             default:
                                 noInternet.setVisibility(View.VISIBLE);
@@ -346,7 +370,7 @@ public class NewsFeedFragment extends Fragment implements SwipeRefreshLayout.OnR
                                 recyclerView.setVisibility(View.GONE);
                                 mShimmerViewContainer.stopShimmer();
                                 mShimmerViewContainer.setVisibility(View.GONE);
-                                Log.d("Yasir","Error no Internet "+error);
+                                Log.d("thp","Error no Internet "+error);
 
                         }
                     }
@@ -370,6 +394,21 @@ public class NewsFeedFragment extends Fragment implements SwipeRefreshLayout.OnR
     public void fragmentBecameVisible() {
         newsFeedList = new ArrayList<>();
         loadPages();
+    }
+
+    @Override
+    public void onAdapterInteraction(Integer position) {
+        NewsFeed n = newsFeedList.get(position);
+        Intent intent = new Intent(mCtx, FriendPageActivity.class);
+        Bundle bundle = new Bundle();
+        bundle.putString("userID", n.getUserID());
+        bundle.putString("name", n.getName());
+        bundle.putInt("position", position);
+        bundle.putString("status", "I'm using Gaius");
+        bundle.putString("avatar", prefs.getString("base_url", null) + n.getAvatar());
+        bundle.putInt("friendstatus", n.getFriendStatus());
+        intent.putExtras(bundle);
+        startActivityForResult(intent, 0);
     }
 }
 

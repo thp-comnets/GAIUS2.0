@@ -18,8 +18,9 @@ public class NewsFeed {
     private ArrayList<String> imagesGallery;
     private String liked;
     private String viewed;
+    private Integer friendStatus;
 
-    public NewsFeed (int id, String name, String updateTime, String avatar, String image, String title, String description, String url, String userID, String type, String liked, String viewed, String published, Boolean showAvatar, ArrayList<String> imagesGallery) {
+    public NewsFeed (int id, String name, String updateTime, String avatar, String image, String title, String description, String url, String userID, String type, String liked, String viewed, String published, Integer friendStatus, Boolean showAvatar, ArrayList<String> imagesGallery) {
         this.id = id;
         this.name = name;
         this.updateTime = updateTime;
@@ -34,6 +35,7 @@ public class NewsFeed {
         this.published = published;
         this.liked = liked;
         this.viewed = viewed;
+        this.friendStatus = friendStatus;
         this.imagesGallery = imagesGallery;
     }
 
@@ -96,6 +98,14 @@ public class NewsFeed {
 
     public void setViewed(String viewed) {
         this.viewed = viewed;
+    }
+
+    public Integer getFriendStatus() {
+        return friendStatus;
+    }
+
+    public void setFriendStatus(Integer friendStatus) {
+        this.friendStatus = friendStatus;
     }
 
     public ArrayList<String> getImagesGallery() {

@@ -235,6 +235,7 @@ public class MyFriendsFragment extends Fragment implements SwipeRefreshLayout.On
         bundle.putInt("position",(Integer) v.getTag());
         bundle.putString("status", "I'm using Gaius");
         bundle.putString("avatar", prefs.getString("base_url", null) + friend.getImage());
+        bundle.putInt("friendstatus", Constants.FRIEND_STATUS_CONNECTED);
         intent.putExtras(bundle);
         startActivityForResult(intent, 0);
     }

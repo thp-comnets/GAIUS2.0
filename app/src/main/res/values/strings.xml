@@ -149,9 +149,14 @@
     <string name="search">Search</string>
     <string name="requests">Requests</string>
     <string name="upload_advertisement">Upload Advertisement</string>
-    <string name="unfriend">Unfriend</string>
 
     <string name="about_description">Gaius is a community based Internet browser. It can be used to create and distribute local content within the community.</string>
+    <string name="connect">Connect</string>
+    <string name="accept">Accept</string>
+    <string name="withdraw">Withdraw</string>
+    <string name="unfriend">Unfriend</string>
+    <string name="subscribe">Subscribe</string>
+    <string name="unsubscribe">Unsubscribe</string>
 
 
 </resources>

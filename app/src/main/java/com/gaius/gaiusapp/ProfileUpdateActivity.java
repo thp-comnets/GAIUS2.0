@@ -199,8 +199,9 @@ public class ProfileUpdateActivity extends AppCompatActivity {
 
         signupInputName.setText(prefs.getString("name", "null"));
         signupInputChannel.setText(prefs.getString("channel", "null"));
-        signupInputEmail.setText(prefs.getString("email", "null"));
-        signupInputEmail.setEnabled(false);
+//        signupInputEmail.setText(prefs.getString("email", "null"));
+//        signupInputEmail.setEnabled(false);
+        signupInputEmail.setVisibility(View.GONE);
 
         if (prefs.getString("age", "null").equals("-1")) {
             signupInputAge.setText("");
@@ -345,15 +346,15 @@ public class ProfileUpdateActivity extends AppCompatActivity {
             error =true;
         }
 
-        if (signupInputEmail.getText().toString().matches("")) {
-            signupInputEmail.setError(getString(R.string.error_email));
-            error =true;
-        }
+//        if (signupInputEmail.getText().toString().matches("")) {
+//            signupInputEmail.setError(getString(R.string.error_email));
+//            error =true;
+//        }
 
-        if (!isEmailValid(signupInputEmail.getText().toString())) {
-            signupInputEmail.setError(getString(R.string.error_email_format));
-            error =true;
-        }
+//        if (!isEmailValid(signupInputEmail.getText().toString())) {
+//            signupInputEmail.setError(getString(R.string.error_email_format));
+//            error =true;
+//        }
 
         if (!signupInputAge.getText().toString().matches("")) {
             age = signupInputAge.getText().toString();

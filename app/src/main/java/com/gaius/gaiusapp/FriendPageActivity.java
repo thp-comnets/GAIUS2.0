@@ -359,7 +359,13 @@ public class FriendPageActivity extends AppCompatActivity implements OnFragmentI
         Intent resultIntent = new Intent();
         resultIntent.putExtra("position", position);
         resultIntent.putExtra("friendstatus", friendStatus);
-        setResult(RESULT_OK, resultIntent);
+        if (friendStatus == Constants.FRIEND_STATUS_CONNECTED) {
+            //nothing has changed
+            setResult(RESULT_CANCELED, resultIntent);
+        } else {
+            setResult(RESULT_OK, resultIntent);
+        }
+
         finish();
     }
 

@@ -244,12 +244,12 @@ public class FriendPageActivity extends AppCompatActivity implements OnFragmentI
     }
 
     private void modifyFriend(final int friendstatus) {
-        String URL = prefs.getString("base_url", null) + "modifyFriend.py?token=" + prefs.getString("token", null) + "&" + Constants.FRIEND_ACTION_LIST.get(friendstatus) + "=" + userID;
 
         progressBar.setVisibility(View.VISIBLE);
         actionButton.setVisibility(View.GONE);
 
-        Log.d("thp", "modifyFreinds.py " + URL);
+//        String URL = prefs.getString("base_url", null) + "modifyFriend.py?token=" + prefs.getString("token", null) + "&" + Constants.FRIEND_ACTION_LIST.get(friendstatus) + "=" + userID;
+//        Log.d("thp", "modifyFreinds.py " + URL);
         AndroidNetworking.get(prefs.getString("base_url", null) + "modifyFriend.py")
                 .addQueryParameter(Constants.FRIEND_ACTION_LIST.get(friendstatus), userID)
                 .addQueryParameter("token", prefs.getString("token", "null"))

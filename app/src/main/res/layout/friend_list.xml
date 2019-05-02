@@ -64,12 +64,12 @@
                 android:paddingEnd="10dp"
                 android:paddingStart="10dp"
                 android:textColor="@color/white"
-                android:textSize="15sp"
+                android:textSize="14sp"
                 android:textAllCaps="false"
                 android:visibility="gone"
                 android:background="@drawable/friend_connect_button"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:layout_height="30dp" />
 
             <ProgressBar
                 android:id="@+id/friend_progress_bar"

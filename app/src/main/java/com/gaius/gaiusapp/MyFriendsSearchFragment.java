@@ -213,7 +213,7 @@ public class MyFriendsSearchFragment extends Fragment implements FragmentVisible
                                         "current status",
                                         friend.getString("avatar"),
                                         friend.getString("userID"),
-                                        friend.getString("type"),
+                                        Constants.FRIEND_STATUS_NOT_CONNECTED,
                                         false
                                 ));
                             }
@@ -288,7 +288,7 @@ public class MyFriendsSearchFragment extends Fragment implements FragmentVisible
                                         "current status",
                                         friend.getString("avatar"),
                                         friend.getString("userID"),
-                                        friend.getString("type"),
+                                        Constants.FRIEND_STATUS_NOT_CONNECTED,
                                         false
                                 ));
                             }

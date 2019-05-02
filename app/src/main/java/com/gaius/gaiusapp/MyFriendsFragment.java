@@ -141,7 +141,7 @@ public class MyFriendsFragment extends Fragment implements SwipeRefreshLayout.On
                                         "current status",
                                         friend.getString("avatar"),
                                         friend.getString("userID"),
-                                        "remove",
+                                        Constants.FRIEND_STATUS_CONNECTED,
                                         true
                                 ));
                             }
@@ -212,15 +212,14 @@ public class MyFriendsFragment extends Fragment implements SwipeRefreshLayout.On
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == 0) {
-            if(resultCode == Activity.RESULT_OK){
-                adapter.removeItemFromFriendsList(data.getIntExtra("removeIndex", Constants.INVALID_POSITION));
+        if (resultCode == Activity.RESULT_OK) {
+            if(requestCode == 0){
+                Integer pos = data.getIntExtra("position", -1);
+                adapter.removeItemFromFriendsList(pos);
+
                 if (adapter.getItemCount() == 0) {
                     noFriendsLayout.setVisibility(View.VISIBLE);
                 }
-            }
-            if (resultCode == Activity.RESULT_CANCELED) {
-               // do nothing
             }
         }
     }

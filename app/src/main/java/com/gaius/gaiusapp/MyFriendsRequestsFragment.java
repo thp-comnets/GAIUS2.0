@@ -65,15 +65,14 @@ public class MyFriendsRequestsFragment extends Fragment implements SwipeRefreshL
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        String token, base_url;
+        String token;
         noFriendsLayout = view.findViewById(R.id.noFriends);
         noFriendTextView = view.findViewById(R.id.noFriendTextView);
         noFriendTextView.setText("You don't have any friend requests.");
 
         prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
         token = prefs.getString("token", "null");
-        base_url = prefs.getString("base_url", null);
-        URL = base_url+"listRequests.py?token=" + token;
+        URL = prefs.getString("base_url", null)+"listRequests.py?token=" + token;
 
         noInternet = view.findViewById(R.id.no_internet);
         noInternet.setOnClickListener(new View.OnClickListener() {
@@ -145,11 +144,11 @@ public class MyFriendsRequestsFragment extends Fragment implements SwipeRefreshL
                                         "current status",
                                         friend.getString("avatar"),
                                         friend.getString("userID"),
-                                        friend.getString("type"),
+                                        Integer.parseInt(friend.getString("friendStatus")),
                                         false
                                 ));
 
-                                if (friend.getString("type").equals("accept")) {
+                                if (friend.getString("friendStatus").equals(Constants.FRIEND_STATUS_ACCEPT)) {
                                     number += 1;
                                 }
                             }

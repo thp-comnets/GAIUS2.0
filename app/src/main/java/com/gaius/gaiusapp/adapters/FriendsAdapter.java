@@ -2,8 +2,10 @@ package com.gaius.gaiusapp.adapters;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.AppCompatButton;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -15,16 +17,19 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
+import com.androidnetworking.AndroidNetworking;
+import com.androidnetworking.common.Priority;
+import com.androidnetworking.error.ANError;
+import com.androidnetworking.interfaces.JSONArrayRequestListener;
 import com.gaius.gaiusapp.R;
 import com.gaius.gaiusapp.classes.Friend;
 import com.gaius.gaiusapp.interfaces.OnAdapterInteractionListener;
 import com.gaius.gaiusapp.networking.GlideApp;
 import com.gaius.gaiusapp.utils.Constants;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.List;
 
@@ -33,6 +38,7 @@ public class FriendsAdapter extends RecyclerView.Adapter<FriendsAdapter.FriendVi
     private Context mCtx;
     private List<Friend> friendsList;
     private SharedPreferences prefs;
+    private Integer friendStatus;
     View.OnClickListener friendOnClickListener;
     OnAdapterInteractionListener mAdapterListener;
 
@@ -82,77 +88,7 @@ public class FriendsAdapter extends RecyclerView.Adapter<FriendsAdapter.FriendVi
             holder.layout.setOnClickListener(friendOnClickListener);
 //        }
 
-        switch (friend.getButtonType()) {
-            case "connect":
-                holder.mButton.setVisibility(View.VISIBLE);
-                holder.mButton.setBackgroundDrawable(mCtx.getResources().getDrawable(R.drawable.friend_connect_button));
-                holder.mButton.setText("Connect");
-                break;
-            case "accept":
-                holder.mButton.setVisibility(View.VISIBLE);
-                holder.mButton.setBackgroundDrawable(mCtx.getResources().getDrawable(R.drawable.friend_accept_button));
-                holder.mButton.setText("Accept");
-                break;
-            case "withdraw":
-                holder.mButton.setVisibility(View.VISIBLE);
-                holder.mButton.setBackgroundDrawable(mCtx.getResources().getDrawable(R.drawable.friend_withdraw_button));
-                holder.mButton.setText("Withdraw");
-                break;
-        }
-
-        holder.mButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mCtx);
-                String token = prefs.getString("token", "null");
-                String URL = prefs.getString("base_url", null) + "modifyFriend.py?token=" + token + "&" + friend.getButtonType() + "=" + friend.getUserID();
-                v.setVisibility(View.INVISIBLE);
-                holder.mProgressBar.setVisibility(View.VISIBLE);
-
-                StringRequest stringRequest = new StringRequest(Request.Method.GET, URL,
-                        new Response.Listener<String>() {
-                            @Override
-                            public void onResponse(String response) {
-                                holder.mProgressBar.setVisibility(View.INVISIBLE);
-                                holder.mButton.setVisibility(View.VISIBLE);
-
-                                if (response.contains("Success")) {
-                                    friendsList.remove(friend);
-                                    notifyDataSetChanged();
-
-                                    if (friend.getButtonType().equals("accept")) {
-
-                                        int number = prefs.getInt("pending-requests", 0);
-
-                                        if (number > 1) {
-                                            number -= 1;
-                                        }
-                                        else {
-                                            number = 0;
-                                        }
-
-                                        // save the pending requests to the sharedprefs
-                                        SharedPreferences.Editor editor = prefs.edit();
-                                        editor.putInt("pending-requests", number);
-                                        editor.apply();
-
-                                        mAdapterListener.onAdapterInteraction(Constants.UPDATE_BADGE_NOTIFICATION_FRIENDS);
-                                    }
-                                }
-                            }
-                        },
-                        new Response.ErrorListener() {
-                            @Override
-                            public void onErrorResponse(VolleyError error) {
-                                holder.mProgressBar.setVisibility(View.INVISIBLE);
-                                holder.mButton.setVisibility(View.VISIBLE);
-                                Log.d("Yasir","Error "+error);
-                            }
-                        });
-                Log.d("Yasir","added request "+stringRequest);
-
-                Volley.newRequestQueue(mCtx).add(stringRequest);
-            }
-        });
+        setActionButton(holder, friend.getFriendStatus());
 
     }
 
@@ -172,13 +108,146 @@ public class FriendsAdapter extends RecyclerView.Adapter<FriendsAdapter.FriendVi
         return friendsList.size();
     }
 
+    private void setActionButton(final FriendViewHolder holder, int friendStatus) {
+        this.friendStatus = friendStatus;
+
+        holder.mProgressBar.setVisibility(View.GONE);
+        holder.actionButton.setVisibility(View.VISIBLE);
+        switch (friendStatus) {
+            case Constants.FRIEND_STATUS_NOT_CONNECTED:
+                holder.actionButton.setBackground(mCtx.getResources().getDrawable(R.drawable.friend_connect_button));
+                holder.actionButton.setText(mCtx.getResources().getString(R.string.connect));
+                holder.actionButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        modifyFriend(holder, Constants.FRIEND_STATUS_NOT_CONNECTED);
+                    }
+                });
+                break;
+            case Constants.FRIEND_STATUS_PENDING:
+                holder.actionButton.setBackground(mCtx.getResources().getDrawable(R.drawable.friend_withdraw_button));
+                holder.actionButton.setText(mCtx.getResources().getString(R.string.withdraw));
+                holder.actionButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        modifyFriend(holder, Constants.FRIEND_STATUS_PENDING);
+                    }
+                });
+                break;
+            case Constants.FRIEND_STATUS_CONNECTED:
+                holder.actionButton.setBackground(mCtx.getResources().getDrawable(R.drawable.friend_unfriend_button));
+                holder.actionButton.setText(mCtx.getResources().getString(R.string.unfriend));
+                holder.actionButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        showUnfriendDialog(holder ,v);
+                    }
+                });
+                break;
+            case Constants.FRIEND_STATUS_ACCEPT:
+                holder.actionButton.setBackground(mCtx.getResources().getDrawable(R.drawable.friend_accept_button));
+                holder.actionButton.setText(mCtx.getResources().getString(R.string.accept));
+                holder.actionButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        modifyFriend(holder, Constants.FRIEND_STATUS_ACCEPT);
+                    }
+                });
+                break;
+            default:
+                //we should not come here
+                holder.actionButton.setVisibility(View.GONE);
+                break;
+        }
+    }
+
+    private void modifyFriend(final FriendViewHolder holder, final int friendstatus) {
+        Friend f = friendsList.get((int) holder.layout.getTag());
+
+        holder.mProgressBar.setVisibility(View.VISIBLE);
+        holder.actionButton.setVisibility(View.GONE);
+
+//        String URL = prefs.getString("base_url", null) + "modifyFriend.py?token=" + prefs.getString("token", null) + "&" + Constants.FRIEND_ACTION_LIST.get(friendstatus) + "=" + f.getUserID();
+//        Log.d("thp", "modifyFreinds.py " + URL);
+
+        AndroidNetworking.get(prefs.getString("base_url", null) + "modifyFriend.py")
+                .addQueryParameter(Constants.FRIEND_ACTION_LIST.get(friendstatus), f.getUserID())
+                .addQueryParameter("token", prefs.getString("token", "null"))
+                .setPriority(Priority.HIGH)
+                .build()
+                .getAsJSONArray(new JSONArrayRequestListener() {
+                    @Override
+                    public void onResponse(JSONArray response) {
+
+                        Log.d("thp", "Response as JSON " + response);
+
+                        try {
+                            JSONObject status = response.getJSONObject(0);
+                            Integer action = Integer.parseInt(status.getString("status"));
+                            setActionButton(holder, action);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                            Log.d("thp","Json error "+e);
+                        }
+
+                    }
+                    @Override
+                    public void onError(ANError error) {
+                        holder.mProgressBar.setVisibility(View.GONE);
+                        holder.actionButton.setVisibility(View.VISIBLE);
+
+                        switch (error.getErrorCode()) {
+                            case 401:
+//                                LogOut.logout(mCtxgetApplicationContext());
+//                                Toast.makeText(getApplicationContext(), "You have logged in from another device. Please login again.",
+//                                        Toast.LENGTH_LONG).show();
+//                                Intent i = new Intent(getApplicationContext(), LoginSMSActivity.class);
+//                                startActivity(i);
+//                                finish();
+                                break;
+                            case 500:
+                                Log.d("thp","Error 500"+error);
+                                break;
+                            default:
+                                Log.d("thp","Error no Internet "+error);
+
+                        }
+                    }
+                });
+    }
+
+    private void showUnfriendDialog(final FriendViewHolder holder, final View v) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(mCtx);
+
+        builder.setTitle("Remove friend?");
+        builder.setMessage("Do you want to remove this friend?");
+
+        builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+
+            public void onClick(DialogInterface dialog, int which) {
+                modifyFriend(holder, Constants.FRIEND_STATUS_CONNECTED);
+                dialog.dismiss();
+            }
+        });
+
+        builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+
+        AlertDialog alert = builder.create();
+        alert.show();
+    }
 
     class FriendViewHolder extends RecyclerView.ViewHolder {
 
         TextView textViewName, textViewPhoneNumber;
         ImageView imageView;
         RelativeLayout layout;
-        AppCompatButton mButton;
+        AppCompatButton actionButton;
         ProgressBar mProgressBar;
 
         public FriendViewHolder(View itemView) {
@@ -188,7 +257,7 @@ public class FriendsAdapter extends RecyclerView.Adapter<FriendsAdapter.FriendVi
             textViewPhoneNumber = itemView.findViewById(R.id.textViewPhoneNumber);
             imageView = itemView.findViewById(R.id.imageView);
             layout = itemView.findViewById(R.id.friend_layout);
-            mButton = itemView.findViewById(R.id.friend_button);
+            actionButton = itemView.findViewById(R.id.friend_button);
             mProgressBar = itemView.findViewById(R.id.friend_progress_bar);
         }
     }

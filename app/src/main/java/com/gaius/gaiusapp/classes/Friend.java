@@ -6,16 +6,16 @@ public class Friend {
     private String phoneNumber;
     private String image;
     private String userID;
-    private String buttonType;
+    private Integer friendStatus;
     private Boolean clickable;
 
-    public Friend(int id, String name, String phoneNumber, String image, String userID, String buttonType, Boolean clickable) {
+    public Friend(int id, String name, String phoneNumber, String image, String userID, Integer buttonType, Boolean clickable) {
         this.id = id;
         this.name = name;
         this.phoneNumber = phoneNumber;
         this.image = image;
         this.userID = userID;
-        this.buttonType = buttonType;
+        this.friendStatus = buttonType;
         this.clickable = clickable;
     }
 
@@ -37,8 +37,8 @@ public class Friend {
 
     public String getUserID() { return userID; }
 
-    public String getButtonType() {
-        return buttonType;
+    public Integer getFriendStatus() {
+        return friendStatus;
     }
 
     public Boolean getClickable() {

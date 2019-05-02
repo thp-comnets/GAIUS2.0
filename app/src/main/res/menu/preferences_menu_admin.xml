@@ -17,6 +17,11 @@
 
         <menu>
             <item
+                android:id="@+id/logoutButton"
+                android:title="Logout"
+                app:showAsAction="always"/>
+
+            <item
                 android:id="@+id/settingsButton"
                 android:title="Settings"
                 app:showAsAction="always"/>

@@ -294,7 +294,11 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.preferences_menu, menu);
+        if (prefs.getString("admin", "0").equals("1")) {
+            getMenuInflater().inflate(R.menu.preferences_menu_admin, menu);
+        } else {
+            getMenuInflater().inflate(R.menu.preferences_menu, menu);
+        }
         return super.onCreateOptionsMenu(menu);
     }
 

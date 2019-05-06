@@ -3,6 +3,7 @@ package com.gaius.gaiusapp;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
@@ -42,15 +43,15 @@ import swarajsaaj.smscodereader.receivers.OtpReader;
 
 public class LoginSMSActivity extends AppCompatActivity implements OTPListener {
 //    private String URL_FOR_LOGIN;
-    private Button customSigninButton;
+    private Button nextButton;
     private IntlPhoneInput phoneInputView;
     private CardView phoneCard;
-    private TextView message,message2,message3, serverList;
+    private TextView message, changeNumber, resendSMS, resendTimer, serverList;
     private OtpView otp_view;
     private Spinner spinner;
     private ArrayList<ServerInfo> serversArrayList;
     private ArrayList<String> names;
-
+    private Integer timerMillis = 30000;
     SharedPreferences prefs;
 
     // easter egg
@@ -90,8 +91,9 @@ public class LoginSMSActivity extends AppCompatActivity implements OTPListener {
 
         phoneCard = findViewById(R.id.phoneCard);
         message = findViewById(R.id.message);
-        message2 = findViewById(R.id.message2);
-        message3 = findViewById(R.id.resend_otp_message);
+        changeNumber = findViewById(R.id.change_number);
+        resendSMS = findViewById(R.id.resend_otp_message);
+        resendTimer = findViewById(R.id.resend_otp_timer);
 
         otp_view = findViewById(R.id.otp_view);
         otp_view.setOtpCompletionListener(new OnOtpCompletionListener() {
@@ -101,8 +103,8 @@ public class LoginSMSActivity extends AppCompatActivity implements OTPListener {
             }
         });
 
-        customSigninButton = (Button) findViewById(R.id.custom_signin_button);
-        customSigninButton.setOnClickListener(new View.OnClickListener() {
+        nextButton = (Button) findViewById(R.id.next_button);
+        nextButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if(!phoneInputView.isValid()) {
@@ -139,6 +141,27 @@ public class LoginSMSActivity extends AppCompatActivity implements OTPListener {
                 }
             }
         }).start();
+    }
+
+    private void startTimer() {
+
+        timerMillis *= 2;
+
+        new CountDownTimer(timerMillis, 1000) {
+
+            public void onTick(long millisUntilFinished) {
+                resendTimer.setText(millisUntilFinished / 1000 + " s");
+                resendSMS.setEnabled(false);
+                resendSMS.setTextColor(getResources().getColor(R.color.black_57));
+            }
+
+            public void onFinish() {
+                resendSMS.setEnabled(true);
+                resendSMS.setTextColor(getResources().getColor(R.color.orange_200));
+                resendTimer.setVisibility(View.GONE);
+            }
+
+        }.start();
     }
 
     private void loadServers() {
@@ -190,7 +213,7 @@ public class LoginSMSActivity extends AppCompatActivity implements OTPListener {
                                 Log.d("Yasir", "Error 500" + error);
                                 break;
                             default:
-                                Log.d("Yasir", "Error no Internet " + error);
+                                Toast.makeText(getApplicationContext(), "Slow or no Internet connection", Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
@@ -238,7 +261,7 @@ public class LoginSMSActivity extends AppCompatActivity implements OTPListener {
                                 Log.d("Yasir", "Error 500" + error);
                                 break;
                             default:
-                                Log.d("Yasir", "Error no Internet " + error);
+                                Toast.makeText(getApplicationContext(), "Slow or no Internet connection", Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
@@ -246,6 +269,51 @@ public class LoginSMSActivity extends AppCompatActivity implements OTPListener {
     }
 
     void doLogin () {
+
+        nextButton.setVisibility(View.GONE);
+        message.setText("Enter the 4-digit code sent to you");
+        changeNumber.setVisibility(View.VISIBLE);
+        resendSMS.setVisibility(View.VISIBLE);
+        resendTimer.setVisibility(View.VISIBLE);
+        otp_view.setVisibility(View.VISIBLE);
+        spinner.setVisibility(View.GONE);
+        serverList.setVisibility(View.GONE);
+        phoneCard.setVisibility(View.GONE);
+
+        resendSMS.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                doLogin();
+            }
+        });
+
+        changeNumber.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                message.setText("Enter your mobile number");
+                changeNumber.setVisibility(View.GONE);
+                resendSMS.setVisibility(View.GONE);
+                resendTimer.setVisibility(View.GONE);
+                phoneCard.setVisibility(View.VISIBLE);
+                otp_view.setVisibility(View.GONE);
+                nextButton.setVisibility(View.VISIBLE);
+                if (prefs.getString("admin", "0").equals("1")) {
+                    spinner.setVisibility(View.VISIBLE);
+                    serverList.setVisibility(View.VISIBLE);
+                    loadServers();
+                }
+
+                nextButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        doLogin();
+                    }
+                });
+            }
+        });
+
+        startTimer();
+
         if (prefs.getString("admin", "0").equals("1")) {
             ServerInfo server = serversArrayList.get(spinner.getSelectedItemPosition());
 
@@ -263,53 +331,7 @@ public class LoginSMSActivity extends AppCompatActivity implements OTPListener {
                 .getAsJSONArray(new JSONArrayRequestListener() {
                     @Override
                     public void onResponse(JSONArray response) {
-                        customSigninButton.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                validateOTP();
-                            }
-                        });
-
-                        customSigninButton.setVisibility(View.GONE);
-                        message.setText("Enter the 4-digit code sent to you");
-                        message2.setVisibility(View.VISIBLE);
-                        message3.setVisibility(View.VISIBLE);
-                        otp_view.setVisibility(View.VISIBLE);
-                        spinner.setVisibility(View.GONE);
-                        serverList.setVisibility(View.GONE);
-
-                        message2.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                message.setText("Enter your mobile number");
-                                message2.setVisibility(View.GONE);
-                                message3.setVisibility(View.GONE);
-                                phoneCard.setVisibility(View.VISIBLE);
-                                otp_view.setVisibility(View.GONE);
-                                customSigninButton.setVisibility(View.VISIBLE);
-                                if (prefs.getString("admin", "0").equals("1")) {
-                                    spinner.setVisibility(View.VISIBLE);
-                                    serverList.setVisibility(View.VISIBLE);
-                                    loadServers();
-                                }
-
-                                customSigninButton.setOnClickListener(new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View v) {
-                                        doLogin();
-                                    }
-                                });
-                            }
-                        });
-
-                        message3.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                doLogin();
-                            }
-                        });
-
-                        phoneCard.setVisibility(View.GONE);
+                        //do nothing and wait for SMS
                     }
 
                     @Override
@@ -323,7 +345,7 @@ public class LoginSMSActivity extends AppCompatActivity implements OTPListener {
                                 Toast.makeText(getApplicationContext(), "Invalid phone number", Toast.LENGTH_SHORT).show();
                                 break;
                             default:
-                                Log.d("SMS", "Error no Internet " + error);
+                                Toast.makeText(getApplicationContext(), "Slow or no Internet connection", Toast.LENGTH_SHORT).show();
                         }
                     }
                 });

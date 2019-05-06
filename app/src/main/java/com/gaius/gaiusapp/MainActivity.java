@@ -1,6 +1,5 @@
 package com.gaius.gaiusapp;
 
-import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -14,9 +13,7 @@ import android.support.annotation.NonNull;
 import android.support.design.internal.BottomNavigationItemView;
 import android.support.design.internal.BottomNavigationMenuView;
 import android.support.design.widget.BottomNavigationView;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -37,27 +34,13 @@ import com.gaius.gaiusapp.utils.Constants;
 import com.gaius.gaiusapp.utils.LogOut;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import cn.jzvd.Jzvd;
 import me.leolin.shortcutbadger.ShortcutBadger;
 import mehdi.sakout.aboutpage.AboutPage;
 import mehdi.sakout.aboutpage.Element;
 
-import static com.gaius.gaiusapp.utils.Constants.MULTIPLE_PERMISSIONS;
-
 public class MainActivity extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener, OnFragmentInteractionListener {
-
-    String[] permissions= new String[]{
-            Manifest.permission.READ_CONTACTS,
-            Manifest.permission.READ_EXTERNAL_STORAGE,
-            Manifest.permission.WRITE_EXTERNAL_STORAGE,
-//            Manifest.permission.ACCESS_COARSE_LOCATION,
-            Manifest.permission.ACCESS_NETWORK_STATE,
-            Manifest.permission.CAMERA,
-//            Manifest.permission.ACCESS_FINE_LOCATION,
-            Manifest.permission.READ_CONTACTS,
-            Manifest.permission.VIBRATE};
 
     TextView badgeTextView;
     Context mCtx;
@@ -70,9 +53,10 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         AndroidNetworking.initialize(getApplicationContext());
         AndroidNetworking.enableLogging();
-        // creating the BASE_URL of the GAIUS edge
+
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
 
         if (prefs.getString("token", null) == null) {
@@ -83,14 +67,25 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         }
 
         // asking the user for all required permissions
-        checkPermissions ();
+//        checkPermissions ();
+//        String[] permissions = {Manifest.permission.ACCESS_NETWORK_STATE, Manifest.permission.VIBRATE};
+//        Permissions.check(this, permissions, null, null, new PermissionHandler() {
+//            @Override
+//            public void onGranted() {
+//
+//            }
+//
+//            @Override
+//            public void onDenied(Context context, ArrayList<String> deniedPermissions) {
+//                super.onDenied(context, deniedPermissions);
+//                Toast.makeText(getApplicationContext(), "If you reject this permission, you can not use this functionality.", Toast.LENGTH_SHORT).show();
+//            }
+//        });
+
 
 //        Slider.init(new GlideImageLoadingService(this));
 
         setContentView(R.layout.activity_main);
-
-        //loading the default fragment
-//        loadFragment(NewsFeedFragment.newInstance(0, 0));
 
         BottomNavigationView mBottomNavigationView = findViewById(R.id.navigation);
 
@@ -256,40 +251,6 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         // Enabling Spinner dropdown bottom_navigation
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
         actionBar.setDisplayShowTitleEnabled(true);
-    }
-
-    private  boolean checkPermissions() {
-        int result;
-        List<String> listPermissionsNeeded = new ArrayList<>();
-        for (String p:permissions) {
-            result = ContextCompat.checkSelfPermission(this,p);
-            if (result != PackageManager.PERMISSION_GRANTED) {
-                listPermissionsNeeded.add(p);
-            }
-        }
-        if (!listPermissionsNeeded.isEmpty()) {
-            ActivityCompat.requestPermissions(this, listPermissionsNeeded.toArray(new String[listPermissionsNeeded.size()]),MULTIPLE_PERMISSIONS );
-            return false;
-        }
-        return true;
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String permissionsList[], int[] grantResults) {
-        switch (requestCode) {
-            case MULTIPLE_PERMISSIONS:{
-                if (grantResults.length > 0) {
-                    String permissionsDenied = "";
-                    for (String per : permissionsList) {
-                        if(grantResults[0] == PackageManager.PERMISSION_DENIED){
-                            permissionsDenied += "\n" + per;
-                        }
-                    }
-                    // Show permissionsDenied
-//                    updateViews();
-                }
-            }
-        }
     }
 
     @Override

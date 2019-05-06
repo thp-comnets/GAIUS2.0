@@ -1,5 +1,6 @@
 package com.gaius.gaiusapp;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -35,6 +36,8 @@ import com.androidnetworking.interfaces.OkHttpResponseListener;
 import com.androidnetworking.interfaces.UploadProgressListener;
 import com.gaius.gaiusapp.adapters.UrlGalleryAdapter;
 import com.gaius.gaiusapp.utils.ResourceHelper;
+import com.nabinbhandari.android.permissions.PermissionHandler;
+import com.nabinbhandari.android.permissions.Permissions;
 
 import java.io.File;
 import java.io.IOException;
@@ -241,31 +244,57 @@ public class CreateContentImagesFragment extends Fragment {
     }
 
     private void uploadImage() {
-        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-        intent.setType("image/*");
-        intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
-        startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_MULTIPLE); //SELECT_PICTURES is simply a global int used to check the calling intent in onActivityResult
+
+        String[] permissions = {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE};
+        Permissions.check(getActivity(), permissions, null, null, new PermissionHandler() {
+            @Override
+            public void onGranted() {
+                Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+                intent.setType("image/*");
+                intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+                startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_MULTIPLE); //SELECT_PICTURES is simply a global int used to check the calling intent in onActivityResult
+            }
+
+            @Override
+            public void onDenied(Context context, ArrayList<String> deniedPermissions) {
+                super.onDenied(context, deniedPermissions);
+                Toast.makeText(getActivity(), "If you reject this permission, you can not use this functionality.", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void captureImage() {
-        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        // Ensure that there's a camera activity to handle the intent
-        if (takePictureIntent.resolveActivity(getActivity().getPackageManager()) != null) {
-            // Create the File where the photo should go
-            File photoFile = null;
-            try {
-                photoFile = createImageFile();
-            } catch (IOException ex) {
-                // Error occurred while creating the File
-                Toast.makeText(getContext(), "Something went wrong when saving the image", Toast.LENGTH_LONG).show();
+
+        String[] permissions = {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA};
+        Permissions.check(getActivity(), permissions, null, null, new PermissionHandler() {
+            @Override
+            public void onGranted() {
+                Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                // Ensure that there's a camera activity to handle the intent
+                if (takePictureIntent.resolveActivity(getActivity().getPackageManager()) != null) {
+                    // Create the File where the photo should go
+                    File photoFile = null;
+                    try {
+                        photoFile = createImageFile();
+                    } catch (IOException ex) {
+                        // Error occurred while creating the File
+                        Toast.makeText(getContext(), "Something went wrong when saving the image", Toast.LENGTH_LONG).show();
+                    }
+                    // Continue only if the File was successfully created
+                    if (photoFile != null) {
+                        Uri photoURI = FileProvider.getUriForFile(getContext(), "com.gaius.gaiusapp.fileprovider", photoFile);
+                        takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                        startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO);
+                    }
+                }
             }
-            // Continue only if the File was successfully created
-            if (photoFile != null) {
-                Uri photoURI = FileProvider.getUriForFile(getContext(), "com.gaius.gaiusapp.fileprovider", photoFile);
-                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
-                startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO);
+
+            @Override
+            public void onDenied(Context context, ArrayList<String> deniedPermissions) {
+                super.onDenied(context, deniedPermissions);
+                Toast.makeText(getActivity(), "If you reject this permission, you can not use this functionality.", Toast.LENGTH_SHORT).show();
             }
-        }
+        });
     }
 
     public void incrementCount(int index) {

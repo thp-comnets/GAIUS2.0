@@ -1,5 +1,6 @@
 package com.gaius.gaiusapp;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -35,9 +36,12 @@ import com.androidnetworking.interfaces.OkHttpResponseListener;
 import com.androidnetworking.interfaces.UploadProgressListener;
 import com.example.videocompressionlibrary.VideoCompress;
 import com.gaius.gaiusapp.utils.ResourceHelper;
+import com.nabinbhandari.android.permissions.PermissionHandler;
+import com.nabinbhandari.android.permissions.Permissions;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import cn.jzvd.Jzvd;
 import cn.jzvd.JzvdStd;
@@ -64,10 +68,22 @@ public class CreateContentVideosFragment extends Fragment {
         uploadImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent galleryIntent = new Intent(Intent.ACTION_PICK, MediaStore.Video.Media.EXTERNAL_CONTENT_URI);
-                galleryIntent.setType("video/*");
-                galleryIntent.putExtra(Intent.EXTRA_MIME_TYPES, new String[] { "video/*"});
-                startActivityForResult(galleryIntent, PICK_VIDEO_REQUEST);
+                String[] permissions = {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE};
+                Permissions.check(getActivity(), permissions, null, null, new PermissionHandler() {
+                    @Override
+                    public void onGranted() {
+                        Intent galleryIntent = new Intent(Intent.ACTION_PICK, MediaStore.Video.Media.EXTERNAL_CONTENT_URI);
+                        galleryIntent.setType("video/*");
+                        galleryIntent.putExtra(Intent.EXTRA_MIME_TYPES, new String[] { "video/*"});
+                        startActivityForResult(galleryIntent, PICK_VIDEO_REQUEST);
+                    }
+
+                    @Override
+                    public void onDenied(Context context, ArrayList<String> deniedPermissions) {
+                        super.onDenied(context, deniedPermissions);
+                        Toast.makeText(getActivity(), "If you reject this permission, you can not use this functionality.", Toast.LENGTH_SHORT).show();
+                    }
+                });
             }
         });
 
@@ -75,8 +91,20 @@ public class CreateContentVideosFragment extends Fragment {
         captureImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent("android.media.action.VIDEO_CAPTURE");
-                startActivity(intent);
+                String[] permissions = {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA};
+                Permissions.check(getActivity(), permissions, null, null, new PermissionHandler() {
+                    @Override
+                    public void onGranted() {
+                        Intent intent = new Intent("android.media.action.VIDEO_CAPTURE");
+                        startActivity(intent);
+                    }
+
+                    @Override
+                    public void onDenied(Context context, ArrayList<String> deniedPermissions) {
+                        super.onDenied(context, deniedPermissions);
+                        Toast.makeText(getActivity(), "If you reject this permission, you can not use this functionality.", Toast.LENGTH_SHORT).show();
+                    }
+                });
             }
         });
         return rootView;

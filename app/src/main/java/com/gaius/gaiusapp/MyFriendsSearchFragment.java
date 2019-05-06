@@ -1,5 +1,6 @@
 package com.gaius.gaiusapp;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -38,6 +39,8 @@ import com.gaius.gaiusapp.interfaces.OnAdapterInteractionListener;
 import com.gaius.gaiusapp.interfaces.OnFragmentInteractionListener;
 import com.gaius.gaiusapp.utils.Constants;
 import com.gaius.gaiusapp.utils.LogOut;
+import com.nabinbhandari.android.permissions.PermissionHandler;
+import com.nabinbhandari.android.permissions.Permissions;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -324,7 +327,19 @@ public class MyFriendsSearchFragment extends Fragment implements FragmentVisible
 
     @Override
     public void fragmentBecameVisible() {
-        //do nothing
+        String[] permissions = {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_CONTACTS};
+        Permissions.check(getActivity(), permissions, null, null, new PermissionHandler() {
+            @Override
+            public void onGranted() {
+                loadPossibleFriends();
+            }
+
+            @Override
+            public void onDenied(Context context, ArrayList<String> deniedPermissions) {
+                super.onDenied(context, deniedPermissions);
+                Toast.makeText(getActivity(), "If you reject this permission, you can not use this functionality.", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     @Override

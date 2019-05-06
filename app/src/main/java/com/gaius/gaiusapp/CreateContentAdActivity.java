@@ -67,7 +67,6 @@ public class CreateContentAdActivity extends AppCompatActivity {
     private String videoFilePath = null;
 
     private final int PICK_VIDEO_REQUEST = 1;
-    private final int READ_EXTERNAL_STORAGE_PERMISSIONS_REQUEST_CODE = 2;
 
     List<String> spinnerArray = new ArrayList<>();
     ArrayList<String> hrefUrls;

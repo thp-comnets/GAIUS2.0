@@ -2,6 +2,7 @@ package com.gaius.gaiusapp;
 
 
 import android.Manifest;
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -40,6 +41,8 @@ import com.androidnetworking.interfaces.JSONArrayRequestListener;
 import com.androidnetworking.interfaces.UploadProgressListener;
 import com.gaius.gaiusapp.networking.GlideApp;
 import com.gaius.gaiusapp.utils.ResourceHelper;
+import com.nabinbhandari.android.permissions.PermissionHandler;
+import com.nabinbhandari.android.permissions.Permissions;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
 
@@ -50,6 +53,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -229,16 +233,41 @@ public class ProfileUpdateActivity extends AppCompatActivity {
         avatarImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent galleryIntent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                startActivityForResult(galleryIntent, PICK_ICON_REQUEST);
+
+                String[] permissions = {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE};
+                Permissions.check((Activity) mCtx, permissions, null, null, new PermissionHandler() {
+                    @Override
+                    public void onGranted() {
+                        Intent galleryIntent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                        startActivityForResult(galleryIntent, PICK_ICON_REQUEST);
+                    }
+
+                    @Override
+                    public void onDenied(Context context, ArrayList<String> deniedPermissions) {
+                        super.onDenied(context, deniedPermissions);
+                        Toast.makeText((Activity) mCtx, "If you reject this permission, you can not use this functionality.", Toast.LENGTH_SHORT).show();
+                    }
+                });
             }
         });
 
         channelImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent galleryIntent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                startActivityForResult(galleryIntent, PICK_CHANNEL_THUMB_REQUEST);
+                String[] permissions = {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE};
+                Permissions.check((Activity) mCtx, permissions, null, null, new PermissionHandler() {
+                    @Override
+                    public void onGranted() {
+                        Intent galleryIntent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                        startActivityForResult(galleryIntent, PICK_CHANNEL_THUMB_REQUEST);
+                    }
+
+                    @Override
+                    public void onDenied(Context context, ArrayList<String> deniedPermissions) {
+                        super.onDenied(context, deniedPermissions);
+                        Toast.makeText((Activity) mCtx, "If you reject this permission, you can not use this functionality.", Toast.LENGTH_SHORT).show();
+                    }
+                });
             }
         });
 

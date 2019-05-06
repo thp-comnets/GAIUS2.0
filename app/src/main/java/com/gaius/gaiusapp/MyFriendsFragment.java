@@ -225,7 +225,7 @@ public class MyFriendsFragment extends Fragment implements SwipeRefreshLayout.On
         if (resultCode == Activity.RESULT_CANCELED) {
             //do nothing
         }
-        }
+    }
 
     @Override
     public void onClick(View v) {

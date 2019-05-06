@@ -1,5 +1,6 @@
 package com.gaius.gaiusapp;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -107,6 +108,25 @@ public class MyFriendsRequestsFragment extends Fragment implements SwipeRefreshL
         mListener = null;
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (resultCode == Activity.RESULT_OK) {
+            if(requestCode == 0){
+                Integer pos = data.getIntExtra("position", -1);
+                adapter.removeItemFromFriendsList(pos);
+
+                if (adapter.getItemCount() == 0) {
+                    noFriendsLayout.setVisibility(View.VISIBLE);
+                }
+            }
+        }
+        if (resultCode == Activity.RESULT_CANCELED) {
+            //do nothing
+        }
+    }
+
     private void loadFriends() {
         /*
          * Creating a String Request
@@ -210,6 +230,7 @@ public class MyFriendsRequestsFragment extends Fragment implements SwipeRefreshL
         bundle.putInt("position",(Integer) v.getTag());
         bundle.putString("status", "I'm using Gaius");
         bundle.putString("avatar", prefs.getString("base_url", null) + friend.getImage());
+        bundle.putInt("friendstatus", friend.getFriendStatus());
         intent.putExtras(bundle);
         startActivityForResult(intent, 0);
     }

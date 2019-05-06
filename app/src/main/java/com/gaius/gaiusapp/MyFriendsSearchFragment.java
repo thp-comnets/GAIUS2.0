@@ -30,7 +30,6 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.androidnetworking.common.ANRequest;
 import com.androidnetworking.error.ANError;
-import com.androidnetworking.interfaces.AnalyticsListener;
 import com.androidnetworking.interfaces.JSONArrayRequestListener;
 import com.gaius.gaiusapp.adapters.FriendsAdapter;
 import com.gaius.gaiusapp.classes.Friend;
@@ -90,7 +89,7 @@ public class MyFriendsSearchFragment extends Fragment implements FragmentVisible
 
         friendList = new ArrayList<>();
 
-        loadPossibleFriends();
+//        loadPossibleFriends();
 
         final EditText searchName  = getView().findViewById(R.id.search_name_edittext);
         ImageView searchButton = getView().findViewById(R.id.search_button);
@@ -133,24 +132,24 @@ public class MyFriendsSearchFragment extends Fragment implements FragmentVisible
     }
 
     public void loadPossibleFriends() {
-        path = context.getExternalFilesDir(null);
-        File file = new File(path, "contacts.txt");
+        path = context.getCacheDir();
         ArrayList<String> phoneNumbers = new ArrayList<String>();
 
         try {
+            File file = File.createTempFile("prefix", "extension", path);
             FileOutputStream stream = new FileOutputStream(file);
 
             Cursor phones = context.getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, null, null, null);
 
             while (phones.moveToNext()) {
-//                String name = phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
+    //                String name = phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
                 String phoneNumber = phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
 
                 phoneNumber = phoneNumber.replace("+","00").replace("(","").replace(")","").replace("-","").replace(" ","").replace("/","");
-// fixme: need to figure out a way to give international code for numbers without a +(code)
-//                if (!phoneNumber.substring(0, 2).contains("00") && phoneNumber.substring(0, 1).contains("0")) {
-//                    phoneNumber = "00971"+phoneNumber.substring(1,phoneNumber.length());
-//                }
+    // fixme: need to figure out a way to give international code for numbers without a +(code)
+    //                if (!phoneNumber.substring(0, 2).contains("00") && phoneNumber.substring(0, 1).contains("0")) {
+    //                    phoneNumber = "00971"+phoneNumber.substring(1,phoneNumber.length());
+    //                }
 
                 if (! phoneNumbers.contains(phoneNumber)) {
                     phoneNumbers.add(phoneNumber);
@@ -161,7 +160,7 @@ public class MyFriendsSearchFragment extends Fragment implements FragmentVisible
             phones.close();
             stream.close();
 
-            uploadMultipart(context, path.toString()+"/contacts.txt",null,null);
+            uploadMultipart(context, path.toString() + "/" + file.getName(),null,null);
 
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -179,16 +178,6 @@ public class MyFriendsSearchFragment extends Fragment implements FragmentVisible
         multiPartBuilder.addMultipartFile("contacts", new File (contactPath));
         multiPartBuilder.addMultipartParameter("token", prefs.getString("token", "null"));
         multiPartBuilder.build()
-                .setAnalyticsListener(new AnalyticsListener() {
-                    @Override
-                    public void onReceived(long timeTakenInMillis, long bytesSent,
-                                           long bytesReceived, boolean isFromCache) {
-                        Log.d("thp", " timeTakenInMillis : " + timeTakenInMillis);
-                        Log.d("thp", " bytesSent : " + bytesSent);
-                        Log.d("thp", " bytesReceived : " + bytesReceived);
-                        Log.d("thp", " isFromCache : " + isFromCache);
-                    }
-                })
                 .getAsJSONArray(new JSONArrayRequestListener() {
                     @Override
                     public void onResponse(JSONArray response) {
@@ -327,7 +316,12 @@ public class MyFriendsSearchFragment extends Fragment implements FragmentVisible
 
     @Override
     public void fragmentBecameVisible() {
-        String[] permissions = {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_CONTACTS};
+
+        if (friendList != null) {
+            friendList.clear();
+        }
+
+        String[] permissions = {Manifest.permission.READ_CONTACTS};
         Permissions.check(getActivity(), permissions, null, null, new PermissionHandler() {
             @Override
             public void onGranted() {

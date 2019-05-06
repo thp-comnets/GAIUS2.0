@@ -3,6 +3,7 @@ package com.gaius.gaiusapp;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
@@ -10,6 +11,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -31,6 +33,7 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import swarajsaaj.smscodereader.interfaces.OTPListener;
 import swarajsaaj.smscodereader.receivers.OtpReader;
@@ -49,6 +52,16 @@ public class LoginSMSActivity extends AppCompatActivity implements OTPListener {
 
     SharedPreferences prefs;
 
+    // easter egg
+    private AtomicInteger mCounter = new AtomicInteger();
+    private Handler handler = new Handler();
+    private Runnable mRunnable = new Runnable(){
+        @Override
+        public void run(){
+            mCounter = new AtomicInteger();
+        }
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -59,6 +72,20 @@ public class LoginSMSActivity extends AppCompatActivity implements OTPListener {
         prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
 
         phoneInputView = (IntlPhoneInput) findViewById(R.id.my_phone_input);
+
+        ImageView easterEgg = findViewById(R.id.logo2a);
+        easterEgg.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+                handler.removeCallbacks(mRunnable);
+                handler.postDelayed(mRunnable, 1000);
+                if(mCounter.incrementAndGet() == 6){
+                    spinner.setVisibility(View.VISIBLE);
+                    serverList.setVisibility(View.VISIBLE);
+                    loadServers();
+                }
+            }
+        });
 
         phoneCard = findViewById(R.id.phoneCard);
         message = findViewById(R.id.message);

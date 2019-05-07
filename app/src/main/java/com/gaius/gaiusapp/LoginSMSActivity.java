@@ -1,5 +1,7 @@
 package com.gaius.gaiusapp;
 
+import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -7,13 +9,13 @@ import android.os.CountDownTimer;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.CardView;
 import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -26,6 +28,8 @@ import com.gaius.gaiusapp.utils.ServerInfo;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.mukesh.OnOtpCompletionListener;
 import com.mukesh.OtpView;
+import com.nabinbhandari.android.permissions.PermissionHandler;
+import com.nabinbhandari.android.permissions.Permissions;
 
 import net.rimoto.intlphoneinput.IntlPhoneInput;
 
@@ -42,17 +46,19 @@ import swarajsaaj.smscodereader.receivers.OtpReader;
 
 
 public class LoginSMSActivity extends AppCompatActivity implements OTPListener {
-//    private String URL_FOR_LOGIN;
+
     private Button nextButton;
     private IntlPhoneInput phoneInputView;
-    private CardView phoneCard;
-    private TextView message, changeNumber, resendSMS, resendTimer, serverList;
+    private TextView changeNumber, resendSMS, resendTimer, serverList;
     private OtpView otp_view;
     private Spinner spinner;
+    LinearLayout layoutEnterNumber, layoutEnterOtp;
     private ArrayList<ServerInfo> serversArrayList;
     private ArrayList<String> names;
     private Integer timerMillis = 30000;
     SharedPreferences prefs;
+    CountDownTimer resendCountDownTimer;
+    Context mCtx;
 
     // easter egg
     private AtomicInteger mCounter = new AtomicInteger();
@@ -66,12 +72,17 @@ public class LoginSMSActivity extends AppCompatActivity implements OTPListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
         setContentView(R.layout.login_activity_sms);
-        super.onCreate(savedInstanceState);
+
+        mCtx = this;
 
         getSupportActionBar().hide();
         prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+
+        layoutEnterNumber = findViewById(R.id.enter_number_layout);
+        layoutEnterOtp = findViewById(R.id.otp_layout);
 
         phoneInputView = (IntlPhoneInput) findViewById(R.id.my_phone_input);
 
@@ -89,8 +100,6 @@ public class LoginSMSActivity extends AppCompatActivity implements OTPListener {
             }
         });
 
-        phoneCard = findViewById(R.id.phoneCard);
-        message = findViewById(R.id.message);
         changeNumber = findViewById(R.id.change_number);
         resendSMS = findViewById(R.id.resend_otp_message);
         resendTimer = findViewById(R.id.resend_otp_timer);
@@ -107,17 +116,63 @@ public class LoginSMSActivity extends AppCompatActivity implements OTPListener {
         nextButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                if (resendCountDownTimer != null) {
+                    resendCountDownTimer.cancel();
+                }
+                resendTimer.setText("");
+
                 if(!phoneInputView.isValid()) {
                     Toast.makeText(getApplicationContext(), "Invalid phone number please correct", Toast.LENGTH_SHORT).show();
                 }
                 else {
-                    getLocalServer();
+                    String[] permissions = {Manifest.permission.READ_SMS, Manifest.permission.RECEIVE_SMS};
+                    Permissions.check(mCtx, permissions, null, null, new PermissionHandler() {
+                        @Override
+                        public void onGranted() {
+                            getLocalServer();
+                            layoutEnterOtp.setVisibility(View.VISIBLE);
+                            layoutEnterNumber.setVisibility(View.GONE);
+                        }
+
+                        @Override
+                        public void onDenied(Context context, ArrayList<String> deniedPermissions) {
+                            super.onDenied(context, deniedPermissions);
+                            Toast.makeText(getApplicationContext(), "If you reject this permission, you have to enter the SMS code manually.", Toast.LENGTH_LONG).show();
+                            getLocalServer();
+                            layoutEnterOtp.setVisibility(View.VISIBLE);
+                            layoutEnterNumber.setVisibility(View.GONE);
+                        }
+                    });
+
                     // hide keyboard
                     InputMethodManager in = (InputMethodManager) getSystemService(getApplicationContext().INPUT_METHOD_SERVICE);
                     in.hideSoftInputFromWindow(v.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
                 }
             }
         });
+
+        resendSMS.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                requestOtp();
+            }
+        });
+
+        changeNumber.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                layoutEnterOtp.setVisibility(View.GONE);
+                layoutEnterNumber.setVisibility(View.VISIBLE);
+
+                if (prefs.getString("admin", "0").equals("1")) {
+                    spinner.setVisibility(View.VISIBLE);
+                    serverList.setVisibility(View.VISIBLE);
+                    loadServers();
+                }
+            }
+        });
+
 
         OtpReader.bind(this,"sms");
 
@@ -129,6 +184,7 @@ public class LoginSMSActivity extends AppCompatActivity implements OTPListener {
             serverList.setVisibility(View.VISIBLE);
             loadServers();
         }
+
         // request a new firebase token
         new Thread(new Runnable() {
             @Override
@@ -147,18 +203,20 @@ public class LoginSMSActivity extends AppCompatActivity implements OTPListener {
 
         timerMillis *= 2;
 
-        new CountDownTimer(timerMillis, 1000) {
+        resendSMS.setTextColor(getResources().getColor(R.color.black_57));
+        resendSMS.setEnabled(false);
+        resendTimer.setText("");
+
+        resendCountDownTimer = new CountDownTimer(timerMillis, 1000) {
 
             public void onTick(long millisUntilFinished) {
                 resendTimer.setText(millisUntilFinished / 1000 + " s");
-                resendSMS.setEnabled(false);
-                resendSMS.setTextColor(getResources().getColor(R.color.black_57));
             }
 
             public void onFinish() {
                 resendSMS.setEnabled(true);
                 resendSMS.setTextColor(getResources().getColor(R.color.orange_200));
-                resendTimer.setVisibility(View.GONE);
+                resendTimer.setText("");
             }
 
         }.start();
@@ -242,7 +300,7 @@ public class LoginSMSActivity extends AppCompatActivity implements OTPListener {
                             editor.putString("server_name", servers.getString("server_name"));
                             editor.commit();
 
-                            doLogin();
+                            requestOtp();
 
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -268,53 +326,9 @@ public class LoginSMSActivity extends AppCompatActivity implements OTPListener {
 
     }
 
-    void doLogin () {
+    void requestOtp() {
 
-        nextButton.setVisibility(View.GONE);
-        message.setText("Enter the 4-digit code sent to you");
-        changeNumber.setVisibility(View.VISIBLE);
-        resendSMS.setVisibility(View.VISIBLE);
-        resendTimer.setVisibility(View.VISIBLE);
-        otp_view.setVisibility(View.VISIBLE);
-        spinner.setVisibility(View.GONE);
-        serverList.setVisibility(View.GONE);
-        phoneCard.setVisibility(View.GONE);
-
-        resendSMS.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                doLogin();
-            }
-        });
-
-        changeNumber.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                message.setText("Enter your mobile number");
-                changeNumber.setVisibility(View.GONE);
-                resendSMS.setVisibility(View.GONE);
-                resendTimer.setVisibility(View.GONE);
-                phoneCard.setVisibility(View.VISIBLE);
-                otp_view.setVisibility(View.GONE);
-                nextButton.setVisibility(View.VISIBLE);
-                if (prefs.getString("admin", "0").equals("1")) {
-                    spinner.setVisibility(View.VISIBLE);
-                    serverList.setVisibility(View.VISIBLE);
-                    loadServers();
-                }
-
-                nextButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        doLogin();
-                    }
-                });
-            }
-        });
-
-        startTimer();
-
-        if (prefs.getString("admin", "0").equals("1")) {
+        if (prefs.getString("admin", "0").equals("1") || serversArrayList != null) {
             ServerInfo server = serversArrayList.get(spinner.getSelectedItemPosition());
 
             SharedPreferences.Editor editor = prefs.edit();
@@ -322,6 +336,8 @@ public class LoginSMSActivity extends AppCompatActivity implements OTPListener {
             editor.putString("server_name", names.get(spinner.getSelectedItemPosition()));
             editor.commit();
         }
+
+        startTimer();
 
         AndroidNetworking.get(prefs.getString("base_url","http://192.169.152.158:60001/test/") + "OTP.py")
                 .addQueryParameter("number", "00"+phoneInputView.getNumber().substring(1))
@@ -425,14 +441,15 @@ public class LoginSMSActivity extends AppCompatActivity implements OTPListener {
                     }
                 });
     }
+
     @Override
     public void otpReceived(String smsText) {
-        int indexOfLast = smsText.lastIndexOf(" ");
-        String otp_code = smsText;
-        if(indexOfLast >= 0) otp_code = smsText.substring(indexOfLast+1, smsText.length());
-
-        Log.d("sms",otp_code);
-        otp_view.setText(otp_code);
+        if (smsText.contains("Your GAIUS verification code is:")) {
+            int indexOfLast = smsText.lastIndexOf(" ");
+            String otp_code = smsText;
+            if (indexOfLast >= 0) otp_code = smsText.substring(indexOfLast + 1, smsText.length());
+            Log.d("sms", otp_code);
+            otp_view.setText(otp_code);
+        }
     }
-
 }

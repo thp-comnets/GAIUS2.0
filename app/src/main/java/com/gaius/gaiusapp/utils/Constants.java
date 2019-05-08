@@ -18,6 +18,7 @@ public class Constants {
     public static final int REQUEST_CONTENT_IMAGES = 3;
     public static final int REQUEST_CONTENT_VIDEOS = 4;
     public static final int REQUEST_CONTENT_ADS = 5;
+    public static final int REQUEST_CONTENT_AUDIOS = 6;
 
     public static final int UPDATE_BADGE_NOTIFICATION_FRIENDS = 0;
     public static final int UPDATE_BADGE_NOTIFICATION_LAUNCHER = 1;

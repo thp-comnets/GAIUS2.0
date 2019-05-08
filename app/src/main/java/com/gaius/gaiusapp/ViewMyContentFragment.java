@@ -202,7 +202,8 @@ public class ViewMyContentFragment extends Fragment {
                     fragment = NewsFeedFragment.newInstance(Constants.REQUEST_TYPE_MYOWN, Constants.REQUEST_CONTENT_VIDEOS);
                     break;
                 case 3:
-                    fragment = PlaceholderFragment.newInstance(position);
+//                    fragment = PlaceholderFragment.newInstance(position);
+                    fragment = NewsFeedFragment.newInstance(Constants.REQUEST_TYPE_MYOWN, Constants.REQUEST_CONTENT_AUDIOS);
                     break;
                 default:
 //                    fragment = PlaceholderFragment.newInstance(position); //TODO there will be another tab for ads

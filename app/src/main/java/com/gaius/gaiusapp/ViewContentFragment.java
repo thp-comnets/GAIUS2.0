@@ -192,7 +192,8 @@ public class ViewContentFragment extends Fragment {
                     fragment = NewsFeedFragment.newInstance(Constants.REQUEST_TYPE_ALL, Constants.REQUEST_CONTENT_VIDEOS);
                     break;
                 case 3:
-                    fragment = PlaceholderFragment.newInstance(position);
+//                    fragment = PlaceholderFragment.newInstance(position);
+                    fragment = NewsFeedFragment.newInstance(Constants.REQUEST_TYPE_ALL, Constants.REQUEST_CONTENT_AUDIOS);
                     break;
                 default:
                     fragment = PlaceholderFragment.newInstance(position);

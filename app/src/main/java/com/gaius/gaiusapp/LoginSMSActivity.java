@@ -111,7 +111,8 @@ public class LoginSMSActivity extends AppCompatActivity implements OTPListener {
     }
 
     private void loadServers() {
-        AndroidNetworking.get("http://192.169.152.158:60001/test/getLocalServer.py")
+//        AndroidNetworking.get("http://192.169.152.158:60001/test/getLocalServer.py")
+        AndroidNetworking.get("http://185.52.0.161:60001/test/getLocalServer.py")
                 .setPriority(Priority.HIGH)
                 .build()
                 .getAsJSONArray(new JSONArrayRequestListener() {
@@ -168,7 +169,8 @@ public class LoginSMSActivity extends AppCompatActivity implements OTPListener {
 
     private void getLocalServer() {
         // get local server information
-        AndroidNetworking.get("http://192.169.152.158:60001/test/getLocalServer.py")
+//        AndroidNetworking.get("http://192.169.152.158:60001/test/getLocalServer.py")
+        AndroidNetworking.get("http://185.52.0.161:60001/test/getLocalServer.py")
                 .setPriority(Priority.HIGH)
                 .build()
                 .getAsJSONArray(new JSONArrayRequestListener() {
@@ -224,7 +226,8 @@ public class LoginSMSActivity extends AppCompatActivity implements OTPListener {
             editor.commit();
         }
 
-        AndroidNetworking.get(prefs.getString("base_url","http://192.169.152.158:60001/test/") + "OTP.py")
+//        AndroidNetworking.get(prefs.getString("base_url","http://192.169.152.158:60001/test/") + "OTP.py")
+        AndroidNetworking.get(prefs.getString("base_url","http://185.52.0.161:60001/test/") + "OTP.py")
                 .addQueryParameter("number", "00"+phoneInputView.getNumber().substring(1))
                 .addQueryParameter("cm-token", prefs.getString("cm-token", "null"))
                 .setPriority(Priority.HIGH)
@@ -308,7 +311,8 @@ public class LoginSMSActivity extends AppCompatActivity implements OTPListener {
             editor.commit();
         }
 
-        AndroidNetworking.get(prefs.getString("base_url","http://192.169.152.158:60001/test/") + "OTP.py")
+//        AndroidNetworking.get(prefs.getString("base_url","http://192.169.152.158:60001/test/") + "OTP.py")
+        AndroidNetworking.get(prefs.getString("base_url","http://185.52.0.161:60001/test/") + "OTP.py")
                 .addQueryParameter("number", "00"+phoneInputView.getNumber().substring(1))
                 .addQueryParameter("OTP", otp_view.getText().toString())
                 .setPriority(Priority.HIGH)

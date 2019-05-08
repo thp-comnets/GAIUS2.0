@@ -159,7 +159,8 @@ public class LoginActivity extends AppCompatActivity {
     private void loadServers() {
         String baseURL = prefs.getString("base_url", "http://192.169.152.158/test/");
 
-        AndroidNetworking.get("http://192.169.152.158/test/getLocalServer.py")
+//        AndroidNetworking.get("http://192.169.152.158:60001/test/getLocalServer.py")
+        AndroidNetworking.get("http://192.168.1.38/GaiusEdgeServer2.0/getLocalServer.py")
                 .setPriority(Priority.HIGH)
                 .build()
                 .getAsJSONArray(new JSONArrayRequestListener() {
@@ -216,7 +217,9 @@ public class LoginActivity extends AppCompatActivity {
 
     private void getLocalServer(final String email, final String password) {
         // get local server information
-        AndroidNetworking.get("http://192.169.152.158/test/getLocalServer.py")
+//        AndroidNetworking.get("http://192.169.152.158/test/getLocalServer.py")
+//        AndroidNetworking.get("http://185.52.0.161:60001/test/getLocalServer.py")
+        AndroidNetworking.get("http://192.168.1.38/GaiusEdgeServer2.0/getLocalServer.py")
                 .setPriority(Priority.HIGH)
                 .build()
                 .getAsJSONArray(new JSONArrayRequestListener() {
@@ -262,7 +265,9 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void loginUser(final String email, final String password) {
-        String baseURL = prefs.getString("base_url", "http://192.169.152.158/test/");
+//        String baseURL = prefs.getString("base_url", "http://192.169.152.158/test/");
+//        String baseURL = prefs.getString("base_url", "http://185.52.0.161:60001/test/");
+        String baseURL = prefs.getString("base_url", "http://192.168.1.38/GaiusEdgeServer2.0/");
         URL_FOR_LOGIN = baseURL + "login.php";
 
         // Tag used to cancel the request

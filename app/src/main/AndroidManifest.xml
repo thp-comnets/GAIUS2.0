@@ -9,6 +9,7 @@
     <uses-permission android:name="android.permission.CAMERA" /> <!-- <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" /> -->
     <uses-permission android:name="android.permission.READ_CONTACTS" />
     <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <!--<uses-permission android:name="android.permission.RECEIVE_SMS" />-->
     <!--<uses-permission android:name="android.permission.READ_SMS" />-->
 
@@ -192,6 +193,10 @@
             android:name=".FriendPageActivity"
             android:launchMode="singleTask"
             android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".AudioActivity"
+            android:screenOrientation="portrait"
+            />
 
         <receiver android:name="swarajsaaj.smscodereader.receivers.OtpReader">
             <intent-filter>

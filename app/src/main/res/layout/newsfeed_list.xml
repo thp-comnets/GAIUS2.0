@@ -88,6 +88,29 @@
         android:layout_width="match_parent"
         android:layout_height="220dp"
         tools:visibility="gone"/>
+    <LinearLayout
+        android:id="@+id/ll_audio"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <ImageButton
+            android:id="@+id/ButtonTestPlayPause"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:layout_centerHorizontal="true"
+            android:contentDescription="TestPlayPause"
+
+            android:src="@drawable/button_play" />
+
+        <SeekBar
+            android:id="@+id/SeekBarTestPlay"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_below="@+id/ButtonTestPlayPause" />
+    </LinearLayout>
 
     <com.gaius.gaiusapp.utils.TopCropImageView
         android:id="@+id/imageView"

@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <ImageView
+                android:id="@+id/iv_RecordAudio"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="100dp"
+                android:src="@drawable/audio_record" />
+
+            <TextView
+                android:id="@+id/tv_RecordAudio"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="sans-serif-medium"
+                android:textStyle="normal"
+                android:textColor="@color/black_87"
+                android:layout_below="@+id/iv_RecordAudio"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="10dp"
+                android:textSize="15sp"
+                android:text="@string/audio_record" />
+
+            <ImageView
+                android:id="@+id/iv_uploadAudio"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_below="@+id/tv_RecordAudio"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="80dp"
+                android:src="@drawable/audio_upload" />
+
+            <TextView
+                android:id="@+id/tv_uploadAudio"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/iv_uploadAudio"
+                android:fontFamily="sans-serif-medium"
+                android:textStyle="normal"
+                android:textColor="@color/black_87"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="10dp"
+                android:textSize="15sp"
+                android:text="@string/audio_upload"/>
+
+
+        </RelativeLayout>
+
+    </ScrollView>
+
+</LinearLayout>

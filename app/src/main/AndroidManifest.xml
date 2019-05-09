@@ -198,6 +198,11 @@
             android:screenOrientation="portrait"
             />
 
+        <activity
+            android:name=".AudioViewActivity"
+            android:screenOrientation="portrait"
+            />
+
         <receiver android:name="swarajsaaj.smscodereader.receivers.OtpReader">
             <intent-filter>
                 <action android:name="android.provider.Telephony.SMS_RECEIVED"/>

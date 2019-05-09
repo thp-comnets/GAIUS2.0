@@ -73,7 +73,7 @@
                 android:id="@+id/tv_menu_icon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:drawableRight="@drawable/more"
+                android:drawableRight="@drawable/baseline_more_vert_24"
                 android:layout_gravity="right|center"
 
                 android:layout_weight="0.10"/>

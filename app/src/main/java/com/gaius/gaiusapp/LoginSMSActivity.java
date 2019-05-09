@@ -281,6 +281,7 @@ public class LoginSMSActivity extends AppCompatActivity implements OTPListener {
     private void getLocalServer() {
         // get local server information
         AndroidNetworking.get("http://192.169.152.158:60001/test/getLocalServer.py")
+                .addQueryParameter("number", "00"+phoneInputView.getNumber().substring(1))
                 .setPriority(Priority.HIGH)
                 .build()
                 .getAsJSONArray(new JSONArrayRequestListener() {

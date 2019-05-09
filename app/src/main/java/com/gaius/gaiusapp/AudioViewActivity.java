@@ -9,6 +9,7 @@ import android.media.MediaPlayer.OnCompletionListener;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
+import android.support.design.widget.FloatingActionButton;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -20,7 +21,7 @@ import android.widget.SeekBar;
 
 public class AudioViewActivity extends Activity implements OnClickListener, OnTouchListener, OnCompletionListener, OnBufferingUpdateListener {
 
-    private ImageButton buttonPlayPause;
+    private FloatingActionButton buttonPlayPause;
     private SeekBar seekBarProgress;
     public EditText editTextSongURL;
 
@@ -55,7 +56,7 @@ public class AudioViewActivity extends Activity implements OnClickListener, OnTo
      * This method initialise all the views in project
      */
     private void initView() {
-        buttonPlayPause = (ImageButton) findViewById(R.id.ButtonTestPlayPause);
+        buttonPlayPause =  findViewById(R.id.ButtonTestPlayPause);
         buttonPlayPause.setOnClickListener(this);
 
         seekBarProgress = (SeekBar) findViewById(R.id.SeekBarTestPlay);
@@ -108,10 +109,10 @@ public class AudioViewActivity extends Activity implements OnClickListener, OnTo
 
             if (!mediaPlayer.isPlaying()) {
                 mediaPlayer.start();
-                buttonPlayPause.setImageResource(R.drawable.button_pause);
+                buttonPlayPause.setImageResource(R.drawable.ic_media_pause);
             } else {
                 mediaPlayer.pause();
-                buttonPlayPause.setImageResource(R.drawable.button_play);
+                buttonPlayPause.setImageResource(R.drawable.ic_media_play);
             }
 
             primarySeekBarProgressUpdater();
@@ -134,7 +135,7 @@ public class AudioViewActivity extends Activity implements OnClickListener, OnTo
     @Override
     public void onCompletion(MediaPlayer mp) {
 
-        buttonPlayPause.setImageResource(R.drawable.button_play);
+        buttonPlayPause.setImageResource(R.drawable.ic_media_play);
     }
 
     @Override

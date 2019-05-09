@@ -93,16 +93,25 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:visibility="gone">
+        android:visibility="visible">
 
-        <ImageButton
+       <!-- <ImageButton
             android:id="@+id/ButtonTestPlayPause"
             android:layout_width="match_parent"
             android:layout_height="100dp"
             android:layout_centerHorizontal="true"
             android:contentDescription="TestPlayPause"
 
-            android:src="@drawable/button_play" />
+            android:src="@drawable/button_play" />-->
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/ButtonTestPlayPause"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_gravity="center"
+            android:contentDescription="TestPlayPause"
+
+            android:src="@drawable/ic_media_play" />
 
         <SeekBar
             android:id="@+id/SeekBarTestPlay"

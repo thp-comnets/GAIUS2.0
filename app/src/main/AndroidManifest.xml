@@ -196,12 +196,12 @@
         <activity
             android:name=".AudioActivity"
             android:screenOrientation="portrait"
-            />
+            android:theme="@style/AppTheme.NoActionBar"/>
 
         <activity
             android:name=".AudioViewActivity"
             android:screenOrientation="portrait"
-            />
+            android:theme="@style/AppTheme.NoActionBar"/>
 
         <receiver android:name="swarajsaaj.smscodereader.receivers.OtpReader">
             <intent-filter>

@@ -1,6 +1,5 @@
 package com.gaius.gaiusapp;
 
-import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -8,6 +7,7 @@ import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -25,11 +25,14 @@ import com.androidnetworking.common.Priority;
 import com.androidnetworking.error.ANError;
 import com.androidnetworking.interfaces.JSONArrayRequestListener;
 import com.gaius.gaiusapp.utils.ServerInfo;
+import com.google.android.gms.auth.api.phone.SmsRetriever;
+import com.google.android.gms.auth.api.phone.SmsRetrieverClient;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.mukesh.OnOtpCompletionListener;
 import com.mukesh.OtpView;
-import com.nabinbhandari.android.permissions.PermissionHandler;
-import com.nabinbhandari.android.permissions.Permissions;
 
 import net.rimoto.intlphoneinput.IntlPhoneInput;
 
@@ -41,11 +44,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import swarajsaaj.smscodereader.interfaces.OTPListener;
-import swarajsaaj.smscodereader.receivers.OtpReader;
 
-
-public class LoginSMSActivity extends AppCompatActivity implements OTPListener {
+public class LoginSMSActivity extends AppCompatActivity {
 
     private Button nextButton;
     private IntlPhoneInput phoneInputView;
@@ -59,6 +59,7 @@ public class LoginSMSActivity extends AppCompatActivity implements OTPListener {
     SharedPreferences prefs;
     CountDownTimer resendCountDownTimer;
     Context mCtx;
+    SmsRetrieverClient smsRetrieverClient;
 
     // easter egg
     private AtomicInteger mCounter = new AtomicInteger();
@@ -117,6 +118,10 @@ public class LoginSMSActivity extends AppCompatActivity implements OTPListener {
             @Override
             public void onClick(View v) {
 
+                SharedPreferences.Editor editor = prefs.edit();
+                editor.putString("number", "00"+phoneInputView.getNumber().substring(1));
+                editor.commit();
+
                 if (resendCountDownTimer != null) {
                     resendCountDownTimer.cancel();
                 }
@@ -126,24 +131,10 @@ public class LoginSMSActivity extends AppCompatActivity implements OTPListener {
                     Toast.makeText(getApplicationContext(), "Invalid phone number please correct", Toast.LENGTH_SHORT).show();
                 }
                 else {
-                    String[] permissions = {Manifest.permission.READ_SMS, Manifest.permission.RECEIVE_SMS};
-                    Permissions.check(mCtx, permissions, null, null, new PermissionHandler() {
-                        @Override
-                        public void onGranted() {
-                            getLocalServer();
-                            layoutEnterOtp.setVisibility(View.VISIBLE);
-                            layoutEnterNumber.setVisibility(View.GONE);
-                        }
 
-                        @Override
-                        public void onDenied(Context context, ArrayList<String> deniedPermissions) {
-                            super.onDenied(context, deniedPermissions);
-                            Toast.makeText(getApplicationContext(), "If you reject this permission, you have to enter the SMS code manually.", Toast.LENGTH_LONG).show();
-                            getLocalServer();
-                            layoutEnterOtp.setVisibility(View.VISIBLE);
-                            layoutEnterNumber.setVisibility(View.GONE);
-                        }
-                    });
+                    getLocalServer();
+                    layoutEnterOtp.setVisibility(View.VISIBLE);
+                    layoutEnterNumber.setVisibility(View.GONE);
 
                     // hide keyboard
                     InputMethodManager in = (InputMethodManager) getSystemService(getApplicationContext().INPUT_METHOD_SERVICE);
@@ -173,9 +164,6 @@ public class LoginSMSActivity extends AppCompatActivity implements OTPListener {
             }
         });
 
-
-        OtpReader.bind(this,"sms");
-
         serverList = findViewById(R.id.switch_server);
         spinner = findViewById(R.id.server_selection);
         names = new ArrayList<String>();
@@ -197,6 +185,15 @@ public class LoginSMSActivity extends AppCompatActivity implements OTPListener {
                 }
             }
         }).start();
+
+        //use this to get the app signature. should be commented on release
+//        AppSignatureHelper dd = new AppSignatureHelper(this);
+//        for (String s: dd.getAppSignatures()) {
+//            Log.d("thp", "hash " + s);
+//        }
+
+        smsRetrieverClient = SmsRetriever.getClient(this);
+
     }
 
     private void startTimer() {
@@ -348,7 +345,28 @@ public class LoginSMSActivity extends AppCompatActivity implements OTPListener {
                 .getAsJSONArray(new JSONArrayRequestListener() {
                     @Override
                     public void onResponse(JSONArray response) {
-                        //do nothing and wait for SMS
+
+                        // Starts SmsRetriever, which waits for ONE matching SMS message until timeout
+                        // (5 minutes). The matching SMS message will be sent via a Broadcast Intent with
+                        // action SmsRetriever#SMS_RETRIEVED_ACTION.
+                        Task<Void> task = smsRetrieverClient.startSmsRetriever();
+
+                        // Listen for success/failure of the start Task. If in a background thread, this
+                        // can be made blocking using Tasks.await(task, [timeout]);
+                        task.addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void aVoid) {
+                                // Successfully started retriever, expect broadcast intent
+                            }
+                        });
+
+                        task.addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                // Failed to start retriever, inspect Exception for more details
+                                Toast.makeText(getApplicationContext(), "Something went wrong with registering the SMS service for OTP, please enter the OTP manually.", Toast.LENGTH_LONG).show();
+                            }
+                        });
                     }
 
                     @Override
@@ -441,16 +459,5 @@ public class LoginSMSActivity extends AppCompatActivity implements OTPListener {
                         }
                     }
                 });
-    }
-
-    @Override
-    public void otpReceived(String smsText) {
-        if (smsText.contains("Your GAIUS verification code is:")) {
-            int indexOfLast = smsText.lastIndexOf(" ");
-            String otp_code = smsText;
-            if (indexOfLast >= 0) otp_code = smsText.substring(indexOfLast + 1, smsText.length());
-            Log.d("sms", otp_code);
-            otp_view.setText(otp_code);
-        }
     }
 }

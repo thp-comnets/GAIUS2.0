@@ -24,6 +24,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.gaius.gaiusapp.AlbumViewActivity;
+import com.gaius.gaiusapp.AudioViewActivity;
 import com.gaius.gaiusapp.R;
 import com.gaius.gaiusapp.RenderMAMLActivity;
 import com.gaius.gaiusapp.VideoViewActivity;
@@ -85,6 +86,9 @@ public class ApproveContentAdapter extends RecyclerView.Adapter<ApproveContentAd
         //TODO the icons need to be properly aligned
         if (content.getType().equals("video")) {
             holder.typeView.setImageResource(R.drawable.create_content_video);
+        }
+        if (content.getType().equals("audio")) {
+            holder.typeView.setImageResource(R.drawable.create_content_audio);
         } else if (content.getType().equals("page")) {
             holder.typeView.setImageResource(R.drawable.create_content_web);
         } else if (content.getType().equals("image")) {
@@ -159,6 +163,9 @@ public class ApproveContentAdapter extends RecyclerView.Adapter<ApproveContentAd
                 }
                 else if (content.getType().equals("video")) {
                     i = new Intent(mCtx, VideoViewActivity.class);
+                }
+                else if (content.getType().equals("audio")) {
+                    i = new Intent(mCtx, AudioViewActivity.class);
                 }
 
                 bundle.putSerializable("URL", c.getUrl());

@@ -13,9 +13,11 @@ import android.support.v7.widget.RecyclerView;
 import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -92,7 +94,46 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Re
             }
         });
 
-        holder.cardView.setOnLongClickListener(new View.OnLongClickListener() {
+        // define an on click listener to open PlaybackFragment
+        holder.tv_menu_icon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                try {
+
+                    Log.v("tv_menu_icon", item.getName());
+                    PopupMenu popup = new PopupMenu(mContext, view);
+                    //Inflating the Popup using xml file
+                    popup.getMenuInflater().inflate(R.menu.audio_popup, popup.getMenu());
+
+                    //registering popup with OnMenuItemClickListener
+                    popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                        public boolean onMenuItemClick(MenuItem item) {
+//                            Toast.makeText(mContext,"You Clicked : " + item.getTitle(), Toast.LENGTH_SHORT).show();
+                            switch (item.getItemId()) {
+                                case R.id.upload:
+                                    upload(holder.getPosition());
+                                    return true;
+                                case R.id.rename:
+                                    renameFileDialog(holder.getPosition());
+                                    return true;
+                                case R.id.delete:
+                                    deleteFileDialog(holder.getPosition());
+                                    return true;
+                                default:
+                                    return false;
+                            }
+
+                        }
+                    });
+
+                    popup.show();
+                } catch (Exception e) {
+                    Log.e(LOG_TAG, "exception", e);
+                }
+            }
+        });
+
+      /*  holder.cardView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
                 final int valID = item.getId();
@@ -135,7 +176,7 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Re
 
                 return false;
             }
-        });
+        });*/
     }
 
     @Override
@@ -155,6 +196,7 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Re
         protected TextView vLength;
         protected TextView vDateAdded;
         protected View cardView;
+        protected TextView tv_menu_icon;
 
         public RecordingsViewHolder(View v) {
             super(v);
@@ -162,6 +204,7 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Re
             vLength = (TextView) v.findViewById(R.id.file_length_text);
             vDateAdded = (TextView) v.findViewById(R.id.file_date_added_text);
             cardView = v.findViewById(R.id.card_view);
+            tv_menu_icon = v.findViewById(R.id.tv_menu_icon);
         }
     }
 

@@ -15,6 +15,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -291,12 +292,12 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.newsFe
                 if (!mediaPlayer.isPlaying()) {
                     mediaFileLengthInMilliseconds = mediaPlayer.getDuration(); // gets the audio length  from URL
                     mediaPlayer.start();
-                    holder.buttonPlayPause.setImageResource(R.drawable.button_pause);
+                    holder.buttonPlayPause.setImageResource(R.drawable.ic_media_pause);
                 } else if(mediaPlayer.isPlaying()) {
 //                    tempPosition = position;
                     mediaFileLengthInMilliseconds = mediaPlayer.getDuration(); // gets the audio length  from URL
                     mediaPlayer.pause();
-                    holder.buttonPlayPause.setImageResource(R.drawable.button_play);
+                    holder.buttonPlayPause.setImageResource(R.drawable.ic_media_play);
 
                 }
 
@@ -308,7 +309,7 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.newsFe
         mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mediaPlayer) {
-                holder.buttonPlayPause.setImageResource(R.drawable.button_play);
+                holder.buttonPlayPause.setImageResource(R.drawable.ic_media_play);
                 mediaPlayer.seekTo(0);
             }
         });
@@ -585,7 +586,7 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.newsFe
         JzvdStd videoView;
         Slider slider;
         LinearLayout ll_audio;
-        ImageButton buttonPlayPause;
+        FloatingActionButton buttonPlayPause;
         SeekBar seekBarProgress;
 
 

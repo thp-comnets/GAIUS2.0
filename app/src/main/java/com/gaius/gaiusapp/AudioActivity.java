@@ -34,6 +34,11 @@ public class AudioActivity extends AppCompatActivity {
         mDatabase = new DBHelper(getApplicationContext());
         pager = (ViewPager) findViewById(R.id.pager);
 
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+
         String intentFragment = getIntent().getExtras().getString("frgToLoad");
    /*     Log.v("intentFragment"," - "+ intentFragment);
         if(intentFragment.equals("Record")){
@@ -61,11 +66,7 @@ public class AudioActivity extends AppCompatActivity {
         }
 
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-//        toolbar.setPopupTheme(R.style.ThemeOverlay_AppCompat_Light);
-        if (toolbar != null) {
-//            setSupportActionBar(toolbar);
-        }
+
     }
 
    /* @Override
@@ -143,6 +144,13 @@ public class AudioActivity extends AppCompatActivity {
                 }
             }
         }
+    }
+
+    //handle the back arrow press in the toolbar
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
     }
 }
 

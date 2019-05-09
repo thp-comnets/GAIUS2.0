@@ -233,18 +233,13 @@ public class NewsFeedFragment extends Fragment implements SwipeRefreshLayout.OnR
             default:
                 query = typeParam + "" + contentParam + prefs.getString("token", "null");
                 url = base_URL+"listContents.py";
-                noContentTextView.setText("You haven't created content yet.");
+                if (contentParam == Constants.REQUEST_TYPE_MYOWN) {
+                    noContentTextView.setText("You haven't created content yet.");
+                } else {
+                    noContentTextView.setText("No content available.");
+                }
 
         }
-//        if (typeParam.equals(Constants.REQUEST_TYPE_NEWSFEED)) {
-//             query = prefs.getString("token", "null");
-//             url = base_URL+"listPages.py";
-//             noContentTextView.setText("You don't have added friends yet.\\nPlease consider adding some.");
-//        } else {
-//            query = typeParam + "" + contentParam + prefs.getString("token", "null") + userIDParam;
-//            url = base_URL+"listContents.py";
-//            noContentTextView.setText("You haven't created content yet." + query);
-//        }
 
         AndroidNetworking.get(url)
                 .addQueryParameter("token", prefs.getString("token", "null")) //TODO remove this later

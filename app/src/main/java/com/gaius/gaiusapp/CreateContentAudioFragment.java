@@ -2,6 +2,7 @@ package com.gaius.gaiusapp;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -42,12 +43,15 @@ import com.androidnetworking.interfaces.OkHttpResponseListener;
 import com.androidnetworking.interfaces.UploadProgressListener;
 import com.gaius.gaiusapp.utils.ResourceHelper;
 import com.google.android.gms.common.util.IOUtils;
+import com.nabinbhandari.android.permissions.PermissionHandler;
+import com.nabinbhandari.android.permissions.Permissions;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
 
 import nl.changer.audiowife.AudioWife;
 import okhttp3.Response;
@@ -76,15 +80,31 @@ public class CreateContentAudioFragment extends Fragment {
             @Override
             public void onClick(View v) {
 
-                if (checkStoragePermission()) {
-//                    startActivityForResult(new Intent(getActivity(), AudioTrimmerActivity.class), ADD_AUDIO);
-//                    startActivityForResult(new Intent(getActivity(), AudioActivity.class), ADD_AUDIO);
+              /*  if (checkStoragePermission()) {
                     Intent i = new Intent(getContext(), AudioActivity.class);
                     i.putExtra("frgToLoad","Record");
                      getContext().startActivity(i);
                 } else {
                     requestStoragePermission();
-                }
+                }*/
+
+                String[] permissions = {Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.RECORD_AUDIO};
+                Permissions.check((Activity) getActivity(), permissions, null, null, new PermissionHandler() {
+                    @Override
+                    public void onGranted() {
+                        Intent i = new Intent(getContext(), AudioActivity.class);
+                        i.putExtra("frgToLoad","Record");
+                        getContext().startActivity(i);
+                    }
+
+                    @Override
+                    public void onDenied(Context context, ArrayList<String> deniedPermissions) {
+                        super.onDenied(context, deniedPermissions);
+                        Toast.makeText((Activity) getActivity(), "If you reject this permission, you can not use this functionality.", Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+
 //                Intent i = new Intent(getContext(), AudioTrimmerActivity.class);
 //                getContext().startActivity(i);
             }
@@ -108,31 +128,23 @@ public class CreateContentAudioFragment extends Fragment {
         return rootView;
     }
 
-    private void requestStoragePermission() {
-        ActivityCompat.requestPermissions(getActivity(),
-                new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                        Manifest.permission.RECORD_AUDIO},
-                REQUEST_ID_PERMISSIONS);
-    }
 
-    private boolean checkStoragePermission() {
-        return (ActivityCompat.checkSelfPermission(getActivity(),
-                Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED &&
-                ActivityCompat.checkSelfPermission(getActivity(),
-                        Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED);
-    }
 
-    @Override
+ /*   @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
+
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == REQUEST_ID_PERMISSIONS) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED &&
                     grantResults[1] == PackageManager.PERMISSION_GRANTED) {
-                Toast.makeText(getActivity(), "Permission granted, Click again", Toast.LENGTH_SHORT).show();
+//                Toast.makeText(getActivity(), "Permission granted, Click again", Toast.LENGTH_SHORT).show();
+                Intent i = new Intent(getContext(), AudioActivity.class);
+                i.putExtra("frgToLoad","Record");
+                getContext().startActivity(i);
             }
         }
-    }
+    }*/
 
     @Override
     @SuppressLint("NewApi")

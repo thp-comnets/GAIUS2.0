@@ -6,6 +6,7 @@ import android.provider.MediaStore;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -36,7 +37,7 @@ public class ImageViewActivity extends AppCompatActivity {
         Bundle bundle = getIntent().getExtras();
         ArrayList<String> imageURLs = bundle.getStringArrayList("URLs");
         int position = bundle.getInt("position");
-
+        Log.v("imagePath"," - "+ bundle.getStringArrayList("URLs"));
         viewPager = (ViewPager) findViewById(R.id.album_view_pager);
         imageSwipeAdapter = new AlbumImageSwipeAdapter(this, imageURLs, position);
         viewPager.setAdapter(imageSwipeAdapter);

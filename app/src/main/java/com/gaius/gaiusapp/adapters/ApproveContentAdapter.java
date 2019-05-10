@@ -166,6 +166,7 @@ public class ApproveContentAdapter extends RecyclerView.Adapter<ApproveContentAd
                 }
                 else if (content.getType().equals("audio")) {
                     i = new Intent(mCtx, AudioViewActivity.class);
+                    bundle.putSerializable("audioName", c.getTitle());
                 }
 
                 bundle.putSerializable("URL", c.getUrl());

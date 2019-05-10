@@ -179,7 +179,7 @@ public class FileViewerFragment extends Fragment implements OnDatabaseChangedLis
 
             @Override
             public void onCompletion(MediaPlayer mp) {
-                Toast.makeText(getContext(), "Completed", Toast.LENGTH_SHORT).show();
+//                Toast.makeText(getContext(), "Completed", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -187,7 +187,7 @@ public class FileViewerFragment extends Fragment implements OnDatabaseChangedLis
 
             @Override
             public void onClick(View v) {
-                Toast.makeText(getContext(), "Play", Toast.LENGTH_SHORT).show();
+//                Toast.makeText(getContext(), "Play", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -195,7 +195,7 @@ public class FileViewerFragment extends Fragment implements OnDatabaseChangedLis
 
             @Override
             public void onClick(View v) {
-                Toast.makeText(getContext(), "Pause", Toast.LENGTH_SHORT).show();
+//                Toast.makeText(getContext(), "Pause", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -318,7 +318,7 @@ public class FileViewerFragment extends Fragment implements OnDatabaseChangedLis
 
                     @Override
                     public void onCompletion(MediaPlayer mp) {
-                        Toast.makeText(getActivity(), "Completed", Toast.LENGTH_SHORT).show();
+//                        Toast.makeText(getActivity(), "Completed", Toast.LENGTH_SHORT).show();
                         // do you stuff.
                     }
                 });
@@ -327,7 +327,7 @@ public class FileViewerFragment extends Fragment implements OnDatabaseChangedLis
 
                     @Override
                     public void onClick(View v) {
-                        Toast.makeText(getActivity(), "Play", Toast.LENGTH_SHORT).show();
+//                        Toast.makeText(getActivity(), "Play", Toast.LENGTH_SHORT).show();
                         // get-set-go. Lets dance.
                     }
                 });
@@ -336,7 +336,7 @@ public class FileViewerFragment extends Fragment implements OnDatabaseChangedLis
 
                     @Override
                     public void onClick(View v) {
-                        Toast.makeText(getActivity(), "Pause", Toast.LENGTH_SHORT).show();
+//                        Toast.makeText(getActivity(), "Pause", Toast.LENGTH_SHORT).show();
                         // Your on audio pause stuff.
                     }
                 });

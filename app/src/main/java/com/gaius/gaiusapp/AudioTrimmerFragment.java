@@ -36,6 +36,8 @@ import java.io.File;
 import java.io.RandomAccessFile;
 import java.util.Locale;
 
+import static android.view.View.GONE;
+
 public class AudioTrimmerFragment extends Fragment implements View.OnClickListener,
         MarkerView.MarkerListener,
         WaveformView.WaveformListener{
@@ -183,6 +185,7 @@ public class AudioTrimmerFragment extends Fragment implements View.OnClickListen
         mTextBottomOffset = (int) (-40 * mDensity);
 
         txtAudioCancel.setOnClickListener(this);
+        txtAudioCancel.setVisibility(GONE);
         txtAudioUpload.setOnClickListener(this);
         txtAudioRecord.setOnClickListener(this);
         txtAudioDone.setOnClickListener(this);
@@ -643,8 +646,8 @@ public class AudioTrimmerFragment extends Fragment implements View.OnClickListen
         } else if (view == txtAudioCancel) {
             getActivity().finish();
         } else if (view == txtAudioRecordUpdate) {
-            rlAudioEdit.setVisibility(View.GONE);
-            txtAudioUpload.setVisibility(View.GONE);
+            rlAudioEdit.setVisibility(GONE);
+            txtAudioUpload.setVisibility(GONE);
             llAudioCapture.setVisibility(View.VISIBLE);
             isAudioRecording = true;
             txtAudioRecord.setBackgroundResource(R.drawable.ic_stop_btn1);
@@ -653,7 +656,7 @@ public class AudioTrimmerFragment extends Fragment implements View.OnClickListen
             mRecordingLastUpdateTime = Utility.getCurrentTime();
             mRecordingKeepGoing = true;
 //            txtAudioCrop.setBackgroundResource(R.drawable.ic_crop_btn);
-            txtAudioDone.setVisibility(View.GONE);
+            txtAudioDone.setVisibility(GONE);
             txtAudioCrop.setVisibility(View.VISIBLE);
             txtAudioPlay.setBackgroundResource(R.drawable.ic_play_btn);
             markerStart.setVisibility(View.INVISIBLE);
@@ -684,7 +687,7 @@ public class AudioTrimmerFragment extends Fragment implements View.OnClickListen
                 }
                 saveRingtone(0);
 
-                txtAudioDone.setVisibility(View.GONE);
+                txtAudioDone.setVisibility(GONE);
                 txtAudioReset.setVisibility(View.VISIBLE);
 //                txtAudioCrop.setBackgroundResource(R.drawable.ic_crop_btn_fill);
                 txtAudioCrop.setVisibility(View.VISIBLE);
@@ -702,7 +705,7 @@ public class AudioTrimmerFragment extends Fragment implements View.OnClickListen
         } else if (view == txtAudioCrop) {
 
 //            txtAudioCrop.setBackgroundResource(R.drawable.ic_crop_btn);
-            txtAudioCrop.setVisibility(View.GONE);
+            txtAudioCrop.setVisibility(GONE);
             txtAudioDone.setVisibility(View.VISIBLE);
             txtAudioReset.setVisibility(View.VISIBLE);
 
@@ -839,12 +842,12 @@ public class AudioTrimmerFragment extends Fragment implements View.OnClickListen
                         txtEndPosition.setVisibility(View.VISIBLE);
                         markerEnd.setVisibility(View.VISIBLE);
                         markerStart.setVisibility(View.VISIBLE);
-                        llAudioCapture.setVisibility(View.GONE);
+                        llAudioCapture.setVisibility(GONE);
                         rlAudioEdit.setVisibility(View.VISIBLE);
                         txtAudioUpload.setVisibility(View.VISIBLE);
 
                         txtAudioReset.setVisibility(View.VISIBLE);
-                        txtAudioCrop.setVisibility(View.GONE);
+                        txtAudioCrop.setVisibility(GONE);
                         txtAudioDone.setVisibility(View.VISIBLE);
 
                     }

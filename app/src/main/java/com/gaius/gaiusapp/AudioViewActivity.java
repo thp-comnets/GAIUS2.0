@@ -6,10 +6,14 @@ import android.content.SharedPreferences;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnBufferingUpdateListener;
 import android.media.MediaPlayer.OnCompletionListener;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.AppCompatTextView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -19,11 +23,11 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.SeekBar;
 
-public class AudioViewActivity extends Activity implements OnClickListener, OnTouchListener, OnCompletionListener, OnBufferingUpdateListener {
+public class AudioViewActivity extends AppCompatActivity implements OnClickListener, OnTouchListener, OnCompletionListener, OnBufferingUpdateListener {
 
     private FloatingActionButton buttonPlayPause;
     private SeekBar seekBarProgress;
-    public EditText editTextSongURL;
+    private AppCompatTextView textAudioName;
 
     private MediaPlayer mediaPlayer;
     private int mediaFileLengthInMilliseconds;
@@ -35,17 +39,39 @@ public class AudioViewActivity extends Activity implements OnClickListener, OnTo
      */
 
     String audioPath;
+    String audioName;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.audio_view_activity);
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        Intent intent = this.getIntent();
-        Bundle bundle = intent.getExtras();
-        audioPath = bundle.getString("URL");
-        audioPath = audioPath.replace("./","");
-        Log.v("audioPath"," - "+ audioPath);
-        audioPath =  prefs.getString("base_url", null) + audioPath;
+        Uri data = getIntent().getData();
+
+        if (data != null && data.toString().contains("http://gaiusnetworks.com/audios/")) {
+            String videoURL =  prefs.getString("base_url", null) + data.toString().replace("http://gaiusnetworks.com","");
+            Log.v("audioPath1", " - " + videoURL);
+            audioPath = videoURL;
+            audioPath = audioPath.replace("t//","t/");
+            Log.v("audioPath1", " - " + audioPath);
+
+        }else {
+
+            Intent intent = this.getIntent();
+            Bundle bundle = intent.getExtras();
+            audioPath = bundle.getString("URL");
+            audioName = bundle.getString("URL");
+            if (audioPath != null)
+                audioPath = audioPath.replace("./", "");
+
+            audioPath = prefs.getString("base_url", null) + audioPath;
+            Log.v("audioPath", " - " + audioPath);
+        }
         initView();
 
 
@@ -57,6 +83,7 @@ public class AudioViewActivity extends Activity implements OnClickListener, OnTo
      */
     private void initView() {
         buttonPlayPause =  findViewById(R.id.ButtonTestPlayPause);
+        textAudioName =  findViewById(R.id.audioName);
         buttonPlayPause.setOnClickListener(this);
 
         seekBarProgress = (SeekBar) findViewById(R.id.SeekBarTestPlay);
@@ -66,6 +93,9 @@ public class AudioViewActivity extends Activity implements OnClickListener, OnTo
         mediaPlayer = new MediaPlayer();
         mediaPlayer.setOnBufferingUpdateListener(this);
         mediaPlayer.setOnCompletionListener(this);
+        if(audioName != null)
+        audioName = audioName.replace("./audios/","");
+        textAudioName.setText(audioName);
     }
 
     /**
@@ -136,6 +166,7 @@ public class AudioViewActivity extends Activity implements OnClickListener, OnTo
     public void onCompletion(MediaPlayer mp) {
 
         buttonPlayPause.setImageResource(R.drawable.ic_media_play);
+        mediaPlayer.seekTo(0);
     }
 
     @Override
@@ -148,6 +179,13 @@ public class AudioViewActivity extends Activity implements OnClickListener, OnTo
     public void onBackPressed() {
         super.onBackPressed();
         mediaPlayer.reset();
+    }
+
+    //handle the back arrow press in the toolbar
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
     }
 }
 

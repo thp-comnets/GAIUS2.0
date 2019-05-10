@@ -219,6 +219,14 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.newsFe
                 audioUrl = audioUrl.replace("./", ""); // removes extra (.)dot from url
             newsfeed.setAudioPath(audioUrl);
 
+            holder.shareButton.setTag(position);
+            holder.shareButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    shareItem(v, "Check this audio on GAIUS");
+                }
+            });
+
         }
         else if (newsfeed.getType().equals("image") || newsfeed.getType().equals("ad")) {
             holder.videoView.setVisibility(View.GONE);

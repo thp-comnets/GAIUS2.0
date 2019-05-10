@@ -57,13 +57,56 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/lonely_animation"
-                android:paddingStart="50dp"
-                android:paddingEnd="50dp"
+                android:paddingStart="80dp"
+                android:paddingEnd="80dp"
                 android:layout_centerHorizontal="true"
                 android:gravity="center"
                 android:text="Nothing to show."
                 android:textColor="#000000"
                 android:textStyle="bold" />
+
+            <android.support.v7.widget.AppCompatButton
+                android:id="@+id/add_friend_button"
+                android:layout_width="210dp"
+                android:layout_height="30dp"
+                android:layout_marginTop="40dp"
+                android:layout_below="@id/noContentTextView"
+                android:background="@drawable/newsfeeed_add_button"
+                android:textColor="@color/white"
+                android:textSize="14sp"
+                android:textAllCaps="false"
+                android:layout_marginBottom="20dp"
+                android:layout_centerHorizontal="true"
+                android:text="@string/add_friend"
+                android:visibility="gone"/>
+
+            <android.support.v7.widget.AppCompatButton
+                android:id="@+id/subscribe_button"
+                android:layout_width="210dp"
+                android:layout_height="30dp"
+                android:layout_below="@id/add_friend_button"
+                android:background="@drawable/newsfeeed_add_button"
+                android:textColor="@color/white"
+                android:textSize="14sp"
+                android:textAllCaps="false"
+                android:layout_centerHorizontal="true"
+                android:text="@string/subscribe_to_channels"
+                android:visibility="gone"/>
+
+            <android.support.v7.widget.AppCompatButton
+                android:id="@+id/create_content_button"
+                android:layout_width="210dp"
+                android:layout_height="30dp"
+                android:layout_marginTop="40dp"
+                android:layout_below="@id/noContentTextView"
+                android:background="@drawable/newsfeeed_add_button"
+                android:textColor="@color/white"
+                android:textSize="14sp"
+                android:textAllCaps="false"
+                android:layout_marginBottom="20dp"
+                android:layout_centerHorizontal="true"
+                android:text="@string/create_content"
+                android:visibility="gone"/>
         </RelativeLayout>
 
         <Button

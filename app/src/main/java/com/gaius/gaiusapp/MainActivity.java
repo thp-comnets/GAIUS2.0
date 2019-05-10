@@ -48,7 +48,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
     Bundle contentBundle;
     private ActionBar actionBar;
     private String userID=null;
-
+    BottomNavigationView mBottomNavigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,7 +87,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
         setContentView(R.layout.activity_main);
 
-        BottomNavigationView mBottomNavigationView = findViewById(R.id.navigation);
+        mBottomNavigationView = findViewById(R.id.navigation);
 
         if (prefs.getString("admin", "0").equals("1")) {
             mBottomNavigationView.inflateMenu(R.menu.bottom_navigation_admin);
@@ -423,12 +423,28 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
     @Override
     public void onFragmentInteraction(Integer action) {
 
-        // update the notification badge in the FriendsFragment
-        // check for FriendsFragment instance in case the user switched to another fragment before the FriendsFragment was fully loaded and not detached/destroyed
-        if (action == Constants.UPDATE_BADGE_NOTIFICATION_FRIENDS && getSupportFragmentManager().findFragmentById(R.id.fragment_container) instanceof FriendsFragment) {
-            FriendsFragment fragment = (FriendsFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_container);
-            fragment.updateNotificationBadge();
+        switch (action) {
+            case  Constants.UPDATE_BADGE_NOTIFICATION_FRIENDS:
+                // update the notification badge in the FriendsFragment
+                // check for FriendsFragment instance in case the user switched to another fragment before the FriendsFragment was fully loaded and not detached/destroyed
+                if (getSupportFragmentManager().findFragmentById(R.id.fragment_container) instanceof FriendsFragment) {
+                    FriendsFragment fragment = (FriendsFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_container);
+                    fragment.updateNotificationBadge();
+                }
+                break;
+            case Constants.SELECT_FRIENDS_FRAGMENT:
+                mBottomNavigationView.setSelectedItemId(R.id.navigation_friends);
+                break;
+            case Constants.SELECT_VIEW_CONTENT_FRAGMENT:
+                mBottomNavigationView.setSelectedItemId(R.id.navigation_content);
+                break;
+            case Constants.SELECT_CREATE_CONTENT_FRAGMENT:
+                mBottomNavigationView.setSelectedItemId(R.id.navigation_add_content);
+                break;
+            default:
+                //do nothing
         }
+
         //TODO add badge for approve pages
 //        if (action == Constants.UPDATE_BADGE_NOTIFICATION_FRIENDS) {
 //            FriendsFragment fragment = (FriendsFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_container);

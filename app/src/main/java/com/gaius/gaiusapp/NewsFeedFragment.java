@@ -54,7 +54,7 @@ public class NewsFeedFragment extends Fragment implements SwipeRefreshLayout.OnR
     RelativeLayout noContentLayout, noInternet, error500;
     TextView noContentTextView;
     ShimmerFrameLayout mShimmerViewContainer;
-    Button buttonReturnToTop;
+    Button buttonReturnToTop, addFriendsButton, subscribeChannelsButton, createContentButton;
     NewsFeedAdapter adapter;
     Context mCtx;
     private static final String ARG_PARAM1 = "typeParam";
@@ -130,6 +130,9 @@ public class NewsFeedFragment extends Fragment implements SwipeRefreshLayout.OnR
 
         noContentLayout = view.findViewById(R.id.noContent);
         noContentTextView = view.findViewById(R.id.noContentTextView);
+        addFriendsButton = view.findViewById(R.id.add_friend_button);
+        subscribeChannelsButton = view.findViewById(R.id.subscribe_button);
+        createContentButton = view.findViewById(R.id.create_content_button);
 
         mShimmerViewContainer = view.findViewById(R.id.shimmer_view_container);
         mShimmerViewContainer.startShimmer();
@@ -223,21 +226,55 @@ public class NewsFeedFragment extends Fragment implements SwipeRefreshLayout.OnR
             case Constants.REQUEST_TYPE_NEWSFEED:
                 query = typeParam + "" + contentParam + prefs.getString("token", "null") + userIDParam;
                 url = base_URL+"listContents.py";
-                noContentTextView.setText("You haven't added any friends yet.\nPlease consider adding some.");
+                noContentTextView.setText("It's quite empty here...\n\nSo, let\'s get started and add friends or subscribe to channels.");
+                addFriendsButton.setVisibility(View.VISIBLE); //will become visible when the layout becomes visible
+                subscribeChannelsButton.setVisibility(View.VISIBLE);
+
+                addFriendsButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (mListener != null) {
+                            mListener.onFragmentInteraction(Constants.SELECT_FRIENDS_FRAGMENT);
+                        }
+                    }
+                });
+                subscribeChannelsButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (mListener != null) {
+                            mListener.onFragmentInteraction(Constants.SELECT_VIEW_CONTENT_FRAGMENT);
+                        }
+                    }
+                });
+                break;
+            case Constants.REQUEST_TYPE_ALL:
+                query = typeParam + "" + contentParam + prefs.getString("token", "null");
+                url = base_URL+"listContents.py";
+                noContentTextView.setText("No content available...");
+                break;
+            case Constants.REQUEST_TYPE_MYOWN:
+                query = typeParam + "" + contentParam + prefs.getString("token", "null");
+                url = base_URL+"listContents.py";
+                noContentTextView.setText("You haven't created content yet...");
+                createContentButton.setVisibility(View.VISIBLE); //will become visible when the layout becomes visible
+                createContentButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (mListener != null) {
+                            mListener.onFragmentInteraction(Constants.SELECT_CREATE_CONTENT_FRAGMENT);
+                        }
+                    }
+                });
                 break;
             case Constants.REQUEST_TYPE_FRIEND:
                 query = typeParam + "" + contentParam + prefs.getString("token", "null") + userIDParam;
                 url = base_URL+"listContents.py";
-                noContentTextView.setText("This user hasn't created content yet.");
+                noContentTextView.setText("This user hasn't created content yet...");
                 break;
             default:
                 query = typeParam + "" + contentParam + prefs.getString("token", "null");
                 url = base_URL+"listContents.py";
-                if (contentParam == Constants.REQUEST_TYPE_MYOWN) {
-                    noContentTextView.setText("You haven't created content yet.");
-                } else {
-                    noContentTextView.setText("No content available.");
-                }
+                noContentTextView.setText("No content available..");
 
         }
 
@@ -256,12 +293,14 @@ public class NewsFeedFragment extends Fragment implements SwipeRefreshLayout.OnR
                         Log.d("thp", "Response as JSON " + response);
 
                         try {
-                            noContentLayout.setVisibility(View.GONE);
 
                             if (response.length() == 0 ) {
                                 noContentLayout.setVisibility(View.VISIBLE);
                                 mShimmerViewContainer.stopShimmer();
                                 mShimmerViewContainer.setVisibility(View.GONE);
+                            } else {
+                                recyclerView.setVisibility(View.VISIBLE);
+                                noContentLayout.setVisibility(View.GONE);
                             }
 
                             String fidelity = prefs.getString("fidelity_level", "high");
@@ -319,7 +358,6 @@ public class NewsFeedFragment extends Fragment implements SwipeRefreshLayout.OnR
                             recyclerView.setAdapter(adapter);
                             noInternet.setVisibility(View.GONE);
                             error500.setVisibility(View.GONE);
-                            recyclerView.setVisibility(View.VISIBLE);
                             mShimmerViewContainer.stopShimmer();
                             mShimmerViewContainer.setVisibility(View.GONE);
                         } catch (JSONException e) {

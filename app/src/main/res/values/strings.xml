@@ -157,6 +157,9 @@
     <string name="unfriend">Unfriend</string>
     <string name="subscribe">Subscribe</string>
     <string name="unsubscribe">Unsubscribe</string>
+    <string name="add_friend">Add friends</string>
+    <string name="subscribe_to_channels">Subscribe to channels</string>
+    <string name="create_content">Create content</string>
 
 
 </resources>

@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.drawable.ColorDrawable;
 import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
@@ -65,8 +66,8 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.newsFe
     private float scale;
     private Integer requestType;
     OnAdapterInteractionListener mAdapterListener;
-
     private final Handler handler = new Handler();
+
 
     public NewsFeedAdapter(Context mCtx, List<NewsFeed> newsFeedList, int requestType, OnAdapterInteractionListener mListener) {
         this.mCtx = mCtx;
@@ -182,6 +183,7 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.newsFe
                 }
             });
         } else if (newsfeed.getType().equals("audio")){
+
             holder.videoView.setVisibility(View.GONE);
             holder.imageView.setVisibility(View.GONE);
             holder.slider.setVisibility(View.GONE);
@@ -220,8 +222,9 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.newsFe
                         holder.mediaPlayer.pause();
                         holder.buttonPlayPause.setImageResource(R.drawable.ic_media_play);
                     }
-
                     primarySeekBarProgressUpdater(holder, position);
+
+
 
                 }
             });
@@ -230,7 +233,7 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.newsFe
                 @Override
                 public void onCompletion(MediaPlayer mediaPlayer) {
                     holder.buttonPlayPause.setImageResource(R.drawable.ic_media_play);
-                    mediaPlayer.seekTo(0);
+                    holder.mediaPlayer.seekTo(0);
                 }
             });
 
@@ -242,19 +245,30 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.newsFe
                 }
             });
 
-            // Seekerbar ontouch listener
-            holder.seekBarProgress.setOnTouchListener(new View.OnTouchListener() {
-                @Override
-                public boolean onTouch(View view, MotionEvent motionEvent) {
 
+
+            holder.seekBarProgress.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                @Override
+                public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+
+
+                }
+
+                @Override
+                public void onStartTrackingTouch(SeekBar seekBar) {
+
+                }
+
+                @Override
+                public void onStopTrackingTouch(SeekBar seekBar) {
                     if (holder.mediaPlayer.isPlaying()) {
-                        SeekBar sb = (SeekBar) view;
-                        int playPositionInMillisecconds = (holder.mediaFileLengthInMilliseconds / 100) * sb.getProgress();
+
+                        int playPositionInMillisecconds = (holder.mediaFileLengthInMilliseconds / 100) * seekBar.getProgress();
                         holder.mediaPlayer.seekTo(playPositionInMillisecconds);
                     }
-                    return false;
                 }
             });
+
         } else if (newsfeed.getType().equals("image") || newsfeed.getType().equals("ad")) {
             holder.videoView.setVisibility(View.GONE);
             holder.imageView.setVisibility(View.GONE);
@@ -588,22 +602,31 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.newsFe
             textViewAdViewed = itemView.findViewById(R.id.textViewAdViewed);
 
         }
+
+
     }
 
-// method to update audio seekerbar
+    // method to update audio seekerbar
     private void primarySeekBarProgressUpdater(final NewsFeedAdapter.newsFeedViewHolder holder,final int position) {
-        holder.seekBarProgress.setProgress((int) (((float) holder.mediaPlayer.getCurrentPosition() / holder.mediaFileLengthInMilliseconds) * 100)); // This math construction give a percentage of "was playing"/"song length"
-        if (holder.mediaPlayer.isPlaying()) {
-            Runnable notification = new Runnable() {
-                public void run() {
-                    primarySeekBarProgressUpdater(holder,position);
-                }
-            };
-            handler.postDelayed(notification, 50);
+        try{
+            holder.seekBarProgress.setProgress((int) (((float) holder.mediaPlayer.getCurrentPosition() / holder.mediaFileLengthInMilliseconds) * 100)); // This math construction give a percentage of "was playing"/"song length"
+            if (holder.mediaPlayer.isPlaying()) {
+                Runnable notification = new Runnable() {
+                    public void run() {
+                        primarySeekBarProgressUpdater(holder,position);
+                    }
+                };
+                handler.postDelayed(notification, 50);
+            }
+        }catch (Exception e){
+
         }
     }
 
 
-
-
+    @Override
+    public void onViewRecycled(newsFeedViewHolder holder) {
+        super.onViewRecycled(holder);
+        holder.mediaPlayer.release();
+    }
 }

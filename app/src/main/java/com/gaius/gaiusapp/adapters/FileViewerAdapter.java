@@ -244,7 +244,7 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Re
     public void upload(int position) {
 
         fileViewerFragment1.uploadAudio(getItem(position).getId());
-        notifyItemRemoved(position);
+//        notifyItemRemoved(position);
     }
 
 

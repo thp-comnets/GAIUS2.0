@@ -66,9 +66,6 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.newsFe
     private Integer requestType;
     OnAdapterInteractionListener mAdapterListener;
 
-    String audioUrl;
-    private int mediaFileLengthInMilliseconds; // gets audio duration
-
     private final Handler handler = new Handler();
 
     public NewsFeedAdapter(Context mCtx, List<NewsFeed> newsFeedList, int requestType, OnAdapterInteractionListener mListener) {
@@ -215,11 +212,11 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.newsFe
                     }
 
                     if (!holder.mediaPlayer.isPlaying()) {
-                        mediaFileLengthInMilliseconds = holder.mediaPlayer.getDuration(); // gets the audio length  from URL
+                        holder.mediaFileLengthInMilliseconds = holder.mediaPlayer.getDuration(); // gets the audio length  from URL
                         holder.mediaPlayer.start();
                         holder.buttonPlayPause.setImageResource(R.drawable.ic_media_pause);
                     } else if(holder.mediaPlayer.isPlaying()) {
-                        mediaFileLengthInMilliseconds = holder.mediaPlayer.getDuration(); // gets the audio length  from URL
+                        holder.mediaFileLengthInMilliseconds = holder.mediaPlayer.getDuration(); // gets the audio length  from URL
                         holder.mediaPlayer.pause();
                         holder.buttonPlayPause.setImageResource(R.drawable.ic_media_play);
                     }
@@ -252,7 +249,7 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.newsFe
 
                     if (holder.mediaPlayer.isPlaying()) {
                         SeekBar sb = (SeekBar) view;
-                        int playPositionInMillisecconds = (mediaFileLengthInMilliseconds / 100) * sb.getProgress();
+                        int playPositionInMillisecconds = (holder.mediaFileLengthInMilliseconds / 100) * sb.getProgress();
                         holder.mediaPlayer.seekTo(playPositionInMillisecconds);
                     }
                     return false;
@@ -563,6 +560,7 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.newsFe
         SeekBar seekBarProgress;
         MediaPlayer mediaPlayer;
         ArrayList<String> multiImageViewBitmaps;
+        Integer mediaFileLengthInMilliseconds;
 
         public newsFeedViewHolder(View itemView) {
             super(itemView);
@@ -594,7 +592,7 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.newsFe
 
 // method to update audio seekerbar
     private void primarySeekBarProgressUpdater(final NewsFeedAdapter.newsFeedViewHolder holder,final int position) {
-        holder.seekBarProgress.setProgress((int) (((float) holder.mediaPlayer.getCurrentPosition() / mediaFileLengthInMilliseconds) * 100)); // This math construction give a percentage of "was playing"/"song length"
+        holder.seekBarProgress.setProgress((int) (((float) holder.mediaPlayer.getCurrentPosition() / holder.mediaFileLengthInMilliseconds) * 100)); // This math construction give a percentage of "was playing"/"song length"
         if (holder.mediaPlayer.isPlaying()) {
             Runnable notification = new Runnable() {
                 public void run() {

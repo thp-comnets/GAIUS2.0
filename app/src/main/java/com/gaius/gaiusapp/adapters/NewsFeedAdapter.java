@@ -1,17 +1,12 @@
 package com.gaius.gaiusapp.adapters;
 
 import android.app.Dialog;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.database.Cursor;
 import android.graphics.drawable.ColorDrawable;
-import android.media.AudioManager;
 import android.media.MediaPlayer;
-import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
@@ -28,14 +23,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
@@ -54,8 +46,6 @@ import com.gaius.gaiusapp.networking.GlideApp;
 import com.gaius.gaiusapp.utils.Constants;
 import com.gaius.gaiusapp.utils.TopCropImageView;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -77,28 +67,15 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.newsFe
     OnAdapterInteractionListener mAdapterListener;
 
     String audioUrl;
-    private MediaPlayer mediaPlayer;
     private int mediaFileLengthInMilliseconds; // gets audio duration
 
     private final Handler handler = new Handler();
-
-    /**
-     * help to toggle between play and pause.
-     */
-    private boolean playPause = false;
-    /**
-     * remain false till media is not completed, inside OnCompletionListener make it true.
-     */
-    private boolean intialStage = true;
-    int tempPosition;
 
     public NewsFeedAdapter(Context mCtx, List<NewsFeed> newsFeedList, int requestType, OnAdapterInteractionListener mListener) {
         this.mCtx = mCtx;
         this.newsFeedList = newsFeedList;
         this.requestType = requestType;
         this.mAdapterListener = mListener;
-//        mediaPlayer = new MediaPlayer(); // commented out for testing by thulasi
-//       mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC); // commented out for testing by thulasi
     }
 
     @Override
@@ -114,7 +91,6 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.newsFe
     @Override
     public void onBindViewHolder(final newsFeedViewHolder holder, final int position) {
         final NewsFeed newsfeed = newsFeedList.get(position);
-        mediaPlayer = new MediaPlayer();
         if (newsfeed.getShowAvatar() == true) {
             if (newsfeed.getAvatar().contains("None")) {
                 holder.avatarView.setImageDrawable(mCtx.getResources().getDrawable(R.drawable.ic_avatar));
@@ -208,16 +184,11 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.newsFe
                     shareItem(v, "Check this video on GAIUS");
                 }
             });
-        }else if(newsfeed.getType().equals("audio")){
+        } else if (newsfeed.getType().equals("audio")){
             holder.videoView.setVisibility(View.GONE);
             holder.imageView.setVisibility(View.GONE);
             holder.slider.setVisibility(View.GONE);
             holder.ll_audio.setVisibility(View.VISIBLE);
-
-            audioUrl = prefs.getString("base_url", null) + newsfeed.getUrl();
-            if(audioUrl.contains("./"))
-                audioUrl = audioUrl.replace("./", ""); // removes extra (.)dot from url
-            newsfeed.setAudioPath(audioUrl);
 
             holder.shareButton.setTag(position);
             holder.shareButton.setOnClickListener(new View.OnClickListener() {
@@ -227,8 +198,67 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.newsFe
                 }
             });
 
-        }
-        else if (newsfeed.getType().equals("image") || newsfeed.getType().equals("ad")) {
+            holder.mediaPlayer = new MediaPlayer();
+
+            holder.buttonPlayPause.setTag(position);
+            holder.buttonPlayPause.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    NewsFeed n = newsFeedList.get((Integer) v.getTag());
+
+                    //FIXME thp: should this really be called all the time? I think this is not the right place here, Thulais please fix
+                    try {
+                        holder.mediaPlayer.setDataSource(prefs.getString("base_url", null) + n.getUrl()); // setup audio from serevr URL to mediaplayer data source
+                        holder.mediaPlayer.prepare();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
+                    if (!holder.mediaPlayer.isPlaying()) {
+                        mediaFileLengthInMilliseconds = holder.mediaPlayer.getDuration(); // gets the audio length  from URL
+                        holder.mediaPlayer.start();
+                        holder.buttonPlayPause.setImageResource(R.drawable.ic_media_pause);
+                    } else if(holder.mediaPlayer.isPlaying()) {
+                        mediaFileLengthInMilliseconds = holder.mediaPlayer.getDuration(); // gets the audio length  from URL
+                        holder.mediaPlayer.pause();
+                        holder.buttonPlayPause.setImageResource(R.drawable.ic_media_play);
+                    }
+
+                    primarySeekBarProgressUpdater(holder, position);
+
+                }
+            });
+
+            holder.mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                @Override
+                public void onCompletion(MediaPlayer mediaPlayer) {
+                    holder.buttonPlayPause.setImageResource(R.drawable.ic_media_play);
+                    mediaPlayer.seekTo(0);
+                }
+            });
+
+            // Seekerbar progress listener
+            holder.mediaPlayer.setOnBufferingUpdateListener(new MediaPlayer.OnBufferingUpdateListener() {
+                @Override
+                public void onBufferingUpdate(MediaPlayer mediaPlayer, int i) {
+                    holder.seekBarProgress.setSecondaryProgress(i);
+                }
+            });
+
+            // Seekerbar ontouch listener
+            holder.seekBarProgress.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View view, MotionEvent motionEvent) {
+
+                    if (holder.mediaPlayer.isPlaying()) {
+                        SeekBar sb = (SeekBar) view;
+                        int playPositionInMillisecconds = (mediaFileLengthInMilliseconds / 100) * sb.getProgress();
+                        holder.mediaPlayer.seekTo(playPositionInMillisecconds);
+                    }
+                    return false;
+                }
+            });
+        } else if (newsfeed.getType().equals("image") || newsfeed.getType().equals("ad")) {
             holder.videoView.setVisibility(View.GONE);
             holder.imageView.setVisibility(View.GONE);
             holder.slider.setVisibility(View.VISIBLE);
@@ -278,71 +308,6 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.newsFe
             });
         }
 
-        holder.buttonPlayPause.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-               if(tempPosition != position){
-                   mediaPlayer.stop();
-                   mediaPlayer.seekTo(0);
-               }
-                tempPosition = position;
-
-
-                try {
-                    mediaPlayer.setDataSource(newsfeed.getAudioPath()); // setup audio from serevr URL to mediaplayer data source
-                    mediaPlayer.prepare();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-
-
-                if (!mediaPlayer.isPlaying()) {
-                    mediaFileLengthInMilliseconds = mediaPlayer.getDuration(); // gets the audio length  from URL
-                    mediaPlayer.start();
-                    holder.buttonPlayPause.setImageResource(R.drawable.ic_media_pause);
-                } else if(mediaPlayer.isPlaying()) {
-//                    tempPosition = position;
-                    mediaFileLengthInMilliseconds = mediaPlayer.getDuration(); // gets the audio length  from URL
-                    mediaPlayer.pause();
-                    holder.buttonPlayPause.setImageResource(R.drawable.ic_media_play);
-
-                }
-
-                primarySeekBarProgressUpdater(holder,position);
-
-            }
-        });
-
-        mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-            @Override
-            public void onCompletion(MediaPlayer mediaPlayer) {
-                holder.buttonPlayPause.setImageResource(R.drawable.ic_media_play);
-                mediaPlayer.seekTo(0);
-            }
-        });
-
-        // Seekerbar progress listener
-        mediaPlayer.setOnBufferingUpdateListener(new MediaPlayer.OnBufferingUpdateListener() {
-            @Override
-            public void onBufferingUpdate(MediaPlayer mediaPlayer, int i) {
-                holder.seekBarProgress.setSecondaryProgress(i);
-            }
-        });
-
-        // Seekerbar ontouch listener
-        holder.seekBarProgress.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View view, MotionEvent motionEvent) {
-
-                if (mediaPlayer.isPlaying()) {
-                    SeekBar sb = (SeekBar) view;
-                    int playPositionInMillisecconds = (mediaFileLengthInMilliseconds / 100) * sb.getProgress();
-                    mediaPlayer.seekTo(playPositionInMillisecconds);
-                }
-                return false;
-            }
-        });
 
         holder.textViewName.setText(newsfeed.getName());
         holder.textViewUpdateTime.setText(newsfeed.getUpdateTime());
@@ -596,9 +561,7 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.newsFe
         LinearLayout ll_audio;
         FloatingActionButton buttonPlayPause;
         SeekBar seekBarProgress;
-
-
-
+        MediaPlayer mediaPlayer;
         ArrayList<String> multiImageViewBitmaps;
 
         public newsFeedViewHolder(View itemView) {
@@ -614,7 +577,6 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.newsFe
             buttonPlayPause = itemView.findViewById(R.id.ButtonTestPlayPause);
             seekBarProgress = itemView.findViewById(R.id.SeekBarTestPlay);
             seekBarProgress.setMax(99);
-//            mDemoSlider = itemView.findViewById(R.id.slider);
             slider = itemView.findViewById(R.id.slider);
             textViewTitle = itemView.findViewById(R.id.textViewTitle);
             textViewDescription = itemView.findViewById(R.id.textViewDescription);
@@ -632,14 +594,14 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.newsFe
 
 // method to update audio seekerbar
     private void primarySeekBarProgressUpdater(final NewsFeedAdapter.newsFeedViewHolder holder,final int position) {
-        holder.seekBarProgress.setProgress((int) (((float) mediaPlayer.getCurrentPosition() / mediaFileLengthInMilliseconds) * 100)); // This math construction give a percentage of "was playing"/"song length"
-        if (mediaPlayer.isPlaying()) {
+        holder.seekBarProgress.setProgress((int) (((float) holder.mediaPlayer.getCurrentPosition() / mediaFileLengthInMilliseconds) * 100)); // This math construction give a percentage of "was playing"/"song length"
+        if (holder.mediaPlayer.isPlaying()) {
             Runnable notification = new Runnable() {
                 public void run() {
                     primarySeekBarProgressUpdater(holder,position);
                 }
             };
-            handler.postDelayed(notification, 1000);
+            handler.postDelayed(notification, 50);
         }
     }
 

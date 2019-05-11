@@ -20,16 +20,6 @@ public class NewsFeed {
     private String viewed;
     private Integer friendStatus;
 
-    public String getAudioPath() {
-        return audioPath;
-    }
-
-    public void setAudioPath(String audioPath) {
-        this.audioPath = audioPath;
-    }
-
-    private String audioPath;
-
     public NewsFeed (int id, String name, String updateTime, String avatar, String image, String title, String description, String url, String userID, String type, String liked, String viewed, String published, Integer friendStatus, Boolean showAvatar, ArrayList<String> imagesGallery) {
         this.id = id;
         this.name = name;

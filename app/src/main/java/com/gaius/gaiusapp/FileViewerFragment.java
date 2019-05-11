@@ -228,7 +228,7 @@ public class FileViewerFragment extends Fragment implements OnDatabaseChangedLis
                 if (filledFields(promptView)) {
                     String sourcePath = audioPath;
                     try {
-
+                        alertD.dismiss();
                         uploadMultipart(editTextPagename.getText().toString(), editTextDescription.getText().toString());
 
                     } catch (Exception e) {

@@ -89,7 +89,7 @@
         android:layout_height="220dp"
         tools:visibility="gone"/>
     <LinearLayout
-        android:id="@+id/ll_audio"
+        android:id="@+id/audioView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"

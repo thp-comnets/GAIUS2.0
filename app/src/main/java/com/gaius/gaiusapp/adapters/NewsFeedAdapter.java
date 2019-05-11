@@ -47,6 +47,7 @@ import com.gaius.gaiusapp.networking.GlideApp;
 import com.gaius.gaiusapp.utils.Constants;
 import com.gaius.gaiusapp.utils.TopCropImageView;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -118,6 +119,7 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.newsFe
             holder.imageView.setVisibility(View.VISIBLE);
             holder.videoView.setVisibility(View.GONE);
             holder.slider.setVisibility(View.GONE);
+            holder.audioView.setVisibility(View.GONE);
 
             holder.imageView.setTag(R.id.imageView, position); //we need the key here, otherwise Glide will complain
             holder.shareButton.setTag(position);
@@ -167,6 +169,7 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.newsFe
             holder.videoView.setVisibility(View.VISIBLE);
             holder.imageView.setVisibility(View.GONE);
             holder.slider.setVisibility(View.GONE);
+            holder.audioView.setVisibility(View.GONE);
 
             GlideApp.with(mCtx)
                     .load(convertImageURLBasedonFidelity(prefs.getString("base_url", null) + newsfeed.getImage(), fidelity))
@@ -183,11 +186,12 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.newsFe
                 }
             });
         } else if (newsfeed.getType().equals("audio")){
+            holder.mediaPlayer = new MediaPlayer();
 
             holder.videoView.setVisibility(View.GONE);
             holder.imageView.setVisibility(View.GONE);
             holder.slider.setVisibility(View.GONE);
-            holder.ll_audio.setVisibility(View.VISIBLE);
+            holder.audioView.setVisibility(View.VISIBLE);
 
             holder.shareButton.setTag(position);
             holder.shareButton.setOnClickListener(new View.OnClickListener() {
@@ -197,21 +201,29 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.newsFe
                 }
             });
 
-            holder.mediaPlayer = new MediaPlayer();
-
+            //FIXME thp: should this really be called all the time? I think this is not the right place here, Thulais please fix
+            try {
+                holder.mediaPlayer.setDataSource(prefs.getString("base_url", null) + newsfeed.getUrl()); // setup audio from serevr URL to mediaplayer data source
+//                holder.mediaPlayer.prepare();
+                holder.mediaPlayer.prepareAsync();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             holder.buttonPlayPause.setTag(position);
+
             holder.buttonPlayPause.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+
                     NewsFeed n = newsFeedList.get((Integer) v.getTag());
 
-                    //FIXME thp: should this really be called all the time? I think this is not the right place here, Thulais please fix
+                  /* //FIXME thp: should this really be called all the time? I think this is not the right place here, Thulais please fix
                     try {
                         holder.mediaPlayer.setDataSource(prefs.getString("base_url", null) + n.getUrl()); // setup audio from serevr URL to mediaplayer data source
                         holder.mediaPlayer.prepare();
                     } catch (Exception e) {
                         e.printStackTrace();
-                    }
+                    }*/
 
                     if (!holder.mediaPlayer.isPlaying()) {
                         holder.mediaFileLengthInMilliseconds = holder.mediaPlayer.getDuration(); // gets the audio length  from URL
@@ -273,6 +285,7 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.newsFe
             holder.videoView.setVisibility(View.GONE);
             holder.imageView.setVisibility(View.GONE);
             holder.slider.setVisibility(View.VISIBLE);
+            holder.audioView.setVisibility(View.GONE);
             holder.setIsRecyclable(false);
 
 //            HashMap<String,String> url_maps = new HashMap<String, String>();
@@ -569,7 +582,7 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.newsFe
         TopCropImageView imageView;
         JzvdStd videoView;
         Slider slider;
-        LinearLayout ll_audio;
+        LinearLayout audioView;
         FloatingActionButton buttonPlayPause;
         SeekBar seekBarProgress;
         MediaPlayer mediaPlayer;
@@ -585,7 +598,7 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.newsFe
             avatarView = itemView.findViewById(R.id.avatarView);
             imageView = itemView.findViewById(R.id.imageView);
             videoView = itemView.findViewById(R.id.videoView);
-            ll_audio = itemView.findViewById(R.id.ll_audio);
+            audioView = itemView.findViewById(R.id.audioView);
             buttonPlayPause = itemView.findViewById(R.id.ButtonTestPlayPause);
             seekBarProgress = itemView.findViewById(R.id.SeekBarTestPlay);
             seekBarProgress.setMax(99);
@@ -627,6 +640,8 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.newsFe
     @Override
     public void onViewRecycled(newsFeedViewHolder holder) {
         super.onViewRecycled(holder);
+        if(holder.mediaPlayer.isPlaying()){
         holder.mediaPlayer.release();
+        }
     }
 }

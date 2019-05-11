@@ -34,7 +34,7 @@ import java.util.concurrent.TimeUnit;
 
 
 public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.RecordingsViewHolder>
-    implements OnDatabaseChangedListener {
+        implements OnDatabaseChangedListener {
 
     private static final String LOG_TAG = "FileViewerAdapter";
 
@@ -55,7 +55,7 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Re
     }
 
     @Override
-    public void onBindViewHolder(final RecordingsViewHolder holder, int position) {
+    public void onBindViewHolder(final RecordingsViewHolder holder, final int position) {
 
         item = getItem(position);
         long itemDuration = item.getLength();
@@ -67,11 +67,11 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Re
         holder.vName.setText(item.getName());
         holder.vLength.setText(String.format("%02d:%02d", minutes, seconds));
         holder.vDateAdded.setText(
-            DateUtils.formatDateTime(
-                mContext,
-                item.getTime(),
-                DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_NUMERIC_DATE | DateUtils.FORMAT_SHOW_TIME | DateUtils.FORMAT_SHOW_YEAR
-            )
+                DateUtils.formatDateTime(
+                        mContext,
+                        item.getTime(),
+                        DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_NUMERIC_DATE | DateUtils.FORMAT_SHOW_TIME | DateUtils.FORMAT_SHOW_YEAR
+                )
         );
 
         // define an on click listener to open PlaybackFragment
@@ -94,13 +94,15 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Re
             }
         });
 
-
+        holder.tv_uploadAudio.setTag(position);
         holder.tv_uploadAudio.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                int pos = (int) view.getTag();
                 try {
                     //FIXME: you probably better use the tag to get the position of the position, this one seems ot be deprecated
-                    upload(holder.getPosition());
+//                    upload(holder.getPosition());
+                    upload(pos);
                 } catch (Exception e) {
                     Log.e(LOG_TAG, "exception", e);
                 }
@@ -242,7 +244,6 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Re
     public void upload(int position) {
 
         fileViewerFragment1.uploadAudio(getItem(position).getId());
-//        mDatabase.removeItemWithId(getItem(position).getId());
         notifyItemRemoved(position);
     }
 
@@ -255,12 +256,12 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Re
         file.delete();
 
         Toast.makeText(
-            mContext,
-            String.format(
-                mContext.getString(R.string.toast_file_delete),
-                getItem(position).getName()
-            ),
-            Toast.LENGTH_SHORT
+                mContext,
+                String.format(
+                        mContext.getString(R.string.toast_file_delete),
+                        getItem(position).getName()
+                ),
+                Toast.LENGTH_SHORT
         ).show();
 
         mDatabase.removeItemWithId(getItem(position).getId());

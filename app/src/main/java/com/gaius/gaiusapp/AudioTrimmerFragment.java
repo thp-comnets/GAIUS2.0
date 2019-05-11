@@ -3,7 +3,6 @@ package com.gaius.gaiusapp;
 import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.ContentValues;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.media.MediaMetadataRetriever;
@@ -38,19 +37,8 @@ import java.util.Locale;
 
 import static android.view.View.GONE;
 
-public class AudioTrimmerFragment extends Fragment implements View.OnClickListener,
-        MarkerView.MarkerListener,
-        WaveformView.WaveformListener{
+public class AudioTrimmerFragment extends Fragment implements View.OnClickListener, MarkerView.MarkerListener, WaveformView.WaveformListener {
     private static final String ARG_POSITION = "position";
-
-    public static AudioTrimmerFragment newInstance(int position) {
-        AudioTrimmerFragment f = new AudioTrimmerFragment();
-        Bundle b = new Bundle();
-        b.putInt(ARG_POSITION, position);
-        f.setArguments(b);
-
-        return f;
-    }
 
     private TextView txtAudioCancel;
     private TextView txtAudioUpload;
@@ -117,15 +105,12 @@ public class AudioTrimmerFragment extends Fragment implements View.OnClickListen
     private File mFile;
     private static final int REQUEST_ID_PERMISSIONS = 1;
     private static final int ADD_AUDIO = 1001;
-    Context mContext;
     private DBHelper mDatabase;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.activity_audio_trim, container, false);
-
-
 
         mHandler = new Handler();
         mDatabase = new DBHelper(getActivity());
@@ -196,8 +181,16 @@ public class AudioTrimmerFragment extends Fragment implements View.OnClickListen
 
         mHandler.postDelayed(mTimerRunnable, 100);
 
-
         return rootView;
+    }
+
+    public static AudioTrimmerFragment newInstance(int position) {
+        AudioTrimmerFragment f = new AudioTrimmerFragment();
+        Bundle b = new Bundle();
+        b.putInt(ARG_POSITION, position);
+        f.setArguments(b);
+
+        return f;
     }
 
     private Runnable mTimerRunnable = new Runnable() {

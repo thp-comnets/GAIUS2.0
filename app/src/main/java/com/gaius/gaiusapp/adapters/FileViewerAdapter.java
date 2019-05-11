@@ -17,6 +17,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -29,7 +30,6 @@ import com.gaius.gaiusapp.helper.OnDatabaseChangedListener;
 import com.gaius.gaiusapp.utils.DBHelper;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
 
@@ -99,6 +99,7 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Re
             @Override
             public void onClick(View view) {
                 try {
+                    //FIXME: you probably better use the tag to get the position of the position, this one seems ot be deprecated
                     upload(holder.getPosition());
                 } catch (Exception e) {
                     Log.e(LOG_TAG, "exception", e);
@@ -112,7 +113,6 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Re
             public void onClick(View view) {
                 try {
 
-                    Log.v("tv_menu_icon", item.getName());
                     PopupMenu popup = new PopupMenu(mContext, view);
                     //Inflating the Popup using xml file
                     popup.getMenuInflater().inflate(R.menu.audio_popup, popup.getMenu());
@@ -191,9 +191,7 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Re
     @Override
     public RecordingsViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
-        View itemView = LayoutInflater.
-                from(parent.getContext()).
-                inflate(R.layout.card_view, parent, false);
+        View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.audio_list, parent, false);
 
         mContext = parent.getContext();
 
@@ -205,8 +203,8 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Re
         protected TextView vLength;
         protected TextView vDateAdded;
         protected View cardView;
-        protected TextView tv_menu_icon;
-        protected TextView tv_uploadAudio;
+        protected ImageView tv_menu_icon;
+        protected ImageView tv_uploadAudio;
 
         public RecordingsViewHolder(View v) {
             super(v);

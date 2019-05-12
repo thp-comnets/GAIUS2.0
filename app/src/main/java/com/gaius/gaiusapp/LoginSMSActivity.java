@@ -92,8 +92,8 @@ public class LoginSMSActivity extends AppCompatActivity {
             @Override
             public void onClick(View v){
                 handler.removeCallbacks(mRunnable);
-                handler.postDelayed(mRunnable, 1000);
-                if(mCounter.incrementAndGet() == 6){
+                handler.postDelayed(mRunnable, 2000);
+                if(mCounter.incrementAndGet() == 4){
                     spinner.setVisibility(View.VISIBLE);
                     serverList.setVisibility(View.VISIBLE);
                     loadServers();

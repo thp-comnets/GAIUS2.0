@@ -53,7 +53,7 @@ public class FriendPageActivity extends AppCompatActivity implements OnFragmentI
     AppCompatButton actionButton;
     ProgressBar progressBar;
     String base_url, userID, avatar="None";
-    Integer position, friendStatus;
+    Integer position, friendStatus = -1;
     Context mCtx;
     Toolbar toolbar;
 

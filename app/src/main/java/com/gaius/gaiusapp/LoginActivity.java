@@ -3,7 +3,6 @@ package com.gaius.gaiusapp;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.media.MediaPlayer;
-import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
@@ -57,8 +56,8 @@ public class LoginActivity extends AppCompatActivity {
         prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
 
         VideoView view = (VideoView) findViewById(R.id.logo);
-        String path = "android.resource://" + getPackageName() + "/" + R.raw.gaius_logo;
-        view.setVideoURI(Uri.parse(path));
+//        String path = "android.resource://" + getPackageName() + "/" + R.raw.gaius_logo;
+//        view.setVideoURI(Uri.parse(path));
         view.start();
         view.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
 
@@ -124,8 +123,8 @@ public class LoginActivity extends AppCompatActivity {
         super.onResume();
 
         VideoView view = (VideoView) findViewById(R.id.logo);
-        String path = "android.resource://" + getPackageName() + "/" + R.raw.gaius_logo;
-        view.setVideoURI(Uri.parse(path));
+//        String path = "android.resource://" + getPackageName() + "/" + R.raw.gaius_logo;
+//        view.setVideoURI(Uri.parse(path));
         view.start();
     }
 

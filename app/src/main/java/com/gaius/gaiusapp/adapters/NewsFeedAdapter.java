@@ -201,7 +201,6 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.newsFe
                 }
             });
 
-            //FIXME thp: should this really be called all the time? I think this is not the right place here, Thulais please fix
             try {
                 holder.mediaPlayer.setDataSource(prefs.getString("base_url", null) + newsfeed.getUrl()); // setup audio from serevr URL to mediaplayer data source
 //                holder.mediaPlayer.prepare();
@@ -215,15 +214,6 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.newsFe
                 @Override
                 public void onClick(View v) {
 
-                    NewsFeed n = newsFeedList.get((Integer) v.getTag());
-
-                  /* //FIXME thp: should this really be called all the time? I think this is not the right place here, Thulais please fix
-                    try {
-                        holder.mediaPlayer.setDataSource(prefs.getString("base_url", null) + n.getUrl()); // setup audio from serevr URL to mediaplayer data source
-                        holder.mediaPlayer.prepare();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }*/
 
                     if (!holder.mediaPlayer.isPlaying()) {
                         holder.mediaFileLengthInMilliseconds = holder.mediaPlayer.getDuration(); // gets the audio length  from URL
@@ -637,11 +627,5 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.newsFe
     }
 
 
-    @Override
-    public void onViewRecycled(newsFeedViewHolder holder) {
-        super.onViewRecycled(holder);
-        if(holder.mediaPlayer.isPlaying()){
-        holder.mediaPlayer.release();
-        }
-    }
+
 }

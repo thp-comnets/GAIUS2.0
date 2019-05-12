@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -31,6 +32,7 @@ import com.androidnetworking.AndroidNetworking;
 import com.gaius.gaiusapp.interfaces.OnFragmentInteractionListener;
 import com.gaius.gaiusapp.networking.GlideApp;
 import com.gaius.gaiusapp.utils.Constants;
+import com.gaius.gaiusapp.utils.ExternalDbOpenHelper;
 import com.gaius.gaiusapp.utils.LogOut;
 
 import java.util.ArrayList;
@@ -48,6 +50,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
     Bundle contentBundle;
     private ActionBar actionBar;
     private String userID=null;
+    SQLiteDatabase database;
 
 
     @Override
@@ -58,6 +61,8 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         AndroidNetworking.enableLogging();
 
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        ExternalDbOpenHelper dbOpenHelper = new ExternalDbOpenHelper(this, "gaius.sqlite");
+        database = dbOpenHelper.openDataBase();
 
         if (prefs.getString("token", null) == null) {
             Intent i = new Intent(this, LoginSMSActivity.class);

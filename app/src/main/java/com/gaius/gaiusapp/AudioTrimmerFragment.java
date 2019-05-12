@@ -3,6 +3,7 @@ package com.gaius.gaiusapp;
 import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.ContentValues;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.media.MediaMetadataRetriever;
@@ -14,6 +15,7 @@ import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -639,23 +641,7 @@ public class AudioTrimmerFragment extends Fragment implements View.OnClickListen
         } else if (view == txtAudioCancel) {
             getActivity().finish();
         } else if (view == txtAudioRecordUpdate) {
-            rlAudioEdit.setVisibility(GONE);
-            txtAudioUpload.setVisibility(GONE);
-            llAudioCapture.setVisibility(View.VISIBLE);
-            isAudioRecording = true;
-            txtAudioRecord.setBackgroundResource(R.drawable.ic_stop_btn1);
-            txtAudioRecordTime.setVisibility(View.VISIBLE);
-            startRecording();
-            mRecordingLastUpdateTime = Utility.getCurrentTime();
-            mRecordingKeepGoing = true;
-//            txtAudioCrop.setBackgroundResource(R.drawable.ic_crop_btn);
-            txtAudioDone.setVisibility(GONE);
-            txtAudioCrop.setVisibility(View.VISIBLE);
-            txtAudioPlay.setBackgroundResource(R.drawable.ic_play_btn);
-            markerStart.setVisibility(View.INVISIBLE);
-            markerEnd.setVisibility(View.INVISIBLE);
-            txtStartPosition.setVisibility(View.VISIBLE);
-            txtEndPosition.setVisibility(View.VISIBLE);
+            openAlert();
 
         } else if (view == txtAudioPlay) {
             if (!mIsPlaying) {
@@ -1252,5 +1238,43 @@ public class AudioTrimmerFragment extends Fragment implements View.OnClickListen
             }
         };
         mLoadSoundFileThread.start();
+    }
+
+    public void openAlert(){
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
+        alertDialogBuilder.setMessage("Are you sure, you want to Re-record?");
+        alertDialogBuilder.setPositiveButton("yes",
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface arg0, int arg1) {
+                        rlAudioEdit.setVisibility(GONE);
+                        txtAudioUpload.setVisibility(GONE);
+                        llAudioCapture.setVisibility(View.VISIBLE);
+                        isAudioRecording = true;
+                        txtAudioRecord.setBackgroundResource(R.drawable.ic_stop_btn1);
+                        txtAudioRecordTime.setVisibility(View.VISIBLE);
+                        startRecording();
+                        mRecordingLastUpdateTime = Utility.getCurrentTime();
+                        mRecordingKeepGoing = true;
+//            txtAudioCrop.setBackgroundResource(R.drawable.ic_crop_btn);
+                        txtAudioDone.setVisibility(GONE);
+                        txtAudioCrop.setVisibility(View.VISIBLE);
+                        txtAudioPlay.setBackgroundResource(R.drawable.ic_play_btn);
+                        markerStart.setVisibility(View.INVISIBLE);
+                        markerEnd.setVisibility(View.INVISIBLE);
+                        txtStartPosition.setVisibility(View.VISIBLE);
+                        txtEndPosition.setVisibility(View.VISIBLE);
+                    }
+                });
+
+        alertDialogBuilder.setNegativeButton("No",new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+            }
+        });
+
+        AlertDialog alertDialog = alertDialogBuilder.create();
+        alertDialog.show();
     }
 }

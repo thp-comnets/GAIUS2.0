@@ -100,8 +100,6 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Re
             public void onClick(View view) {
                 int pos = (int) view.getTag();
                 try {
-                    //FIXME: you probably better use the tag to get the position of the position, this one seems ot be deprecated
-//                    upload(holder.getPosition());
                     upload(pos);
                 } catch (Exception e) {
                     Log.e(LOG_TAG, "exception", e);
@@ -143,51 +141,7 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Re
                 }
             }
         });
-
-      /*  holder.cardView.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                final int valID = item.getId();
-                ArrayList<String> entrys = new ArrayList<String>();
-                entrys.add(mContext.getString(R.string.dialog_audio_upload));
-                entrys.add(mContext.getString(R.string.dialog_file_rename));
-                entrys.add(mContext.getString(R.string.dialog_file_delete));
-
-                final CharSequence[] items = entrys.toArray(new CharSequence[entrys.size()]);
-
-
-                // File delete confirm
-                AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
-                builder.setTitle(mContext.getString(R.string.dialog_title_options));
-                builder.setItems(items, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int item) {
-                        if (item == 0) {
-//                            shareFileDialog(holder.getPosition());
-//                            ((fileViewerFragment1).uploadAudio(holder.getPosition());
-//                            fileViewerFragment1.uploadAudio(valID);
-                            upload(holder.getPosition());
-
-                        } if (item == 1) {
-                            renameFileDialog(holder.getPosition());
-                        } else if (item == 2) {
-                            deleteFileDialog(holder.getPosition());
-                        }
-                    }
-                });
-                builder.setCancelable(true);
-                builder.setNegativeButton(mContext.getString(R.string.dialog_action_cancel),
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                dialog.cancel();
-                            }
-                        });
-
-                AlertDialog alert = builder.create();
-                alert.show();
-
-                return false;
-            }
-        });*/
+        
     }
 
     @Override

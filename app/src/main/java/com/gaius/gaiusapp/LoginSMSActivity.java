@@ -118,9 +118,6 @@ public class LoginSMSActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                SharedPreferences.Editor editor = prefs.edit();
-                editor.putString("number", "00"+phoneInputView.getNumber().substring(1));
-                editor.commit();
 
                 if (resendCountDownTimer != null) {
                     resendCountDownTimer.cancel();
@@ -131,6 +128,10 @@ public class LoginSMSActivity extends AppCompatActivity {
                     Toast.makeText(getApplicationContext(), "Invalid phone number please correct", Toast.LENGTH_SHORT).show();
                 }
                 else {
+
+                    SharedPreferences.Editor editor = prefs.edit();
+                    editor.putString("number", "00"+phoneInputView.getNumber().substring(1));
+                    editor.commit();
 
                     getLocalServer();
                     layoutEnterOtp.setVisibility(View.VISIBLE);

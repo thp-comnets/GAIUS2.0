@@ -1,18 +1,25 @@
 package com.gaius.gaiusapp;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 import com.astuetz.PagerSlidingTabStrip;
 import com.gaius.gaiusapp.utils.DBHelper;
+
+import static java.security.AccessController.getContext;
 
 
 //import android.support.v7.app.ActionBarActivity;
@@ -26,6 +33,7 @@ public class AudioActivity extends AppCompatActivity {
     private ViewPager pager;
     private static final int ADD_AUDIO = 1001;
     private DBHelper mDatabase;
+    AlertDialog alertBack;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,23 +48,7 @@ public class AudioActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
         String intentFragment = getIntent().getExtras().getString("frgToLoad");
-   /*     Log.v("intentFragment"," - "+ intentFragment);
-        if(intentFragment.equals("Record")){
-            pager.setAdapter(new MyAdapter(getSupportFragmentManager()));
-        }else{
-            pager.setAdapter(new MyAdapter(getSupportFragmentManager()));
-            switch (intentFragment){
 
-                case "Record":
-                    Log.v("intentFragment1"," - "+ intentFragment);
-                    AudioTrimmerFragment.newInstance(1);
-                    break;
-                case "Saved":
-                    Log.v("intentFragment2"," - "+ intentFragment);
-                    FileViewerFragment.newInstance(2);
-                    break;
-            }
-        }*/
 
         pager.setAdapter(new MyAdapter(getSupportFragmentManager()));
         tabs = (PagerSlidingTabStrip) findViewById(R.id.tabs);
@@ -69,28 +61,7 @@ public class AudioActivity extends AppCompatActivity {
 
     }
 
-   /* @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        // Handle presses on the action bar items
-        switch (item.getItemId()) {
-            case R.id.action_settings:
-//                Intent i = new Intent(this, SettingsActivity.class);
-//                startActivity(i);
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-    }*/
 
     public class MyAdapter extends FragmentPagerAdapter {
         private String[] titles = { getString(R.string.tab_title_record),
@@ -149,8 +120,32 @@ public class AudioActivity extends AppCompatActivity {
     //handle the back arrow press in the toolbar
     @Override
     public boolean onSupportNavigateUp() {
-        onBackPressed();
+//        onBackPressed();
+        openBackAlert();
         return true;
     }
+
+
+    public void openBackAlert(){
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+        alertDialogBuilder.setMessage("Are you sure, you want to exit?");
+                alertDialogBuilder.setPositiveButton("yes",
+                        new DialogInterface.OnClickListener() {
+        @Override
+        public void onClick(DialogInterface arg0, int arg1) {
+            onBackPressed();
+        }
+    });
+
+        alertDialogBuilder.setNegativeButton("No",new DialogInterface.OnClickListener() {
+        @Override
+        public void onClick(DialogInterface dialog, int which) {
+
+        }
+    });
+
+    AlertDialog alertDialog = alertDialogBuilder.create();
+        alertDialog.show();
+}
 }
 

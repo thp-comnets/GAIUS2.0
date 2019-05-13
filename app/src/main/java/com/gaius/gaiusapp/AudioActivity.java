@@ -12,6 +12,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
@@ -33,7 +34,7 @@ public class AudioActivity extends AppCompatActivity {
     private static final String LOG_TAG = MainActivity.class.getSimpleName();
 
     private PagerSlidingTabStrip tabs;
-    private ViewPager pager;
+    private CustomViewPager pager;
     private static final int ADD_AUDIO = 1001;
     private DBHelper mDatabase;
     AlertDialog alertBack;
@@ -43,7 +44,7 @@ public class AudioActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_audio);
         mDatabase = new DBHelper(getApplicationContext());
-        pager = (ViewPager) findViewById(R.id.pager);
+        pager =  findViewById(R.id.pager);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -59,7 +60,7 @@ public class AudioActivity extends AppCompatActivity {
         if(intentFragment.equals("Saved")){
             pager.setCurrentItem(2);
         }
-
+         pager.setPagingEnabled(false);
 
 
     }
@@ -124,8 +125,6 @@ public class AudioActivity extends AppCompatActivity {
     //handle the back arrow press in the toolbar
     @Override
     public boolean onSupportNavigateUp() {
-//        onBackPressed();
-//        openBackAlert();
         List fragmentList = getSupportFragmentManager().getFragments();
 
         boolean handled = false;

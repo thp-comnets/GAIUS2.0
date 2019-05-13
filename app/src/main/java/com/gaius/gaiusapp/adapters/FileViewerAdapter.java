@@ -230,7 +230,8 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Re
     public void rename(int position, String name) {
         //rename a file
 
-        String mFilePath = Environment.getExternalStorageDirectory().getAbsolutePath();
+//        String mFilePath = Environment.getExternalStorageDirectory().getAbsolutePath();
+        String mFilePath = String.valueOf(mContext.getFilesDir());
         mFilePath += "/Gaius/" + name;
         File f = new File(mFilePath);
 

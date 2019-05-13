@@ -66,7 +66,7 @@ public class SignUp extends AppCompatActivity {
             }
         });
 
-        loadingImageView = (ImageView) findViewById(R.id.signup_animation);
+//        loadingImageView = (ImageView) findViewById(R.id.signup_animation);
 
         avatarImageView = (ImageView) findViewById(R.id.logo);
         avatarImageView.setOnClickListener(new View.OnClickListener() {
@@ -177,7 +177,7 @@ public class SignUp extends AppCompatActivity {
 
         Log.d("yasir", "RegisterActivity: register user: " + name + " " + channel + " " + email + " " + " " + URL_FOR_REGISTRATION);
 
-        loadingImageView.setVisibility(View.VISIBLE);
+//        loadingImageView.setVisibility(View.VISIBLE);
 
         ANRequest.MultiPartBuilder multiPartBuilder = new ANRequest.MultiPartBuilder(URL_FOR_REGISTRATION);
 
@@ -245,7 +245,7 @@ public class SignUp extends AppCompatActivity {
                                     String errorMsg = jObj.getString("error_msg");
                                     Toast.makeText(getApplicationContext(),
                                             errorMsg, Toast.LENGTH_LONG).show();
-                                    loadingImageView.setVisibility(View.GONE);
+//                                    loadingImageView.setVisibility(View.GONE);
                                 }
 
                             } catch (JSONException e) {
@@ -260,7 +260,7 @@ public class SignUp extends AppCompatActivity {
 
                     @Override
                     public void onError(ANError anError) {
-                        loadingImageView.setVisibility(View.GONE);
+//                        loadingImageView.setVisibility(View.GONE);
 
                         Toast.makeText(getApplicationContext(),
                                 anError.getErrorDetail(), Toast.LENGTH_LONG).show();

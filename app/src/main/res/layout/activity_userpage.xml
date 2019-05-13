@@ -87,32 +87,6 @@
                     android:layout_gravity="center"
                     android:visibility="gone" />
 
-                <RelativeLayout
-                    android:id="@+id/noPages"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:visibility="gone">
-
-                    <pl.droidsonroids.gif.GifImageView
-                        android:id="@+id/lonely_animation"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_centerHorizontal="true"
-                        android:src="@drawable/ic_no_pages">
-                    </pl.droidsonroids.gif.GifImageView>
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_below="@+id/lonely_animation"
-                        android:textAlignment="center"
-                        android:layout_centerHorizontal="true"
-                        android:text="Your friend does not have\n any pages yet."
-                        android:textStyle="bold"
-                        android:textSize="18sp"
-                        android:textColor="#000000"/>
-                </RelativeLayout>
-
             </LinearLayout>
 
             <android.support.v7.widget.Toolbar

@@ -2,6 +2,7 @@ package com.gaius.gaiusapp;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -49,10 +50,11 @@ public class SignUpSMSActivity extends AppCompatActivity {
     private static final int PICK_CHANNEL_REQUEST = 2;
     private String iconPath, channelThumbnailPath, URL_FOR_REGISTRATION, croppedImage;
     private Uri avatarUri, channelThumbnailUri;
-    private ImageView avatarImageView, loadingImageView, channelImageView;
+    private ImageView avatarImageView, channelImageView;
     private EditText signupInputName, signupInputChannel;
     SharedPreferences prefs;
     Context mCtx;
+    ProgressDialog dialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,8 +76,6 @@ public class SignUpSMSActivity extends AppCompatActivity {
                 submitForm();
             }
         });
-
-        loadingImageView = (ImageView) findViewById(R.id.signup_animation);
 
         avatarImageView = (ImageView) findViewById(R.id.logo);
         avatarImageView.setOnClickListener(new View.OnClickListener() {
@@ -229,7 +229,9 @@ public class SignUpSMSActivity extends AppCompatActivity {
     }
 
     private void registerUser(final String name, final String channel) {
-        loadingImageView.setVisibility(View.VISIBLE);
+
+        dialog = ProgressDialog.show(this, "",
+                "Loading. Please wait...", true);
 
         ANRequest.MultiPartBuilder request = new ANRequest.MultiPartBuilder(URL_FOR_REGISTRATION);
 
@@ -242,7 +244,7 @@ public class SignUpSMSActivity extends AppCompatActivity {
         }
 
         request.addMultipartParameter("login", "1")
-                .addMultipartParameter("number", prefs.getString("number", ""))
+                .addMultipartParameter("numbe", prefs.getString("number", ""))
                 .addMultipartParameter("OTP", prefs.getString("OTP", ""))
                 .addMultipartParameter("name", name)
                 .addMultipartParameter("channel", channel)
@@ -288,15 +290,18 @@ public class SignUpSMSActivity extends AppCompatActivity {
                             String errorMsg = jObj.getString("error_msg");
                             Toast.makeText(getApplicationContext(),
                                     errorMsg, Toast.LENGTH_LONG).show();
-                            loadingImageView.setVisibility(View.GONE);
+                            dialog.dismiss();
                         }
 
                     } catch (JSONException e) {
                         e.printStackTrace();
+                        dialog.dismiss();
                     } catch (IOException e) {
                         e.printStackTrace();
+                        dialog.dismiss();
                     }
                 } else {
+                    dialog.dismiss();
                     Toast.makeText(getApplicationContext(), "Something went wrong with the registration ("+ response.code()+")", Toast.LENGTH_LONG).show();
                 }
             }
@@ -304,13 +309,14 @@ public class SignUpSMSActivity extends AppCompatActivity {
             @Override
             public void onError(ANError error) {
 
+                dialog.dismiss();
+
                 switch (error.getErrorCode()) {
                     case 401:
                         break;
                     case 500:
                         Log.d("SMS", "Error 500" + error);
                         Toast.makeText(getApplicationContext(), "Invalid OTP, please correct it", Toast.LENGTH_SHORT).show();
-
                         break;
                     default:
                         Log.d("SMS", "Error no Internet " + error);

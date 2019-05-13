@@ -69,7 +69,7 @@ public class MyFriendsSearchFragment extends Fragment implements FragmentVisible
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         mAdapterListener = this;
-        return inflater.inflate(R.layout.search_friends_fragment, null);
+        return inflater.inflate(R.layout.fragment_search_friends, null);
     }
 
     @Override

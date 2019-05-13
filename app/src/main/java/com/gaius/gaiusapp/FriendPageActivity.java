@@ -49,7 +49,6 @@ import ss.com.bannerslider.Slider;
 
 public class FriendPageActivity extends AppCompatActivity implements OnFragmentInteractionListener {
     SharedPreferences prefs;
-    RelativeLayout noPages;
     AppCompatButton actionButton;
     ProgressBar progressBar;
     String base_url, userID, avatar="None";
@@ -100,7 +99,6 @@ public class FriendPageActivity extends AppCompatActivity implements OnFragmentI
         Integer friendStatus = -1;
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
         base_url = prefs.getString("base_url", null);
-        noPages = findViewById(R.id.noPages);
 
         Bundle bundle = getIntent().getExtras();
         if (bundle != null) {

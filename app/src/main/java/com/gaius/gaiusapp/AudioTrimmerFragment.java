@@ -30,6 +30,7 @@ import com.gaius.gaiusapp.customAudioViews.MarkerView;
 import com.gaius.gaiusapp.customAudioViews.SamplePlayer;
 import com.gaius.gaiusapp.customAudioViews.SoundFile;
 import com.gaius.gaiusapp.customAudioViews.WaveformView;
+import com.gaius.gaiusapp.interfaces.IOnBackPressed;
 import com.gaius.gaiusapp.utils.DBHelper;
 import com.gaius.gaiusapp.utils.Utility;
 
@@ -39,7 +40,7 @@ import java.util.Locale;
 
 import static android.view.View.GONE;
 
-public class AudioTrimmerFragment extends Fragment implements View.OnClickListener, MarkerView.MarkerListener, WaveformView.WaveformListener {
+public class AudioTrimmerFragment extends Fragment implements View.OnClickListener, MarkerView.MarkerListener, WaveformView.WaveformListener, IOnBackPressed {
     private static final String ARG_POSITION = "position";
 
     private TextView txtAudioCancel;
@@ -697,7 +698,8 @@ public class AudioTrimmerFragment extends Fragment implements View.OnClickListen
 
         } else if (view == txtAudioUpload) {
 
-            File folder = new File(Environment.getExternalStorageDirectory() + "/Gaius");
+//            File folder = new File(Environment.getExternalStorageDirectory() + "/Gaius");
+            File folder = new File(getActivity().getFilesDir() + "/Gaius");
             if (!folder.exists()) {
                 //folder /SoundRecorder doesn't exist, create the folder
                 folder.mkdir();
@@ -1120,7 +1122,8 @@ public class AudioTrimmerFragment extends Fragment implements View.OnClickListen
 
     private String makeRingtoneFilename(CharSequence title, String extension) {
         String subDir;
-        String externalRootDir = Environment.getExternalStorageDirectory().getPath() + "/Gaius";
+//        String externalRootDir = Environment.getExternalStorageDirectory().getPath() + "/Gaius";
+        String externalRootDir = getActivity().getFilesDir() + "/Gaius";
         if (!externalRootDir.endsWith("/")) {
             externalRootDir += "/";
         }
@@ -1277,4 +1280,18 @@ public class AudioTrimmerFragment extends Fragment implements View.OnClickListen
         AlertDialog alertDialog = alertDialogBuilder.create();
         alertDialog.show();
     }
+
+    @Override
+    public boolean onAudioBackPressed() {
+
+        if (rlAudioEdit.getVisibility() == View.VISIBLE || txtAudioRecordTime.getVisibility()  == View.VISIBLE) {
+            //action not popBackStack
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+
+
 }

@@ -17,7 +17,10 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import com.astuetz.PagerSlidingTabStrip;
+import com.gaius.gaiusapp.interfaces.IOnBackPressed;
 import com.gaius.gaiusapp.utils.DBHelper;
+
+import java.util.List;
 
 import static java.security.AccessController.getContext;
 
@@ -60,6 +63,7 @@ public class AudioActivity extends AppCompatActivity {
 
 
     }
+
 
 
 
@@ -121,10 +125,49 @@ public class AudioActivity extends AppCompatActivity {
     @Override
     public boolean onSupportNavigateUp() {
 //        onBackPressed();
-        openBackAlert();
+//        openBackAlert();
+        List fragmentList = getSupportFragmentManager().getFragments();
+
+        boolean handled = false;
+        for(Object f : fragmentList) {
+            if(f instanceof AudioTrimmerFragment) {
+                handled = ((AudioTrimmerFragment)f).onAudioBackPressed();
+
+                if(handled) {
+                    openBackAlert();
+                    break;
+                }
+            }
+        }
+
+        if(!handled) {
+            super.onBackPressed();
+        }
         return true;
     }
 
+
+    @Override
+    public void onBackPressed() {
+
+        List fragmentList = getSupportFragmentManager().getFragments();
+
+        boolean handled = false;
+        for(Object f : fragmentList) {
+            if(f instanceof AudioTrimmerFragment) {
+                handled = ((AudioTrimmerFragment)f).onAudioBackPressed();
+
+                if(handled) {
+                    openBackAlert();
+                    break;
+                }
+            }
+        }
+
+        if(!handled) {
+            super.onBackPressed();
+        }
+    }
 
     public void openBackAlert(){
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
@@ -133,7 +176,7 @@ public class AudioActivity extends AppCompatActivity {
                         new DialogInterface.OnClickListener() {
         @Override
         public void onClick(DialogInterface arg0, int arg1) {
-            onBackPressed();
+            finish();
         }
     });
 

@@ -90,6 +90,7 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.newsFe
     @Override
     public void onBindViewHolder(final newsFeedViewHolder holder, final int position) {
         final NewsFeed newsfeed = newsFeedList.get(position);
+//        holder.setIsRecyclable(true);
         if (newsfeed.getShowAvatar() == true) {
             if (newsfeed.getAvatar().contains("None")) {
                 holder.avatarView.setImageDrawable(mCtx.getResources().getDrawable(R.drawable.ic_avatar));

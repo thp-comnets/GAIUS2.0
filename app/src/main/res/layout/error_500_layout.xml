@@ -5,25 +5,27 @@
     android:layout_height="wrap_content"
     android:layout_centerHorizontal="true"
     android:layout_centerVertical="true"
+    android:paddingBottom="50dp"
     android:visibility="gone">
 
-    <pl.droidsonroids.gif.GifImageView
-        android:id="@+id/lonely_animation"
-        android:layout_width="wrap_content"
+    <ImageView
+        android:id="@+id/error_500_image_view"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:src="@drawable/ic_error500"
-        android:layout_marginBottom="10dp"/>
+        android:layout_marginStart="80dp"
+        android:layout_marginEnd="80dp"
+        android:layout_marginBottom="20dp"
+        android:src="@drawable/error_500"/>
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/lonely_animation"
-        android:paddingStart="50dp"
-        android:paddingEnd="50dp"
-        android:layout_centerHorizontal="true"
+        android:layout_marginStart="60dp"
+        android:layout_marginEnd="60dp"
+        android:layout_below="@id/error_500_image_view"
         android:gravity="center"
-        android:text="You broke our servers :-(\nDon't worry, some internal error occured.\nWe are working on fixing it in no time ..."
-        android:textColor="#000000"
+        android:layout_centerHorizontal="true"
+        android:text="Oops, something went wrong.\nWe\'re working on it we\'ll get it fixed as soon as possible..."
+        android:textColor="@color/black_57"
         android:textStyle="bold" />
 </RelativeLayout>

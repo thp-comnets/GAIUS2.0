@@ -80,14 +80,6 @@ public class CreateContentAudioFragment extends Fragment {
             @Override
             public void onClick(View v) {
 
-              /*  if (checkStoragePermission()) {
-                    Intent i = new Intent(getContext(), AudioActivity.class);
-                    i.putExtra("frgToLoad","Record");
-                     getContext().startActivity(i);
-                } else {
-                    requestStoragePermission();
-                }*/
-
                 String[] permissions = {Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.RECORD_AUDIO};
                 Permissions.check((Activity) getActivity(), permissions, null, null, new PermissionHandler() {
                     @Override
@@ -105,8 +97,6 @@ public class CreateContentAudioFragment extends Fragment {
                 });
 
 
-//                Intent i = new Intent(getContext(), AudioTrimmerActivity.class);
-//                getContext().startActivity(i);
             }
         });
 
@@ -114,37 +104,30 @@ public class CreateContentAudioFragment extends Fragment {
         uploadAudio.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                Intent galleryIntent = new Intent(Intent.ACTION_PICK, MediaStore.Video.Media.EXTERNAL_CONTENT_URI);
-//                galleryIntent.setType("audio/*");
-//                galleryIntent.putExtra(Intent.EXTRA_MIME_TYPES, new String[] { "audio/*"});
-//                startActivityForResult(galleryIntent, PICK_AUDIO_REQUEST);
 
-                Intent intent_upload = new Intent();
-                intent_upload.setType("audio/*");
-                intent_upload.setAction(Intent.ACTION_GET_CONTENT);
-                startActivityForResult(intent_upload,PICK_AUDIO_REQUEST);
+                String[] permissions = {Manifest.permission.READ_EXTERNAL_STORAGE};
+                Permissions.check((Activity) getActivity(), permissions, null, null, new PermissionHandler() {
+                    @Override
+                    public void onGranted() {
+                        Intent intent_upload = new Intent();
+                        intent_upload.setType("audio/*");
+                        intent_upload.setAction(Intent.ACTION_GET_CONTENT);
+                        startActivityForResult(intent_upload,PICK_AUDIO_REQUEST);
+                    }
+
+                    @Override
+                    public void onDenied(Context context, ArrayList<String> deniedPermissions) {
+                        super.onDenied(context, deniedPermissions);
+                        Toast.makeText((Activity) getActivity(), "If you reject this permission, you can not use this functionality.", Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+
             }
         });
         return rootView;
     }
 
-
-
- /*   @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
-                                           @NonNull int[] grantResults) {
-
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == REQUEST_ID_PERMISSIONS) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED &&
-                    grantResults[1] == PackageManager.PERMISSION_GRANTED) {
-//                Toast.makeText(getActivity(), "Permission granted, Click again", Toast.LENGTH_SHORT).show();
-                Intent i = new Intent(getContext(), AudioActivity.class);
-                i.putExtra("frgToLoad","Record");
-                getContext().startActivity(i);
-            }
-        }
-    }*/
 
     @Override
     @SuppressLint("NewApi")
@@ -159,24 +142,15 @@ public class CreateContentAudioFragment extends Fragment {
                 try {
                     String uriString = uri.toString();
                     myFile = new File(uriString);
-                    //    String path = myFile.getAbsolutePath();
-                    String displayName = null;
-//                    audioPath = getAudioPath(uri);
-//                    String[] videoFile = getAudioPathOne(uri);
                     audioPath = getFilePathFromURI(getActivity(),uri);
                     Log.d("thulasi", "Upload video " + audioPath + " " );
 
                 } catch (Exception e) {
                     //handle exception
-                    Log.d("thulasi", "Upload video " + e.getMessage() + " " );
+                    Log.d("thulasi", "Upload video1 " + e.getMessage() + " " );
                     Toast.makeText(getActivity(), "Unable to process,try again", Toast.LENGTH_SHORT).show();
                 }
 
-
-//                Uri fileUri = data.getData();
-//                String[] videoFile = getVideoPath(fileUri);
-//                uploadVideoPath = videoFile[0];
-//                Bitmap selectedImage = ThumbnailUtils.createVideoThumbnail(videoFile[0], MediaStore.Images.Thumbnails.MINI_KIND);
 
                 Log.d("yasir", "Upload audio " + myFile + " " + "");
 
@@ -205,8 +179,7 @@ public class CreateContentAudioFragment extends Fragment {
 
                     @Override
                     public void onCompletion(MediaPlayer mp) {
-                        Toast.makeText(getActivity(), "Completed", Toast.LENGTH_SHORT).show();
-                        // do you stuff.
+                        // add action after audio finished playing (future usage)
                     }
                 });
 
@@ -214,8 +187,7 @@ public class CreateContentAudioFragment extends Fragment {
 
                     @Override
                     public void onClick(View v) {
-                        Toast.makeText(getActivity(), "Play", Toast.LENGTH_SHORT).show();
-                        // get-set-go. Lets dance.
+//                        // add action during audio playing (future usage)
                     }
                 });
 
@@ -223,8 +195,7 @@ public class CreateContentAudioFragment extends Fragment {
 
                     @Override
                     public void onClick(View v) {
-                        Toast.makeText(getActivity(), "Pause", Toast.LENGTH_SHORT).show();
-                        // Your on audio pause stuff.
+//                      // add action when audio is paused (future usage)
                     }
                 });
 
@@ -232,11 +203,6 @@ public class CreateContentAudioFragment extends Fragment {
                 editTextDescription = promptView.findViewById(R.id.description_edittext);
                 editTextPagenameLayout = promptView.findViewById(R.id.title_edittext_layout);
                 editTextDescriptionLayout = promptView.findViewById(R.id.description_edittext_layout);
-
-
-//                JzvdStd jzVideoPlayerStandard = (JzvdStd) promptView.findViewById(R.id.video_view);
-//                jzVideoPlayerStandard.setUp(uploadVideoPath, "", Jzvd.SCREEN_WINDOW_NORMAL);
-//                jzVideoPlayerStandard.thumbImageView.setImageBitmap(selectedImage);
 
                 Button cancel_button = (Button) promptView.findViewById(R.id.cancel_button);
                 final Button upload_button = (Button) promptView.findViewById(R.id.upload_button);
@@ -257,7 +223,7 @@ public class CreateContentAudioFragment extends Fragment {
                         if (filledFields(promptView)) {
                             String sourcePath = audioPath;
                             try {
-
+                                alertD.dismiss();
                                 uploadMultipart(editTextPagename.getText().toString(), editTextDescription.getText().toString());
 
                             } catch (Exception e) {
@@ -271,14 +237,7 @@ public class CreateContentAudioFragment extends Fragment {
         }
     }
 
-    private String getAudioPath(Uri uri) {
-        String[] data = {MediaStore.Audio.Media.DATA};
-        CursorLoader loader = new CursorLoader(getActivity(), uri, data, null, null, null);
-        Cursor cursor = loader.loadInBackground();
-        int column_index = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DATA);
-        cursor.moveToFirst();
-        return cursor.getString(column_index);
-    }
+
 
     public boolean filledFields(View view) {
         boolean haveContent = true;
@@ -398,72 +357,12 @@ public class CreateContentAudioFragment extends Fragment {
 
 
 
-    /*private class UploadFileToServer extends AsyncTask<Void, Integer, String> {
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-        }
-
-        @Override
-        protected String doInBackground(Void... params) {
-            return uploadFile();
-        }
-
-        private String uploadFile() {
-            String responseString = null;
-            Log.d("Log", "File path" + opFilePath);
-            HttpClient httpclient = new DefaultHttpClient();
-            HttpPost httppost = new HttpPost(Bitmap.Config.FILE_UPLOAD_URL);
-            try {
-                AndroidMultiPartEntity entity = new AndroidMultiPartEntity(
-                        new AndroidMultiPartEntity.ProgressListener() {
-
-                            @Override
-                            public void transferred(long num) {
-                                publishProgress((int) ((num / (float) totalSize) * 100));
-                            }
-                        });
-                ExifInterface newIntef = new ExifInterface(opFilePath);
-                newIntef.setAttribute(ExifInterface.TAG_ORIENTATION,String.valueOf(2));
-                File file = new File(opFilePath);
-                entity.addPart("pic", new FileBody(file));
-                totalSize = entity.getContentLength();
-                httppost.setEntity(entity);
-
-                // Making server call
-                HttpResponse response = httpclient.execute(httppost);
-                HttpEntity r_entity = response.getEntity();
-
-
-                int statusCode = response.getStatusLine().getStatusCode();
-                if (statusCode == 200) {
-                    // Server response
-                    responseString = EntityUtils.toString(r_entity);
-                    Log.d("Log", responseString);
-                } else {
-                    responseString = "Error occurred! Http Status Code: "
-                            + statusCode + " -> " + response.getStatusLine().getReasonPhrase();
-                    Log.d("Log", responseString);
-                }
-
-            } catch (ClientProtocolException e) {
-                responseString = e.toString();
-            } catch (IOException e) {
-                responseString = e.toString();
-            }
-
-            return responseString;
-        }
-    }*/
-
-
-
-
     public static String getFilePathFromURI(Context context, Uri contentUri) {
         //copy file and send new file path
         String fileName = getFileName(contentUri);
         if (!TextUtils.isEmpty(fileName)) {
-            File copyFile = new File(Environment.getExternalStorageDirectory().getPath() + File.separator + fileName);
+//            File copyFile = new File(Environment.getExternalStorageDirectory().getPath() + File.separator + fileName);
+            File copyFile = new File(context.getExternalCacheDir() + File.separator + fileName);
             copy(context, contentUri, copyFile);
             return copyFile.getAbsolutePath();
         }

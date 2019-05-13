@@ -171,4 +171,12 @@ public class ExternalDbOpenHelper extends SQLiteOpenHelper {
 		}
 		return database;
 	}
+
+    @Override
+    public void onConfigure(SQLiteDatabase db) {
+//        super.onConfigure(db);
+        super.onOpen(db);
+        db.rawQuery("PRAGMA journal_mode = OFF",null);
+        db.disableWriteAheadLogging();
+    }
 }

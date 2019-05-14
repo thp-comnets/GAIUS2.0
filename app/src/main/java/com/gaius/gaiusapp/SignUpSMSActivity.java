@@ -24,23 +24,21 @@ import android.widget.Toast;
 import com.androidnetworking.common.ANRequest;
 import com.androidnetworking.common.Priority;
 import com.androidnetworking.error.ANError;
-import com.androidnetworking.interfaces.OkHttpResponseListener;
+import com.androidnetworking.interfaces.JSONArrayRequestListener;
 import com.gaius.gaiusapp.utils.ResourceHelper;
 import com.nabinbhandari.android.permissions.PermissionHandler;
 import com.nabinbhandari.android.permissions.Permissions;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import okhttp3.Response;
 
 import static com.gaius.gaiusapp.utils.ResourceHelper.getResizedBitmap;
 
@@ -48,7 +46,7 @@ import static com.gaius.gaiusapp.utils.ResourceHelper.getResizedBitmap;
 public class SignUpSMSActivity extends AppCompatActivity {
     private static final int PICK_ICON_REQUEST = 1;
     private static final int PICK_CHANNEL_REQUEST = 2;
-    private String iconPath, channelThumbnailPath, URL_FOR_REGISTRATION, croppedImage;
+    private String iconPath, channelThumbnailPath, croppedImage;
     private Uri avatarUri, channelThumbnailUri;
     private ImageView avatarImageView, channelImageView;
     private EditText signupInputName, signupInputChannel;
@@ -64,7 +62,6 @@ public class SignUpSMSActivity extends AppCompatActivity {
         mCtx = this;
 
         prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
-        URL_FOR_REGISTRATION = prefs.getString("base_url", null)+"OTP.py";
 
         signupInputName = findViewById(R.id.name_edittext);
         signupInputChannel = findViewById(R.id.channel_edittext);
@@ -233,7 +230,7 @@ public class SignUpSMSActivity extends AppCompatActivity {
         dialog = ProgressDialog.show(this, "",
                 "Loading. Please wait...", true);
 
-        ANRequest.MultiPartBuilder request = new ANRequest.MultiPartBuilder(URL_FOR_REGISTRATION);
+        ANRequest.MultiPartBuilder request = new ANRequest.MultiPartBuilder(prefs.getString("base_url", null)+"signup.py");
 
         if (iconPath != null) {
             request.addMultipartFile("avatar",new File (iconPath));
@@ -243,86 +240,146 @@ public class SignUpSMSActivity extends AppCompatActivity {
             request.addMultipartFile("channelThumbnail",new File (channelThumbnailPath));
         }
 
-        request.addMultipartParameter("login", "1")
-                .addMultipartParameter("numbe", prefs.getString("number", ""))
+        request.addMultipartParameter("number", prefs.getString("number", ""))
                 .addMultipartParameter("OTP", prefs.getString("OTP", ""))
                 .addMultipartParameter("name", name)
                 .addMultipartParameter("channel", channel)
-                .addMultipartParameter("password", "test")
+                .addMultipartParameter("cm-token", prefs.getString("cm-token", "null"))
                 .setPriority(Priority.HIGH);
 
-        ANRequest anRequest = request.build();
-
-        anRequest.getAsOkHttpResponse(new OkHttpResponseListener() {
+        request.build().getAsJSONArray(new JSONArrayRequestListener() {
             @Override
-            public void onResponse(Response response) {
-                if (response.code() == 200) {
-                    JSONObject jObj = null;
-                    try {
-                        jObj = new JSONObject(response.body().string());
-                        boolean error = jObj.getBoolean("error");
+            public void onResponse(JSONArray response) {
 
-                        if (!error) {
-                            String user = jObj.getJSONObject("user").getString("name");
-                            Log.d("yasir","RegisterActivity: Received token: " + jObj.getJSONObject("user").getString("token"));
+                Log.d("thp", "response " + response);
 
-                            Toast.makeText(getApplicationContext(), "Your account was successfully", Toast.LENGTH_SHORT).show();
+                try {
+                    JSONObject obj = response.getJSONObject(0);
 
-                            SharedPreferences.Editor editor = prefs.edit();
-                            editor.putString("name", jObj.getJSONObject("user").getString("name"));
-                            editor.putString("email", jObj.getJSONObject("user").getString("email"));
-                            editor.putString("password", "test");
-                            editor.putString("token", jObj.getJSONObject("user").getString("token"));
-                            editor.putString("channel", jObj.getJSONObject("user").getString("channel"));
-                            editor.putString("gender", jObj.getJSONObject("user").getString("gender"));
-                            editor.putString("age", jObj.getJSONObject("user").getString("age"));
-                            editor.putString("userID", jObj.getJSONObject("user").getString("userID"));
-                            editor.putString("number", jObj.getJSONObject("user").getString("phoneNumber"));
-                            editor.putString("admin", jObj.getJSONObject("user").getString("admin"));
-                            editor.commit();
+                    Toast.makeText(getApplicationContext(), "Your account was successfully created", Toast.LENGTH_SHORT).show();
 
-                            Intent i = new Intent(getApplicationContext(), MainActivity.class);
-                            startActivity(i);
+                    SharedPreferences.Editor editor = prefs.edit();
+                    editor.putString("name", obj.getString("name"));
+                    editor.putString("token", obj.getString("token"));
+                    editor.putString("channel", obj.getString("channel"));
+                    editor.putString("userID", obj.getString("userID"));
+                    editor.putString("number", obj.getString("phoneNumber"));
+                    editor.putString("admin", "0");
+                    editor.commit();
 
-                            finish();
+                    Intent i = new Intent(getApplicationContext(), MainActivity.class);
+                    startActivity(i);
 
-                        } else {
-                            String errorMsg = jObj.getString("error_msg");
-                            Toast.makeText(getApplicationContext(),
-                                    errorMsg, Toast.LENGTH_LONG).show();
-                            dialog.dismiss();
-                        }
+                    finish();
 
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                        dialog.dismiss();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                        dialog.dismiss();
-                    }
-                } else {
+                } catch (JSONException e) {
+                    e.printStackTrace();
                     dialog.dismiss();
-                    Toast.makeText(getApplicationContext(), "Something went wrong with the registration ("+ response.code()+")", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), "Something went wrong with the registration ("+ e +")", Toast.LENGTH_LONG).show();
                 }
+
             }
 
             @Override
-            public void onError(ANError error) {
+            public void onError(ANError anError) {
+
+                Log.d("thp", "Error " + anError);
 
                 dialog.dismiss();
 
-                switch (error.getErrorCode()) {
+                switch (anError.getErrorCode()) {
                     case 401:
-                        break;
-                    case 500:
-                        Log.d("SMS", "Error 500" + error);
+                        Log.d("thp", "Error 401" + anError);
                         Toast.makeText(getApplicationContext(), "Invalid OTP, please correct it", Toast.LENGTH_SHORT).show();
                         break;
+                    case 402:
+                        Log.d("thp", "Error 402" + anError);
+                        Toast.makeText(getApplicationContext(), "User is already registered with this number", Toast.LENGTH_SHORT).show();
+                        break;
+                    case 403:
+                        Log.d("thp", "Error 403" + anError);
+                        Toast.makeText(getApplicationContext(), "No such phone number exists", Toast.LENGTH_SHORT).show();
+                        break;
+                    case 500:
+                        Log.d("thp", "Error 500" + anError);
+                        Toast.makeText(getApplicationContext(), "Internal server error", Toast.LENGTH_SHORT).show();
+                        break;
                     default:
-                        Log.d("SMS", "Error no Internet " + error);
+                        Log.d("thp", "Error no Internet " + anError.getErrorBody());
                 }
             }
         });
+
+//        anRequest.getAsOkHttpResponse(new OkHttpResponseListener() {
+//            @Override
+//            public void onResponse(Response response) {
+//                if (response.code() == 200) {
+//                    JSONObject jObj = null;
+//                    try {
+//                        jObj = new JSONObject(response.body().string());
+//                        boolean error = jObj.getBoolean("error");
+//
+//                        if (!error) {
+//                            String user = jObj.getJSONObject("user").getString("name");
+//                            Log.d("yasir","RegisterActivity: Received token: " + jObj.getJSONObject("user").getString("token"));
+//
+//                            Toast.makeText(getApplicationContext(), "Your account was successfully created", Toast.LENGTH_SHORT).show();
+//
+//                            SharedPreferences.Editor editor = prefs.edit();
+//                            editor.putString("name", jObj.getJSONObject("user").getString("name"));
+//                            editor.putString("email", jObj.getJSONObject("user").getString("email"));
+//                            editor.putString("password", "test");
+//                            editor.putString("token", jObj.getJSONObject("user").getString("token"));
+//                            editor.putString("channel", jObj.getJSONObject("user").getString("channel"));
+//                            editor.putString("gender", jObj.getJSONObject("user").getString("gender"));
+//                            editor.putString("age", jObj.getJSONObject("user").getString("age"));
+//                            editor.putString("userID", jObj.getJSONObject("user").getString("userID"));
+//                            editor.putString("number", jObj.getJSONObject("user").getString("phoneNumber"));
+//                            editor.putString("admin", jObj.getJSONObject("user").getString("admin"));
+//                            editor.commit();
+//
+//                            Intent i = new Intent(getApplicationContext(), MainActivity.class);
+//                            startActivity(i);
+//
+//                            finish();
+//
+//                        } else {
+//                            String errorMsg = jObj.getString("error_msg");
+//                            Toast.makeText(getApplicationContext(),
+//                                    errorMsg, Toast.LENGTH_LONG).show();
+//                            dialog.dismiss();
+//                        }
+//
+//                    } catch (JSONException e) {
+//                        e.printStackTrace();
+//                        dialog.dismiss();
+//                    } catch (IOException e) {
+//                        e.printStackTrace();
+//                        dialog.dismiss();
+//                    }
+//                } else {
+//                    dialog.dismiss();
+//                    Toast.makeText(getApplicationContext(), "Something went wrong with the registration ("+ response.code()+")", Toast.LENGTH_LONG).show();
+//                }
+//            }
+//
+//            @Override
+//            public void onError(ANError error) {
+//
+//                dialog.dismiss();
+//
+//                switch (error.getErrorCode()) {
+//                    case 401:
+//                        break;
+//                    case 500:
+//                        Log.d("SMS", "Error 500" + error);
+//                        Toast.makeText(getApplicationContext(), "Invalid OTP, please correct it", Toast.LENGTH_SHORT).show();
+//                        break;
+//                    default:
+//                        Log.d("SMS", "Error no Internet " + error);
+//                }
+//            }
+//        });
 
         SharedPreferences.Editor editor = prefs.edit();
         editor.putString("account_avatar", iconPath);

@@ -29,6 +29,23 @@
 
     </style>
 
+    <style name="TextLabelSignup" parent="TextAppearance.AppCompat">
+        <!--hint color And Label Color in False State-->
+        <item name="android:textColorHint">#99000000</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:labelTextSize">18sp</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:textColor">#ffffff</item>
+        <item name="android:textColorHighlight">@android:color/holo_red_dark</item>
+        <item name="android:textColorLink">@android:color/holo_red_light</item>
+
+        <!--Label color in True State And Bar Color False And True State-->
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="colorControlNormal">@color/grey_100</item>
+        <item name="colorControlActivated">@color/grey_100</item>
+
+    </style>
+
     <style name="AppTheme.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>

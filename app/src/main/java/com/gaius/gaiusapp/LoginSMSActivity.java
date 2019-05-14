@@ -86,7 +86,7 @@ public class LoginSMSActivity extends AppCompatActivity {
 
         phoneInputView = (IntlPhoneInput) findViewById(R.id.my_phone_input);
 
-        ImageView easterEgg = findViewById(R.id.logo2a);
+        ImageView easterEgg = findViewById(R.id.logo3);
         easterEgg.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){

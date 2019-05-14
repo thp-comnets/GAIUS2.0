@@ -105,6 +105,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
     @Override
     public void onNewToken(String token) {
+        super.onNewToken(token);
         // this is being called on app install
         Log.d("firebase", "Refreshed token: " + token);
 

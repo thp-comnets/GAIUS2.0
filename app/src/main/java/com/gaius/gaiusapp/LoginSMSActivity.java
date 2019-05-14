@@ -40,7 +40,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -178,12 +177,7 @@ public class LoginSMSActivity extends AppCompatActivity {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                try {
-                    FirebaseInstanceId.getInstance().deleteInstanceId();
                     FirebaseInstanceId.getInstance().getToken();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
             }
         }).start();
 

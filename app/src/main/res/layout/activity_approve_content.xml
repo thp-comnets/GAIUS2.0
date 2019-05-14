@@ -26,7 +26,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:paddingTop="?attr/actionBarSize"
-
         android:paddingBottom="50dp">
 
         <ImageView
@@ -35,7 +34,7 @@
             android:layout_height="wrap_content"
             android:src="@drawable/approved"
             android:layout_marginTop="60dp"
-            android:visibility="visible"/>
+            android:visibility="gone"/>
 
         <TextView
             android:id="@+id/nothing_to_approve_text"

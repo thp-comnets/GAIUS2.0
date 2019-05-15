@@ -383,6 +383,7 @@ public class NewsFeedFragment extends Fragment implements SwipeRefreshLayout.OnR
         }
         newsFeedList = new ArrayList<>();
         loadPages();
+        adapter.stopPlayer();
     }
 
     @Override

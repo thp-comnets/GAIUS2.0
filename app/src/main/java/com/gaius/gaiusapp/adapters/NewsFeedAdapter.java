@@ -6,7 +6,9 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.ColorStateList;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
@@ -21,6 +23,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.AppCompatSeekBar;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.Gravity;
@@ -249,36 +252,39 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.newsFe
                     shareItem(v, "Check this audio on GAIUS");
                 }
             });
-           if(playingHolder != null){
-            playingHolder.seekBarProgress.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-                @Override
-                public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                    seeked_progess = progress;
-                }
 
-                @Override
-                public void onStartTrackingTouch(SeekBar seekBar) {
-
-                }
-
-                @Override
-                public void onStopTrackingTouch(SeekBar seekBar) {
-                    if (mediaPlayer.isPlaying()) {
-                        mediaPlayer.seekTo(seeked_progess);
+            if(playingHolder != null){
+                playingHolder.seekBarProgress.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                    @Override
+                    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                        seeked_progess = progress;
                     }
-                }
-            });
 
-            if(mediaPlayer != null)
-            mediaPlayer.setOnBufferingUpdateListener(new MediaPlayer.OnBufferingUpdateListener() {
-            @Override
-            public void onBufferingUpdate(MediaPlayer mediaPlayer, int i) {
-                playingHolder.seekBarProgress.setSecondaryProgress(i);
+                    @Override
+                    public void onStartTrackingTouch(SeekBar seekBar) {
+
+                    }
+
+                    @Override
+                    public void onStopTrackingTouch(SeekBar seekBar) {
+                        if (mediaPlayer.isPlaying()) {
+                            mediaPlayer.seekTo(seeked_progess);
+                        }
+                    }
+                });
+
+                if(mediaPlayer != null)
+                    mediaPlayer.setOnBufferingUpdateListener(new MediaPlayer.OnBufferingUpdateListener() {
+                        @Override
+                        public void onBufferingUpdate(MediaPlayer mediaPlayer, int i) {
+
+                            int playPositionInMillisecconds = (mediaPlayer.getDuration() / 100) * i;
+                            playingHolder.seekBarProgress.setSecondaryProgress(playPositionInMillisecconds);
 
 
+                        }
+                    });
             }
-            });
-}
         }
         else if (newsfeed.getType().equals("image") || newsfeed.getType().equals("ad")) {
             holder.videoView.setVisibility(View.GONE);
@@ -526,7 +532,7 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.newsFe
         mCtx.startActivity(Intent.createChooser(sharingIntent, "Share using"));
     }
 
-    public   void stopPlayer() {
+    public  void stopPlayer() {
         if (null != mediaPlayer) {
             releaseMediaPlayer();
         }
@@ -615,6 +621,7 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.newsFe
 
 
 
+
         ArrayList<String> multiImageViewBitmaps;
 
         public newsFeedViewHolder(View itemView) {
@@ -650,6 +657,8 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.newsFe
 
         @Override
         public void onClick(View v) {
+
+            try{
             if(getAdapterPosition() == playingPosition){
 
                 if (mediaPlayer.isPlaying()) {
@@ -674,22 +683,17 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.newsFe
                 }
 
             }
-
             updatePlayingView();
+            }catch(Exception e){
 
-
+            }
         }
-
-
     }
 
-
-
+    //  Updates the View for the audios that are being played
     private void updatePlayingView() {
         playingHolder.seekBarProgress.setMax(mediaPlayer.getDuration());
-         playingHolder.seekBarProgress.setProgress(mediaPlayer.getCurrentPosition());
-
-//        playingHolder.seekBarProgress.setProgress((int) (((float) mediaPlayer.getCurrentPosition() / mediaFileLengthInMilliseconds) * 100));
+        playingHolder.seekBarProgress.setProgress(mediaPlayer.getCurrentPosition());
         playingHolder.seekBarProgress.setEnabled(true);
 
         if (mediaPlayer.isPlaying()) {
@@ -702,6 +706,7 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.newsFe
 
     }
 
+    //  Updates the View for the audios that are not being played
     private void updateNonPlayingView(newsFeedViewHolder holder) {
 
         holder.seekBarProgress.removeCallbacks(seekBarUpdater);
@@ -710,8 +715,9 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.newsFe
         holder.buttonPlayPause.setImageResource(R.drawable.ic_media_play);
     }
 
-    private void startMediaPlayer(Uri audioResId) {
-              mediaPlayer = MediaPlayer.create(mCtx, audioResId);
+    private void startMediaPlayer(Uri audioUri) {
+
+        mediaPlayer = MediaPlayer.create(mCtx, audioUri);
         mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mp) {
@@ -720,12 +726,13 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.newsFe
         });
         mediaPlayer.start();
 
+
         if(mediaPlayer != null)
             mediaPlayer.setOnBufferingUpdateListener(new MediaPlayer.OnBufferingUpdateListener() {
                 @Override
                 public void onBufferingUpdate(MediaPlayer mediaPlayer, int i) {
-                    playingHolder.seekBarProgress.setSecondaryProgress(i);
-
+                    int playPositionInMillisecconds = (mediaPlayer.getDuration() / 100) * i;
+                    playingHolder.seekBarProgress.setSecondaryProgress(playPositionInMillisecconds);
                 }
             });
 
@@ -759,12 +766,4 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.newsFe
         playingPosition = -1;
     }
 
-    @Override
-    public void onViewRecycled(newsFeedViewHolder holder) {
-        super.onViewRecycled(holder);
-        if (playingPosition == holder.getAdapterPosition()) {
-            updateNonPlayingView(playingHolder);
-//            playingHolder = null;
-        }
-    }
 }

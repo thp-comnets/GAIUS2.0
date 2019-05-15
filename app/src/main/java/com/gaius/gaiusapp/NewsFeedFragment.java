@@ -405,5 +405,11 @@ public class NewsFeedFragment extends Fragment implements SwipeRefreshLayout.OnR
         intent.putExtras(bundle);
         startActivityForResult(intent, 0);
     }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        adapter.stopPlayer();
+    }
 }
 

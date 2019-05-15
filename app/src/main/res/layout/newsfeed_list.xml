@@ -88,21 +88,15 @@
         android:layout_width="match_parent"
         android:layout_height="220dp"
         tools:visibility="gone"/>
-    <LinearLayout
+
+   <LinearLayout
         android:id="@+id/audioView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:visibility="gone">
 
-       <!-- <ImageButton
-            android:id="@+id/ButtonTestPlayPause"
-            android:layout_width="match_parent"
-            android:layout_height="100dp"
-            android:layout_centerHorizontal="true"
-            android:contentDescription="TestPlayPause"
 
-            android:src="@drawable/button_play" />-->
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/ButtonTestPlayPause"
             android:layout_width="match_parent"
@@ -121,7 +115,7 @@
             android:layout_below="@+id/ButtonTestPlayPause" />
     </LinearLayout>
 
-    <com.gaius.gaiusapp.utils.TopCropImageView
+       <com.gaius.gaiusapp.utils.TopCropImageView
         android:id="@+id/imageView"
         android:layout_width="match_parent"
         android:layout_height="220dp"

@@ -1,1 +1,1 @@
-include ':app', ':videocompressionlibrary'
+include ':app', ':videocompressionlibrary', 'audiocompressionlibrary'

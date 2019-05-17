@@ -76,6 +76,8 @@ dependencies {
     implementation 'com.jpardogo.materialtabstrip:library:1.0.6'
     implementation 'net.the4thdimension:audio-wife:1.0.3'
     implementation 'com.r0adkll:slidableactivity:2.0.6'
+    implementation project(':audiocompressionlibrary')
+//    implementation 'com.github.adrielcafe:AndroidAudioConverter:0.0.8'
 
 
 }

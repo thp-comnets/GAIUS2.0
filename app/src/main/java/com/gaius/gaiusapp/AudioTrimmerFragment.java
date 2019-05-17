@@ -436,7 +436,7 @@ public class AudioTrimmerFragment extends Fragment implements View.OnClickListen
     private void resetPositions() {
         mStartPos = audioWaveform.secondsToPixels(0.0);
 //        mEndPos = audioWaveform.secondsToPixels(15.0);
-        mEndPos = audioWaveform.secondsToPixels(60.0);
+        mEndPos = audioWaveform.secondsToPixels(5000.0);
     }
 
     private void setOffsetGoalNoUpdate(int offset) {
@@ -753,12 +753,6 @@ public class AudioTrimmerFragment extends Fragment implements View.OnClickListen
                 i.putExtra("frgToLoad", "Saved");
                 startActivity(i);
 
-//                FileViewerFragment fragmentA = new FileViewerFragment();
-//                getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.container,fragmentA).commit();
-//                getActivity().setResult(RESULT_OK, intent);
-//                getActivity().finish();
-
-//                startActivity(intent);
             }
 
 
@@ -773,7 +767,7 @@ public class AudioTrimmerFragment extends Fragment implements View.OnClickListen
                 new SoundFile.ProgressListener() {
                     public boolean reportProgress(double elapsedTime) {
                         long now = Utility.getCurrentTime();
-                        Log.v("mRecordingLastUpd"," -- "+ mRecordingLastUpdateTime);
+                        Log.v("mRecordingLastUpd"," -- "+ elapsedTime);
                         if (now - mRecordingLastUpdateTime > 5) {
                             mRecordingTime = elapsedTime;
                             // Only UI thread can update Views such as TextViews.
@@ -794,6 +788,7 @@ public class AudioTrimmerFragment extends Fragment implements View.OnClickListen
         Thread mRecordAudioThread = new Thread() {
             public void run() {
                 try {
+
                     mRecordedSoundFile = SoundFile.record(listener);
                     if (mRecordedSoundFile == null) {
                         getActivity().finish();
@@ -1007,7 +1002,7 @@ public class AudioTrimmerFragment extends Fragment implements View.OnClickListen
                 File outFile = new File(outPath);
                 try {
                     // Write the new file
-                    mRecordedSoundFile.WriteFile(outFile, startFrame, endFrame - startFrame);
+                    mRecordedSoundFile.WriteWAVFile(outFile, startFrame, endFrame - startFrame);
                 } catch (Exception e) {
                     // log the error and try to create a .wav file instead
                     if (outFile.exists()) {
@@ -1053,7 +1048,7 @@ public class AudioTrimmerFragment extends Fragment implements View.OnClickListen
 
         values.put(MediaStore.Audio.Media.ARTIST, getActivity().getApplicationInfo().name);
         values.put(MediaStore.Audio.Media.DURATION, duration);
-
+Log.v("afterring_dur"," - "+duration);
         values.put(MediaStore.Audio.Media.IS_MUSIC, true);
 
         Uri uri = MediaStore.Audio.Media.getContentUriForPath(outPath);
@@ -1089,7 +1084,8 @@ public class AudioTrimmerFragment extends Fragment implements View.OnClickListen
                 art = metaRetriver.getEmbeddedPicture();
 //                Log.v("onActivityResult1", " - "+ metaRetriver.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION));
                 duration1 =  Long.parseLong(metaRetriver.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION));
-//                        Log.v("onActivityResult1", " - "+ metaRetriver.extractMetadata(MediaMetadataRetriever.));
+                        Log.v("onActivityResult3", " - "+ metaRetriver.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION));
+                        Log.v("onActivityResult3", " - "+ duration1);
 
             } catch (Exception e) {
 
@@ -1127,9 +1123,7 @@ public class AudioTrimmerFragment extends Fragment implements View.OnClickListen
         if (!externalRootDir.endsWith("/")) {
             externalRootDir += "/";
         }
-//        subDir = "media/audio/music/";
-//        subDir = "/";
-//        String parentDir = externalRootDir + subDir;
+
         String parentDir = externalRootDir ;
 
         // Create the parent directory
@@ -1283,7 +1277,6 @@ public class AudioTrimmerFragment extends Fragment implements View.OnClickListen
 
     @Override
     public boolean onAudioBackPressed() {
-
         if (rlAudioEdit.getVisibility() == View.VISIBLE || txtAudioRecordTime.getVisibility()  == View.VISIBLE) {
             //action not popBackStack
             return true;

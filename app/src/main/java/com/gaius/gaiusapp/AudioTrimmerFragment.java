@@ -698,7 +698,6 @@ public class AudioTrimmerFragment extends Fragment implements View.OnClickListen
 
         } else if (view == txtAudioUpload) {
 
-//            File folder = new File(Environment.getExternalStorageDirectory() + "/Gaius");
             File folder = new File(getActivity().getFilesDir() + "/Gaius");
             if (!folder.exists()) {
                 //folder /SoundRecorder doesn't exist, create the folder
@@ -714,29 +713,23 @@ public class AudioTrimmerFragment extends Fragment implements View.OnClickListen
                 Bundle conData = new Bundle();
                 conData.putString("INTENT_AUDIO_FILE", mFile.getAbsolutePath());
                 Intent intent = new Intent();
-                Log.v("thulasiram"," - "+mFile.getAbsolutePath());
 //                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                 intent.putExtras(conData);
                 String path = mFile.getAbsolutePath();
-                System.out.println(path.substring(path.lastIndexOf("/")));
 
                 String trackName = path.substring(path.lastIndexOf("/"));
                 trackName = trackName.replaceAll("\\\\", "");
                 String[] parts = path.split("/");
                 String lastOne = parts[parts.length-1];
                 long duration = 0;
-                Log.v("onActivityResult1"," - " + "--"+path);
-                Log.v("onActivityResult2"," - " + "--"+trackName);
+
 
                 MediaMetadataRetriever metaRetriver;
                 byte[] art;
                 metaRetriver = new MediaMetadataRetriever();
                 metaRetriver.setDataSource(path);
                 try {
-                    art = metaRetriver.getEmbeddedPicture();
-                    Log.v("onActivityResult1", " - "+ metaRetriver.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION));
                     duration =  Long.parseLong(metaRetriver.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION));
-//                        Log.v("onActivityResult1", " - "+ metaRetriver.extractMetadata(MediaMetadataRetriever.));
 
                 } catch (Exception e) {
 
@@ -746,7 +739,7 @@ public class AudioTrimmerFragment extends Fragment implements View.OnClickListen
                     mDatabase.addRecording(lastOne, path, duration);
 
                 } catch (Exception e){
-                    Log.e("dfdg", "exception", e);
+//                    Log.e("dfdg", "exception", e);
                 }
                 getActivity().finish();
                 Intent i = new Intent(getActivity(), AudioActivity.class);
@@ -872,19 +865,7 @@ public class AudioTrimmerFragment extends Fragment implements View.OnClickListen
         updateDisplay();
     }
 
-    private void requestStoragePermission() {
-        ActivityCompat.requestPermissions(getActivity(),
-                new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                        Manifest.permission.RECORD_AUDIO},
-                REQUEST_ID_PERMISSIONS);
-    }
 
-    private boolean checkStoragePermission() {
-        return (ActivityCompat.checkSelfPermission(getActivity(),
-                Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED &&
-                ActivityCompat.checkSelfPermission(getActivity(),
-                        Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED);
-    }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
@@ -1048,19 +1029,18 @@ public class AudioTrimmerFragment extends Fragment implements View.OnClickListen
 
         values.put(MediaStore.Audio.Media.ARTIST, getActivity().getApplicationInfo().name);
         values.put(MediaStore.Audio.Media.DURATION, duration);
-Log.v("afterring_dur"," - "+duration);
+
         values.put(MediaStore.Audio.Media.IS_MUSIC, true);
 
         Uri uri = MediaStore.Audio.Media.getContentUriForPath(outPath);
         final Uri newUri = getActivity().getContentResolver().insert(uri, values);
-        Log.e("final URI >> ", newUri + " >> " + outPath);
+
 
         if (finish == 0) {
             loadFromFile(outPath);
         } else if (finish == 1) {
             Bundle conData = new Bundle();
             conData.putString("INTENT_AUDIO_FILE", outPath);
-            Log.v("thulasiram1", " -- "+outPath);
             Intent intent = getActivity().getIntent();
             intent.putExtras(conData);
 
@@ -1070,22 +1050,14 @@ Log.v("afterring_dur"," - "+duration);
             String trackName = path.substring(path.lastIndexOf("/"));
             String[] parts = path.split("/");
             String lastOne = parts[parts.length-1];
-//            trackName = trackName.replaceAll("\\\\", "");
-//             duration = 0;
             long duration1 = 0;
-            Log.v("onActivityResult1"," - " + "--"+path);
-            Log.v("onActivityResult2"," - " + "--"+trackName);
 
             MediaMetadataRetriever metaRetriver;
             byte[] art;
             metaRetriver = new MediaMetadataRetriever();
             metaRetriver.setDataSource(path);
             try {
-                art = metaRetriver.getEmbeddedPicture();
-//                Log.v("onActivityResult1", " - "+ metaRetriver.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION));
                 duration1 =  Long.parseLong(metaRetriver.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION));
-                        Log.v("onActivityResult3", " - "+ metaRetriver.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION));
-                        Log.v("onActivityResult3", " - "+ duration1);
 
             } catch (Exception e) {
 
@@ -1095,17 +1067,14 @@ Log.v("afterring_dur"," - "+duration);
                 mDatabase.addRecording(lastOne, path, duration1);
 
             } catch (Exception e){
-                Log.e("dfdg", "exception", e);
+//                Log.e("dfdg", "exception", e);
             }
 
             getActivity().finish();
             Intent i = new Intent(getActivity(), AudioActivity.class);
             i.putExtra("frgToLoad", "Saved");
             startActivity(i);
-//            FileViewerFragment fragmentA = new FileViewerFragment();
-//            getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.container,fragmentA).commit();
-//            getActivity().setResult(RESULT_OK, intent);
-//            getActivity().finish();
+
         }
     }
 
@@ -1118,7 +1087,7 @@ Log.v("afterring_dur"," - "+duration);
 
     private String makeRingtoneFilename(CharSequence title, String extension) {
         String subDir;
-//        String externalRootDir = Environment.getExternalStorageDirectory().getPath() + "/Gaius";
+
         String externalRootDir = getActivity().getFilesDir() + "/Gaius";
         if (!externalRootDir.endsWith("/")) {
             externalRootDir += "/";

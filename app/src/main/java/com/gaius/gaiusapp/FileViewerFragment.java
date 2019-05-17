@@ -72,6 +72,7 @@ public class FileViewerFragment extends Fragment implements OnDatabaseChangedLis
 
     private final int PICK_AUDIO_REQUEST = 111;
     String audioPath;
+    String deleteAudio;
     String audio_name;
     AlertDialog alertD;
     EditText editTextPagename, editTextDescription;
@@ -98,6 +99,18 @@ public class FileViewerFragment extends Fragment implements OnDatabaseChangedLis
         database = dbOpenHelper.openDataBase();
         observer.startWatching();
 
+        // Loads the FFMPEG file
+        AndroidAudioConverter.load(getActivity(), new ILoadCallback() {
+            @Override
+            public void onSuccess() {
+
+            }
+            @Override
+            public void onFailure(Exception error) {
+                // FFmpeg is not supported by device
+                error.printStackTrace();
+            }
+        });
     }
 
     @Override
@@ -151,10 +164,9 @@ public class FileViewerFragment extends Fragment implements OnDatabaseChangedLis
         Cursor audio = database.rawQuery("SELECT * FROM saved_recordings WHERE _id = "+ids+" ",null);
         audio.moveToFirst();
         if(audio.getCount() > 0){
-          String id = audio.getString(audio.getColumnIndex("_id"));
-          file_path = audio.getString(audio.getColumnIndex("file_path"));
-           filename = audio.getString(audio.getColumnIndex("recording_name"));
-          Log.v("file_path", " "+ id+" - "+ file_path);
+            String id = audio.getString(audio.getColumnIndex("_id"));
+            file_path = audio.getString(audio.getColumnIndex("file_path"));
+            filename = audio.getString(audio.getColumnIndex("recording_name"));
         }
         audio.close();
 
@@ -229,17 +241,49 @@ public class FileViewerFragment extends Fragment implements OnDatabaseChangedLis
             public void onClick(View view) {
                 AudioWife.getInstance().release();
 
-                if (filledFields(promptView)) {
-                    String sourcePath = audioPath;
-                    try {
-                        alertD.dismiss();
-                        uploadMultipart(editTextPagename.getText().toString(), editTextDescription.getText().toString());
+                progress = new ProgressDialog(getActivity());
+                progress.setMessage("Compressing Audio...");
+                progress.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+                progress.setCancelable(false);
+                progress.setProgress(0);
+                progress.setButton(ProgressDialog.BUTTON_NEUTRAL, "Cancel",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
 
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        Toast.makeText(getContext(), "Something went wrong with the audio", Toast.LENGTH_LONG).show();
+                            }
+                        });
+                progress.show();
+
+                File audioFile = new File(getActivity().getFilesDir()+"/Gaius/",audio_name);
+
+                IConvertCallback callback = new IConvertCallback() {
+                    @Override
+                    public void onSuccess(File convertedFile) {
+                        progress.dismiss();
+                        if (filledFields(promptView)) {
+                            audioPath = convertedFile.getPath();
+                            deleteAudio = audioPath;
+                            try {
+                                alertD.dismiss();
+                                uploadMultipart(editTextPagename.getText().toString(), editTextDescription.getText().toString());
+
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                                Toast.makeText(getContext(), "Something went wrong with the audio", Toast.LENGTH_LONG).show();
+                            }
+                        }
                     }
-                }
+                    @Override
+                    public void onFailure(Exception error) {
+                        Log.v("onSuccess"," - "+ error.getMessage());
+                    }
+                };
+
+                AndroidAudioConverter.with(mContext)
+                        .setFile(audioFile)
+                        .setFormat(AudioFormat.MP3)
+                        .setCallback(callback)
+                        .convert();
 
             }
         });
@@ -268,8 +312,6 @@ public class FileViewerFragment extends Fragment implements OnDatabaseChangedLis
                 }
 
 
-                Log.d("yasir", "Upload audio " + myFile + " " + "");
-
                 LayoutInflater layoutInflater = LayoutInflater.from(getContext());
                 final View promptView = layoutInflater.inflate(R.layout.upload_audio_popup, null);
                 alertD = new AlertDialog.Builder(getContext()).create();
@@ -295,7 +337,6 @@ public class FileViewerFragment extends Fragment implements OnDatabaseChangedLis
 
                     @Override
                     public void onCompletion(MediaPlayer mp) {
-//                        Toast.makeText(getActivity(), "Completed", Toast.LENGTH_SHORT).show();
                         // do you stuff.
                     }
                 });
@@ -304,8 +345,7 @@ public class FileViewerFragment extends Fragment implements OnDatabaseChangedLis
 
                     @Override
                     public void onClick(View v) {
-//                        Toast.makeText(getActivity(), "Play", Toast.LENGTH_SHORT).show();
-                        // get-set-go. Lets dance.
+                        // do stuff if play pressed
                     }
                 });
 
@@ -313,7 +353,6 @@ public class FileViewerFragment extends Fragment implements OnDatabaseChangedLis
 
                     @Override
                     public void onClick(View v) {
-//                        Toast.makeText(getActivity(), "Pause", Toast.LENGTH_SHORT).show();
                         // Your on audio pause stuff.
                     }
                 });
@@ -386,14 +425,6 @@ public class FileViewerFragment extends Fragment implements OnDatabaseChangedLis
         }
     }
 
-    private String getAudioPath(Uri uri) {
-        String[] data = {MediaStore.Audio.Media.DATA};
-        CursorLoader loader = new CursorLoader(getActivity(), uri, data, null, null, null);
-        Cursor cursor = loader.loadInBackground();
-        int column_index = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DATA);
-        cursor.moveToFirst();
-        return cursor.getString(column_index);
-    }
 
     public boolean filledFields(View view) {
         boolean haveContent = true;
@@ -459,19 +490,21 @@ public class FileViewerFragment extends Fragment implements OnDatabaseChangedLis
                     @Override
                     public void onReceived(long timeTakenInMillis, long bytesSent,
                                            long bytesReceived, boolean isFromCache) {
-                        Log.d("thp", " timeTakenInMillis : " + timeTakenInMillis);
-                        Log.d("thp", " bytesSent : " + bytesSent);
-                        Log.d("thp", " bytesReceived : " + bytesReceived);
-                        Log.d("thp", " isFromCache : " + isFromCache);
+
                     }
                 })
                 .getAsOkHttpResponse(new OkHttpResponseListener() {
                     @Override
                     public void onResponse(Response response) {
-                        Log.d("thp", "OnResponse " + response.code());
+
                         if (response.code() == 200) {
                             progress.dismiss();
                             alertD.dismiss();
+                            // Deleting the temporarily created file
+                            File audioFile = new File(deleteAudio);
+                            if(audioFile.exists())
+                                audioFile.delete();
+
                             uploadSuccessful();
 
                         } else {
@@ -490,7 +523,6 @@ public class FileViewerFragment extends Fragment implements OnDatabaseChangedLis
     }
 
     private void uploadSuccessful() {
-        Log.d("thp", "upload successful");
 
         AlertDialog alertDialog = new AlertDialog.Builder(getActivity()).create();
         alertDialog.setTitle("Upload successful");

@@ -224,6 +224,11 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.newsFe
                     shareItem(v, "Check this image album on GAIUS");
                 }
             });
+        } else if (newsfeed.getType().equals("audio")) {
+            //FIXME
+            holder.videoView.setVisibility(View.GONE);
+            holder.imageView.setVisibility(View.GONE);
+            holder.slider.setVisibility(View.GONE);
         }
 
         holder.textViewName.setText(newsfeed.getName());

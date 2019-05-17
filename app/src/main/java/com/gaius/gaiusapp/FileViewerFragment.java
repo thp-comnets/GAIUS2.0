@@ -53,6 +53,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import cafe.adriel.androidaudioconverter.AndroidAudioConverter;
+import cafe.adriel.androidaudioconverter.callback.IConvertCallback;
+import cafe.adriel.androidaudioconverter.callback.ILoadCallback;
+import cafe.adriel.androidaudioconverter.model.AudioFormat;
 import nl.changer.audiowife.AudioWife;
 import okhttp3.Response;
 
@@ -68,6 +72,7 @@ public class FileViewerFragment extends Fragment implements OnDatabaseChangedLis
 
     private final int PICK_AUDIO_REQUEST = 111;
     String audioPath;
+    String audio_name;
     AlertDialog alertD;
     EditText editTextPagename, editTextDescription;
     TextInputLayout editTextPagenameLayout, editTextDescriptionLayout;
@@ -92,6 +97,7 @@ public class FileViewerFragment extends Fragment implements OnDatabaseChangedLis
         ExternalDbOpenHelper dbOpenHelper = new ExternalDbOpenHelper(getActivity(), "gaius.sqlite");
         database = dbOpenHelper.openDataBase();
         observer.startWatching();
+
     }
 
     @Override
@@ -140,16 +146,19 @@ public class FileViewerFragment extends Fragment implements OnDatabaseChangedLis
 
     public void uploadAudio(int ids){
         String file_path = null;
+
+        String filename = null;
         Cursor audio = database.rawQuery("SELECT * FROM saved_recordings WHERE _id = "+ids+" ",null);
         audio.moveToFirst();
         if(audio.getCount() > 0){
           String id = audio.getString(audio.getColumnIndex("_id"));
           file_path = audio.getString(audio.getColumnIndex("file_path"));
+           filename = audio.getString(audio.getColumnIndex("recording_name"));
           Log.v("file_path", " "+ id+" - "+ file_path);
         }
         audio.close();
 
-
+        audio_name = filename;
         File audioFile = new File(file_path);
         Uri mUri = Uri.fromFile(audioFile);
         Log.i("", Uri.fromFile(audioFile).toString());
@@ -204,11 +213,6 @@ public class FileViewerFragment extends Fragment implements OnDatabaseChangedLis
         editTextPagenameLayout = promptView.findViewById(R.id.title_edittext_layout);
         editTextDescriptionLayout = promptView.findViewById(R.id.description_edittext_layout);
 
-
-//                JzvdStd jzVideoPlayerStandard = (JzvdStd) promptView.findViewById(R.id.video_view);
-//                jzVideoPlayerStandard.setUp(uploadVideoPath, "", Jzvd.SCREEN_WINDOW_NORMAL);
-//                jzVideoPlayerStandard.thumbImageView.setImageBitmap(selectedImage);
-
         Button cancel_button = (Button) promptView.findViewById(R.id.cancel_button);
         final Button upload_button = (Button) promptView.findViewById(R.id.upload_button);
 
@@ -236,17 +240,10 @@ public class FileViewerFragment extends Fragment implements OnDatabaseChangedLis
                         Toast.makeText(getContext(), "Something went wrong with the audio", Toast.LENGTH_LONG).show();
                     }
                 }
+
             }
         });
 
-
-
-
-
-//        Intent intent_upload = new Intent();
-//        intent_upload.setType("audio/*");
-//        intent_upload.setAction(Intent.ACTION_GET_CONTENT);
-//        startActivityForResult(intent_upload,PICK_AUDIO_REQUEST);
     }
 
     @Override
@@ -262,34 +259,14 @@ public class FileViewerFragment extends Fragment implements OnDatabaseChangedLis
                 try {
                     String uriString = uri.toString();
                     myFile = new File(uriString);
-                    //    String path = myFile.getAbsolutePath();
-                    String displayName = null;
-//                    audioPath = getAudioPath(uri);
+
                     audioPath = getFilePathFromURI(getActivity(),uri);
-                    Log.v("audioPath","sds"+audioPath);
-//                    File f = new File(audioPath);
-//                    long fileSizeInBytes = f.length();
-//                    long fileSizeInKB = fileSizeInBytes / 1024;
-//                    long fileSizeInMB = fileSizeInKB / 1024;
-//                    if (fileSizeInMB > 8) {
-//                        customAlterDialog("Can't Upload ", "sorry file size is large");
-//                    } else {
-//                        profilePicUrl = path2;
-//                        isPicSelect = true;
-//                    }
+
                 } catch (Exception e) {
                     //handle exception
                     Toast.makeText(getActivity(), "Unable to process,try again", Toast.LENGTH_SHORT).show();
                 }
 
-
-
-
-
-//                Uri fileUri = data.getData();
-//                String[] videoFile = getVideoPath(fileUri);
-//                uploadVideoPath = videoFile[0];
-//                Bitmap selectedImage = ThumbnailUtils.createVideoThumbnail(videoFile[0], MediaStore.Images.Thumbnails.MINI_KIND);
 
                 Log.d("yasir", "Upload audio " + myFile + " " + "");
 
@@ -346,11 +323,6 @@ public class FileViewerFragment extends Fragment implements OnDatabaseChangedLis
                 editTextPagenameLayout = promptView.findViewById(R.id.title_edittext_layout);
                 editTextDescriptionLayout = promptView.findViewById(R.id.description_edittext_layout);
 
-
-//                JzvdStd jzVideoPlayerStandard = (JzvdStd) promptView.findViewById(R.id.video_view);
-//                jzVideoPlayerStandard.setUp(uploadVideoPath, "", Jzvd.SCREEN_WINDOW_NORMAL);
-//                jzVideoPlayerStandard.thumbImageView.setImageBitmap(selectedImage);
-
                 Button cancel_button = (Button) promptView.findViewById(R.id.cancel_button);
                 final Button upload_button = (Button) promptView.findViewById(R.id.upload_button);
 
@@ -379,20 +351,35 @@ public class FileViewerFragment extends Fragment implements OnDatabaseChangedLis
                                 });
                         progress.show();
 
-                        if (filledFields(promptView)) {
-                            String sourcePath = audioPath;
-                            try {
+                        File audioFile = new File(audioPath);
+                        IConvertCallback callback = new IConvertCallback() {
+                            @Override
+                            public void onSuccess(File convertedFile) {
+                                if (filledFields(promptView)) {
+                                    String sourcePath = audioPath;
+                                    try {
 
-                                uploadMultipart(editTextPagename.getText().toString(), editTextDescription.getText().toString());
+                                        uploadMultipart(editTextPagename.getText().toString(), editTextDescription.getText().toString());
 
 
-
-
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                                Toast.makeText(getContext(), "Something went wrong with the compression", Toast.LENGTH_LONG).show();
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                        Toast.makeText(getContext(), "Something went wrong with the compression", Toast.LENGTH_LONG).show();
+                                    }
+                                }
                             }
-                        }
+                            @Override
+                            public void onFailure(Exception error) {
+                            }
+                        };
+
+                        AndroidAudioConverter.with(getActivity())
+                                .setFile(audioFile)
+                                .setFormat(AudioFormat.MP3)
+                                .setCallback(callback)
+                                .convert();
+
+
                     }
                 });
             }
@@ -455,13 +442,9 @@ public class FileViewerFragment extends Fragment implements OnDatabaseChangedLis
         progress.show();
 
         String url = prefs.getString("base_url", null) + "uploadAudio.py";
-
         ANRequest.MultiPartBuilder multiPartBuilder = new ANRequest.MultiPartBuilder(url);
-
         multiPartBuilder.addMultipartFile("audio", new File(audioPath));
         multiPartBuilder.addMultipartParameter("category", "101");
-
-
         multiPartBuilder.addMultipartParameter("token", prefs.getString("token", "null"));
         multiPartBuilder.addMultipartParameter("title", title);
         multiPartBuilder.addMultipartParameter("description", description);
@@ -489,7 +472,6 @@ public class FileViewerFragment extends Fragment implements OnDatabaseChangedLis
                         if (response.code() == 200) {
                             progress.dismiss();
                             alertD.dismiss();
-
                             uploadSuccessful();
 
                         } else {
@@ -537,7 +519,7 @@ public class FileViewerFragment extends Fragment implements OnDatabaseChangedLis
         //copy file and send new file path
         String fileName = getFileName(contentUri);
         if (!TextUtils.isEmpty(fileName)) {
-            File copyFile = new File(Environment.getExternalStorageDirectory().getPath() + File.separator + fileName);
+            File copyFile = new File(context.getExternalCacheDir() + File.separator + fileName);
             copy(context, contentUri, copyFile);
             return copyFile.getAbsolutePath();
         }
@@ -567,6 +549,7 @@ public class FileViewerFragment extends Fragment implements OnDatabaseChangedLis
             e.printStackTrace();
         }
     }
+
 
 }
 
